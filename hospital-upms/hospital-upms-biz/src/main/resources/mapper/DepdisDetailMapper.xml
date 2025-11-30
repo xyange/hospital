@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DepartmentDiseaseMapper">
+
+  <resultMap id="departmentDiseaseMap" type="com.wyzy.hospital.admin.api.entity.DepartmentDisease">
+                  <id property="id" column="id"/>
+                        <result property="departmentsId" column="departments_id"/>
+                        <result property="diseaseId" column="disease_id"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+    <resultMap id="departmentsDisease" type="com.wyzy.hospital.admin.api.dto.department.DepartmentsDiseaseDTO">
+        <id property="departmentId" column="id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="departmentImage" column="department_image"/>
+        <collection property="diseaseList" resultMap="disease"/>
+    </resultMap>
+
+    <resultMap id="disease" type="com.wyzy.hospital.admin.api.entity.Disease">
+        <id property="id" column="disease_id"/>
+        <result property="diseaseName" column="disease_name"/>
+        <result property="common" column="common"/>
+        <result property="showOnDoctor" column="show_on_doctor"/>
+        <result property="showOnNeighborhood" column="show_on_neighborhood"/>
+        <result property="severity" column="severity"/>
+        <result property="sortCode" column="sort_code"/>
+    </resultMap>
+
+    <select id="listDepartmentDisease" resultMap="departmentsDisease">
+        SELECT dep.id,
+               dep.department_name,
+               dep.department_image,
+               dd.disease_id ,
+               dis.disease_name ,
+               dis.common ,
+               dis.show_on_doctor ,
+               dis.show_on_neighborhood,
+               dis.severity ,
+               dis.sort_code
+
+        FROM (SELECT dep.id, dep.department_name,dep.department_image
+              FROM departments dep
+              WHERE dep.del_flag = 0
+                AND dep.superior_id = 0
+                     ) dep
+                     LEFT JOIN departments son ON son.superior_id=dep.id
+                     LEFT JOIN department_disease dd ON son.id = dd.departments_id
+                     LEFT JOIN disease dis ON dis.id = dd.disease_id
+    </select>
+    <select id="appListDepartmentDisease" resultMap="departmentsDisease">
+        SELECT dep.id, dep.department_name, dep.department_image, dd.disease_id, dis.disease_name
+        FROM (SELECT dep.id, dep.department_name, dep.department_image
+              FROM departments dep
+              WHERE dep.del_flag = 0
+                AND dep.superior_id = 0
+                AND dep.show_on_doctor = 1
+              ORDER BY dep.sort
+                     ) dep
+            LEFT JOIN departments son ON son.superior_id=dep.id
+                     LEFT JOIN department_disease dd ON son.id = dd.departments_id
+                     LEFT JOIN disease dis ON dis.id = dd.disease_id
+    </select>
+
+
+</mapper>

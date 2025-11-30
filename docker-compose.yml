@@ -1,0 +1,162 @@
+# 使用说明 V4.0.0
+# 1. 使用docker-compose  宿主机不需要配置host来发现
+# 2. 无需修改源码，根目录  docker-compose up 即可
+# 3. 静静等待服务启动
+
+version: '2'
+services:
+  hospital-mysql:
+    build:
+      context: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    container_name: hospital-mysql
+    image: hospital-mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./hospital-mysql:/var/lib/mysql
+    command: --lower_case_table_names=1
+
+  hospital-redis:
+    container_name: hospital-redis
+    image: redis:5.0.7
+    restart: always
+    ports:
+      - 6379:6379
+
+  hospital-minio:
+    container_name: hospital-minio
+    image: minio/minio
+    command: server /data
+    ports:
+      - 9000:9000
+    volumes:
+      - ./data:/data
+      - ./config:/root/.minio
+    environment:
+      - MINIO_DOMAIN=hospital-minio
+      - MINIO_ACCESS_KEY=lengleng
+      - MINIO_SECRET_KEY=lengleng
+
+  hospital-register:
+    build:
+      context: ./hospital-register
+    restart: always
+    container_name: hospital-register
+    image: hospital-register
+    ports:
+      - 8848:8848
+
+  hospital-gateway:
+    build:
+      context: ./hospital-gateway
+    restart: always
+    container_name: hospital-gateway
+    image: hospital-gateway
+    ports:
+      - 9999:9999
+
+  hospital-auth:
+    build:
+      context: ./hospital-auth
+    restart: always
+    container_name: hospital-auth
+    image: hospital-auth
+
+  hospital-upms:
+    build:
+      context: ./hospital-upms/hospital-upms-biz
+    restart: always
+    container_name: hospital-upms
+    image: hospital-upms
+
+  hospital-monitor:
+    build:
+      context: ./hospital-visual/hospital-monitor
+    restart: always
+    image: hospital-monitor
+    container_name: hospital-monitor
+    ports:
+      - 5001:5001
+
+  hospital-daemon-quartz:
+    build:
+      context: ./hospital-visual/hospital-daemon-quartz
+    restart: always
+    image: hospital-daemon-quartz
+    container_name: hospital-daemon-quartz
+
+  hospital-daemon-elastic-job:
+    build:
+      context: ./hospital-visual/hospital-daemon-elastic-job
+    restart: always
+    image: hospital-daemon-elastic-job
+    container_name: hospital-daemon-elastic-job
+
+  hospital-codegen:
+    build:
+      context: ./hospital-visual/hospital-codegen
+    restart: always
+    image: hospital-codegen
+    container_name: hospital-codegen
+
+  hospital-mp-platform:
+    build:
+      context: ./hospital-visual/hospital-mp-platform
+    restart: always
+    image: hospital-mp-platform
+    container_name: pigx-mp-platform
+
+  pigx-pay-platform:
+    build:
+      context: ./pigx-visual/pigx-pay-platform
+    restart: always
+    image: pigx-pay-platform
+    container_name: pigx-pay-platform
+
+  pigx-oa-platform:
+    build:
+      context: ./pigx-visual/pigx-oa-platform
+    restart: always
+    image: pigx-oa-platform
+    container_name: pigx-oa-platform
+
+  pigx-bi-platform:
+    build:
+      context: ./pigx-visual/pigx-bi-platform
+    restart: always
+    image: pigx-bi-platform
+    container_name: pigx-bi-platform
+    ports:
+      - 5006:5006
+
+  hospital-job:
+    build:
+      context: ./pigx-visual/pigx-xxl-job-admin
+    restart: always
+    container_name: pigx-job
+    hostname: pigx-job
+    image: pigx-job
+    ports:
+      - 9080:9080
+
+  pigx-tx-manager:
+    build:
+      context: ./pigx-visual/pigx-tx-manager
+    restart: always
+    image: pigx-tx-manager
+    container_name: pigx-tx-manager
+    ports:
+      - 5004:5004
+      - 9998:9998
+
+  pigx-sentinel:
+    build:
+      context: ./pigx-visual/pigx-sentinel-dashboard
+    restart: always
+    image: pigx-sentinel
+    container_name: pigx-sentinel
+    ports:
+      - 5020:5020

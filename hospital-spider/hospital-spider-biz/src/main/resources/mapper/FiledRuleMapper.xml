@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.spider.mapper.FiledRuleMapper">
+
+  <resultMap id="filedRuleMap" type="com.wyzy.hospital.spider.entity.FiledRule">
+                  <id property="id" column="id"/>
+                        <result property="fieldId" column="field_id"/>
+                        <result property="processType" column="process_type"/>
+                        <result property="replacereg" column="replaceReg"/>
+                        <result property="replacement" column="replacement"/>
+                        <result property="substrTarget" column="substr_target"/>
+                        <result property="sort" column="sort"/>
+            </resultMap>
+</mapper>

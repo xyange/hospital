@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.DoctorHonorMapper">
+
+  <resultMap id="doctorHonorMap" type="com.wyzy.hospital.psychology.api.entity.DoctorHonor">
+            <id property="id" column="id"/>
+                  <result property="doctorId" column="doctor_id"/>
+                        <result property="honorName" column="honor_name"/>
+                        <result property="achieveTime" column="achieve_time"/>
+            </resultMap>
+    <select id="selectDoctorHonorByHonorName" resultMap="doctorHonorMap">
+        select id,doctor_id,honor_name,achieve_time from doctor_honor
+        where honor_name = #{doctorHonor.honorName}
+        and doctor_id = #{doctorHonor.doctorId}
+    </select>
+</mapper>

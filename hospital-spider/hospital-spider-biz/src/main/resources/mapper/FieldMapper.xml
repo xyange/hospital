@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.spider.mapper.FieldMapper">
+
+  <resultMap id="fieldMap" type="com.wyzy.hospital.spider.entity.Field">
+                  <id property="fieldId" column="field_id"/>
+                        <result property="configId" column="config_id"/>
+                        <result property="field" column="field"/>
+                        <result property="fieldName" column="field_name"/>
+                        <result property="extractType" column="extract_type"/>
+                        <result property="extractBy" column="extract_by"/>
+                        <result property="constantValue" column="constant_value"/>
+                        <result property="extractIndex" column="extract_index"/>
+                        <result property="processRuleId" column="process_rule_id"/>
+                        <result property="extractAttrFlag" column="extract_attr_flag"/>
+                        <result property="extractAttr" column="extract_attr"/>
+            </resultMap>
+</mapper>

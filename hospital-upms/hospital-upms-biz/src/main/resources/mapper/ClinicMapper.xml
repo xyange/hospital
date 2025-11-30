@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ClinicMapper">
+    <resultMap id="clinicMap" type="com.wyzy.hospital.admin.api.entity.Clinic">
+        <id property="clinicId" column="clinic_id"/>
+        <result property="clinicNumber" column="clinic_number"/>
+        <result property="clinicTitle" column="clinic_title"/>
+        <result property="departmentsId" column="departments_id"/>
+        <result property="contactsName" column="contacts_name"/>
+        <result property="contactsPhone" column="contacts_phone"/>
+        <result property="salesmenId" column="salesmen_id"/>
+        <result property="salesmenName" column="salesmen_name"/>
+        <result property="salesmenPhone" column="salesmen_phone"/>
+        <result property="businessHours" column="business_hours"/>
+        <result property="introducePic" column="introduce_pic"/>
+        <result property="introduceVideo" column="introduce_video"/>
+        <result property="introduceIcon" column="introduce_icon"/>
+        <result property="serviceEnvironment" column="service_environment"/>
+        <result property="businessLicense" column="business_license"/>
+        <result property="awardCertificate" column="award_certificate"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="approve" column="approve"/>
+        <result property="status" column="status"/>
+        <result property="reviewDate" column="review_date"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="geoCode" column="geo_code"/>
+        <result property="area" column="area"/>
+    </resultMap>
+
+
+    <resultMap id="clinicMaps" type="com.wyzy.hospital.admin.api.dto.ClinicDTO">
+        <id property="clinicId" column="clinic_id"/>
+        <result property="clinicNumber" column="clinic_number"/>
+        <result property="clinicTitle" column="clinic_title"/>
+        <result property="departmentsId" column="departments_id"/>
+        <result property="contactsName" column="contacts_name"/>
+        <result property="contactsPhone" column="contacts_phone"/>
+        <result property="salesmenId" column="salesmen_id"/>
+        <result property="salesmenName" column="salesmen_name"/>
+        <result property="salesmenPhone" column="salesmen_phone"/>
+        <result property="businessHours" column="business_hours"/>
+        <result property="introducePic" column="introduce_pic"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="geoCode" column="geo_code"/>
+        <result property="area" column="area"/>
+    </resultMap>
+
+    <resultMap id="clinicRecord" type="com.wyzy.hospital.admin.api.dto.ClinicDiagnosisServiceDto">
+        <id property="clinicId" column="clinic_id"/>
+        <result property="departmentsName" column="departmentsName"/>
+        <result property="clinicNumber" column="clinic_number"/>
+        <result property="clinicTitle" column="clinic_title"/>
+        <result property="departmentsId" column="departments_id"/>
+        <result property="contactsName" column="contacts_name"/>
+        <result property="contactsPhone" column="contacts_phone"/>
+        <result property="salesmenId" column="salesmen_id"/>
+        <result property="salesmenName" column="salesmen_name"/>
+        <result property="salesmenPhone" column="salesmen_phone"/>
+        <result property="businessHours" column="business_hours"/>
+        <result property="introducePic" column="introduce_pic"/>
+        <result property="introduceVideo" column="introduce_video"/>
+        <result property="introduceIcon" column="introduce_icon"/>
+        <result property="serviceEnvironment" column="service_environment"/>
+        <result property="businessLicense" column="business_license"/>
+        <result property="awardCertificate" column="award_certificate"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="approve" column="approve"/>
+        <result property="status" column="status"/>
+        <result property="reviewDate" column="review_date"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="geoCode" column="geo_code"/>
+        <result property="area" column="area"/>
+        <collection property="clinicDiagnosisList" ofType="com.wyzy.hospital.admin.api.dto.ClinicDiagnosisTechnologyDTO">
+            <id property="diagnosisId" column="diagnosis_id"/>
+            <result property="diagnosisName" column="diagnosis_name"/>
+            <result property="diagnosisProgramme" column="diagnosis_programme"/>
+            <result property="diagnosisPicture" column="diagnosis_picture"/>
+            <result property="isCharacteristic" column="is_characteristic"/>
+            <collection property="clinicTechnologyDetails"
+                        ofType="com.wyzy.hospital.admin.api.entity.ClinicTechnologyDetails">
+                <id property="technologyId" column="technology_id"/>
+                <result property="technologyTitle" column="technology_title"/>
+                <result property="technologyPic" column="technology_pic"/>
+                <result property="technologyBornDate" column="technology_born_date"/>
+                <result property="technologyBornCountry" column="technology_born_country"/>
+                <result property="technologyApply" column="technology_apply"/>
+                <result property="technologyCharacteristic" column="technology_characteristic"/>
+                <result property="technologyPrinciple" column="technology_principle"/>
+                <result property="technologyEquipment" column="technology_equipment"/>
+                <result property="technologyDiagnosisId" column="technology_diagnosis_id"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="clinicsRecord" type="com.wyzy.hospital.admin.api.dto.ClinicDiagnosisBusinessDTO">
+        <id property="clinicId" column="clinic_id"/>
+        <result property="departmentsName" column="departmentsName"/>
+        <result property="clinicNumber" column="clinic_number"/>
+        <result property="clinicTitle" column="clinic_title"/>
+        <result property="departmentsId" column="departments_id"/>
+        <result property="contactsName" column="contacts_name"/>
+        <result property="contactsPhone" column="contacts_phone"/>
+        <result property="salesmenId" column="salesmen_id"/>
+        <result property="salesmenName" column="salesmen_name"/>
+        <result property="salesmenPhone" column="salesmen_phone"/>
+        <result property="businessHours" column="business_hours"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="geoCode" column="geo_code"/>
+        <result property="area" column="area"/>
+        <collection property="clinicDiagnosisList" ofType="com.wyzy.hospital.admin.api.entity.ClinicDiagnosis">
+            <id property="diagnosisId" column="diagnosis_id"/>
+            <result property="diagnosisName" column="diagnosis_name"/>
+            <result property="diagnosisProgramme" column="diagnosis_programme"/>
+            <result property="diagnosisPicture" column="diagnosis_picture"/>
+            <result property="isCharacteristic" column="is_characteristic"/>
+        </collection>
+        <collection property="clinicTechnologyDetails" ofType="com.wyzy.hospital.admin.api.entity.ClinicTechnologyDetails">
+            <id property="technologyId" column="technology_id"/>
+            <result property="technologyTitle" column="technology_title"/>
+            <result property="technologyPic" column="technology_pic"/>
+            <result property="technologyBornDate" column="technology_born_date"/>
+            <result property="technologyBornCountry" column="technology_born_country"/>
+            <result property="technologyApply" column="technology_apply"/>
+            <result property="technologyCharacteristic" column="technology_characteristic"/>
+            <result property="technologyPrinciple" column="technology_principle"/>
+            <result property="technologyEquipment" column="technology_equipment"/>
+            <result property="technologyDiagnosisId" column="technology_diagnosis_id"/>
+        </collection>
+
+    </resultMap>
+
+
+    <select id="getClinicPageList" resultMap="clinicRecord">
+        SELECT DISTINCT
+                            c.*,
+                            cds.diagnosis_name,
+                            cds.diagnosis_programme,
+                            cds.diagnosis_picture,
+                            cds.is_characteristic,
+                            ctd.*
+        FROM clinic as c
+                     left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+                     left join clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+                     left JOIN clinic_technology_details ctd ON cds.diagnosis_id = ctd.technology_diagnosis_id
+                     left JOIN clinic_departments cdm on cdm.clinic_id = c.clinic_id
+        <where>
+            c.del_flag = 0
+                AND c.approve = 1
+            <if test="clinicDiagnosisDto.clinicTitle != null and clinicDiagnosisDto.clinicTitle != ''">
+                <bind name="clinicDiagnosisDto.clinicTitle" value="'%' + clinicDiagnosisDto.clinicTitle + '%'"/>
+                AND c.clinic_title LIKE #{clinicDiagnosisDto.clinicTitle}
+                        OR c.contacts_Name LIKE #{clinicDiagnosisDto.clinicTitle}
+            </if>
+            <if test="clinicDiagnosisDto.status != null and clinicDiagnosisDto.status != ''">
+                AND c.status = #{clinicDiagnosisDto.status}
+            </if>
+            <if test="clinicDiagnosisDto.departmentsId != null">
+                AND cdm.departments_id = #{clinicDiagnosisDto.departmentsId}
+            </if>
+            <if test="clinicDiagnosisDto.startReviewDate != null  and clinicDiagnosisDto.startReviewDate != '' and clinicDiagnosisDto.endReviewDate != null and clinicDiagnosisDto.endReviewDate != ''">
+                AND c.review_date >= #{clinicDiagnosisDto.startReviewDate}
+                        AND c.review_date &lt;= #{clinicDiagnosisDto.endReviewDate}
+            </if>
+        </where>
+        order by  c.clinic_id desc
+
+    </select>
+
+
+    <select id="getReviewedList" resultMap="clinicRecord">
+        SELECT DISTINCT
+                    c.*,
+                    cds.diagnosis_name,
+                    cds.diagnosis_programme,
+                    cds.diagnosis_picture,
+                    cds.is_characteristic,
+                    ctd.*
+        FROM clinic as c
+                     left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+                     left join clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+                     left JOIN clinic_technology_details ctd ON cds.diagnosis_id = ctd.technology_diagnosis_id
+                     left JOIN clinic_departments cdm on cdm.clinic_id = c.clinic_id
+        <where>
+                    c.del_flag = 0
+                    and approve = 0
+            <if test="clinicDiagnosisDto.clinicTitle != null and clinicDiagnosisDto.clinicTitle != ''">
+                <bind name="clinicDiagnosisDto.clinicTitle" value="'%' + clinicDiagnosisDto.clinicTitle + '%'"/>
+                AND c.clinic_title LIKE #{clinicDiagnosisDto.clinicTitle}
+                        OR c.contacts_Name LIKE #{clinicDiagnosisDto.clinicTitle}
+            </if>
+            <if test="clinicDiagnosisDto.status != null and clinicDiagnosisDto.status != ''">
+                AND c.status = #{clinicDiagnosisDto.status}
+            </if>
+            <if test="clinicDiagnosisDto.departmentsId != null">
+                AND cdm.departments_id = #{clinicDiagnosisDto.departmentsId}
+            </if>
+            <if test="clinicDiagnosisDto.startReviewDate != null  and clinicDiagnosisDto.startReviewDate != '' and clinicDiagnosisDto.endReviewDate != null and clinicDiagnosisDto.endReviewDate != ''">
+                AND c.review_date >= #{clinicDiagnosisDto.startReviewDate}
+                        AND c.review_date &lt;= #{clinicDiagnosisDto.endReviewDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="getNoReviewedList" resultMap="clinicRecord">
+        SELECT DISTINCT
+        c.*,
+        cds.diagnosis_name,
+        cds.diagnosis_programme,
+        cds.diagnosis_picture,
+        cds.is_characteristic,
+        ctd.*
+        FROM clinic as c
+        left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+        left join clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+        left JOIN clinic_technology_details ctd ON cds.diagnosis_id = ctd.technology_diagnosis_id
+        left JOIN clinic_departments cdm on cdm.clinic_id = c.clinic_id
+        <where>
+            c.del_flag = 0
+            and approve = 2
+            <if test="clinicDiagnosisDto.clinicTitle != null and clinicDiagnosisDto.clinicTitle != ''">
+                <bind name="clinicDiagnosisDto.clinicTitle" value="'%' + clinicDiagnosisDto.clinicTitle + '%'"/>
+                AND c.clinic_title LIKE #{clinicDiagnosisDto.clinicTitle}
+                OR c.contacts_Name LIKE #{clinicDiagnosisDto.clinicTitle}
+            </if>
+            <if test="clinicDiagnosisDto.status != null and clinicDiagnosisDto.status != ''">
+                AND c.status = #{clinicDiagnosisDto.status}
+            </if>
+            <if test="clinicDiagnosisDto.departmentsId != null">
+                AND cdm.departments_id = #{clinicDiagnosisDto.departmentsId}
+            </if>
+            <if test="clinicDiagnosisDto.startReviewDate != null  and clinicDiagnosisDto.startReviewDate != '' and clinicDiagnosisDto.endReviewDate != null and clinicDiagnosisDto.endReviewDate != ''">
+                AND c.review_date >= #{clinicDiagnosisDto.startReviewDate}
+                AND c.review_date &lt;= #{clinicDiagnosisDto.endReviewDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="getClinicBydiseaseId" resultType="com.wyzy.hospital.admin.api.dto.ClinicDTO">
+        SELECT DISTINCT c.*,GROUP_CONCAT(dse.disease_name) AS diseaseName
+        FROM
+                clinic c
+                        LEFT JOIN clinic_departments  cds on cds.clinic_id  = c.clinic_id
+                        LEFT JOIN department_disease  dds on cds.departments_id  = dds.departments_id
+                        LEFT JOIN disease     dse         on  dds.disease_id = dse.id
+        <where>
+            c.del_flag = 0
+            and c.status =1
+            and c.approve =1
+            <if test="diseaseId != null and diseaseId != 0">
+               and dse.id = #{diseaseId}
+            </if>
+        </where>
+        GROUP BY c.clinic_id
+    </select>
+
+
+
+    <select id="getClinicByClinicId" resultMap="clinicsRecord">
+        SELECT
+           distinct c.*,
+                    cds.diagnosis_id,
+                    cds.diagnosis_name,
+                    cds.diagnosis_programme,
+                    cds.diagnosis_picture,
+                    cds.is_characteristic,
+                    ctd.*
+        FROM
+                clinic c
+                        LEFT JOIN clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+                        LEFT JOIN clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+                        LEFT JOIN clinic_technology_details ctd ON ctd.technology_diagnosis_id = cds.diagnosis_id
+
+        <where>
+            <if test=" clinicDTO.clinicId!= null and clinicDTO.clinicId != 0">
+                 c.clinic_id = #{ clinicDTO.clinicId }
+            </if>
+        </where>
+    </select>
+
+    <select id="getNeighborhoodClinics" resultType="com.wyzy.hospital.admin.api.dto.ClinicNeighborhoodDTO">
+        SELECT cli.clinic_id                                              AS clinicId,
+               cli.clinic_title                                           AS clinicTitle,
+               cli.introduce_icon                                         AS introduceIcon,
+               (SELECT GROUP_CONCAT(dia.diagnosis_name)
+                FROM clinic_diagnosis dia
+                WHERE dia.clinic_id = cli.clinic_id)                      AS diagnosisNames,
+               (SELECT GROUP_CONCAT(dep.department_name)
+                FROM departments dep
+                WHERE dep.id IN (SELECT cliDep.departments_id
+                                 FROM clinic_departments cliDep
+                                 WHERE cliDep.clinic_id = cli.clinic_id)) AS deportments,
+        cli.area                                                AS areaName,
+        cli.longitude,
+        cli.latitude
+        FROM clinic cli
+
+        <where>
+            <if test="geoCode != null and geoCode != ''">
+                <bind name="geoCodeValue" value="geoCode + '%'"/>
+                AND cli.geo_code LIKE #{geoCodeValue}
+            </if>
+            <if test="minMaxLngLat != null">
+                AND cli.longitude >=#{minMaxLngLat.minlng}
+                AND cli.longitude &lt;=#{minMaxLngLat.maxlng}
+                AND cli.latitude >=#{minMaxLngLat.minlat}
+                AND cli.latitude &lt;=#{minMaxLngLat.maxlat}
+            </if>
+
+            <if test="area != null and area != ''">
+                AND cli.area = #{area}
+            </if>
+            <if test="deportmentId != null">
+                AND cli.clinic_id IN
+                    (SELECT dep.clinic_id FROM clinic_departments dep WHERE dep.departments_id = #{deportmentId})
+            </if>
+
+            <if test="diseaseId != null">
+                AND
+                        (SELECT dd.departments_id FROM department_disease dd WHERE dd.disease_id = #{diseaseId})
+                                IN
+                        (SELECT cd.departments_id FROM clinic_departments cd WHERE cd.clinic_id = cli.clinic_id)
+            </if>
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWordValue" value="'%' + keyWord + '%'"/>
+                AND (cli.clinic_title LIKE #{keyWordValue}
+                        OR
+                LOCATE(#{keyWord}, (SELECT GROUP_CONCAT(doctor.doctor_name)
+                                                   FROM doctor
+                                                   WHERE doctor.doctor_id IN
+                                                         (SELECT attr.doctor_id
+                                                          FROM doctor_attribution attr
+                                                          WHERE attr.attribution_type = 132
+                                                            AND attr.attribution_id = cli.clinic_id)
+                             )))
+            </if>
+        </where>
+    </select>
+
+    <select id="getCollectedClinic"  resultMap="clinicRecord">
+        SELECT DISTINCT
+                c.*,
+                cds.diagnosis_name,
+                cds.diagnosis_programme,
+                cds.diagnosis_picture,
+                cds.is_characteristic,
+                ctd.*,
+        (SELECT GROUP_CONCAT(dep.department_name SEPARATOR ' ') FROM departments dep WHERE dep.id IN  (SELECT cd.departments_id FROM clinic_departments cd WHERE cd.clinic_id=c.clinic_id )) AS departmentsName
+        FROM clinic as c
+                     left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+                     left join clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+                     left JOIN clinic_technology_details ctd ON cds.diagnosis_id = ctd.technology_diagnosis_id
+                     left JOIN clinic_departments cdm on cdm.clinic_id = c.clinic_id
+        WHERE c.clinic_id IN (SELECT uc.clinic_id FROM user_clinic uc WHERE uc.user_id=#{userId})
+    </select>
+
+    <select id="getAllClinic" resultMap="clinicMaps">
+        select   distinct c.* from  clinic c
+        left join clinic_departments cd on cd.clinic_id = c.clinic_id
+        <where>
+            <if test="clinic.departmentsId != 0 and  clinic.departmentsId!=null ">
+                cd.departments_id  = #{ clinic.departmentsId }
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getClinicByDiagnosisId" resultType="com.wyzy.hospital.admin.api.dto.ClinicDTO">
+        select   distinct c.* from  clinic c
+        left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+        left join clinic_diagnosis cd on cd.diagnosis_id = cdn.diagnosis_id
+        <where>
+            <if test="clinicDTO.diagnosisId != 0 and  clinicDTO.diagnosisId !=null ">
+                cd.diagnosis_id  = #{ clinicDTO.diagnosisId }
+            </if>
+        </where>
+    </select>
+
+    <select id="getClinicByDeptId" resultType="com.wyzy.hospital.admin.api.dto.ClinicDTO">
+        select   distinct c.* from  clinic c
+        left join clinic_departments cdm on c.clinic_id = cdm.clinic_id
+        <where>
+            <if test="clinic.departmentsId != 0 and  clinic.departmentsId !=null ">
+                cdm.departments_id  = #{ clinic.departmentsId }
+            </if>
+        </where>
+    </select>
+
+    <select id="selectLocalClinicByKeyWord" resultMap="clinicMaps">
+           select distinct c.* from  clinic c
+        left join clinic_diagnosis_connect  cdn ON c.clinic_id = cdn.clinic_id
+        left join clinic_diagnosis cds  ON  cdn.diagnosis_id  = cds.diagnosis_id
+        <where>
+            <if test="clinicDTO.clinicTitle != null and clinicDTO.clinicTitle != '' ">
+                <bind name="clinicDTO.clinicTitle" value="'%' + clinicDTO.clinicTitle + '%'"/>
+                c.clinic_title  like #{ clinicDTO.clinicTitle }
+                 OR cds.diagnosis_name LIKE #{ clinicDTO.clinicTitle }
+            </if>
+        </where>
+    </select>
+
+    <select id="selectIfEndStatus" resultType="string">
+        select status from clinic
+        <where>
+            <if test="clinicId !=0 and clinicId!= null ">
+                clinic_id = #{clinicId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectClinicByClinicId" resultMap="clinicRecord">
+        SELECT
+        DISTINCT c.*,
+        cds.diagnosis_id,
+        cds.diagnosis_name,
+        cds.diagnosis_programme,
+        cds.diagnosis_picture,
+        cds.is_characteristic,
+        ctd.*
+        FROM clinic as c
+        left join clinic_diagnosis_connect cdn on c.clinic_id = cdn.clinic_id
+        left join clinic_diagnosis cds on cds.diagnosis_id = cdn.diagnosis_id
+        left JOIN clinic_technology_details ctd ON cds.diagnosis_id = ctd.technology_diagnosis_id
+        left JOIN clinic_departments cdm on cdm.clinic_id = c.clinic_id
+        <where>
+            <if test="clinicId != null and clinicId != 0">
+             and c.clinic_id  = #{clinicId}
+            </if>
+        </where>
+
+    </select>
+</mapper>

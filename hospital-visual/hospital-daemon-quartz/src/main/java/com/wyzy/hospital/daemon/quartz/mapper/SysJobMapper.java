@@ -1,0 +1,18 @@
+
+
+package com.wyzy.hospital.daemon.quartz.mapper;
+
+import com.wyzy.hospital.common.data.datascope.HospitalBaseMapper;
+import com.wyzy.hospital.daemon.quartz.entity.SysJob;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * 定时任务调度表
+ *
+ * @author frwcloud
+ * @date 2019-01-27 10:04:42
+ */
+@Mapper
+public interface SysJobMapper extends HospitalBaseMapper<SysJob> {
+
+}

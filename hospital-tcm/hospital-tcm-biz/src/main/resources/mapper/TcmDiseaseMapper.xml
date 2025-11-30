@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmDiseaseMapper">
+
+  <resultMap id="tcmDiseaseMap" type="com.wyzy.hospital.tcm.entity.TcmDisease">
+                  <id property="diseaseId" column="disease_id"/>
+                        <result property="diseaseName" column="disease_name"/>
+                        <result property="introduce" column="introduce"/>
+                        <result property="reason" column="reason"/>
+                        <result property="symptom" column="symptom"/>
+                        <result property="diagnosis" column="diagnosis"/>
+                        <result property="prophylaxis" column="prophylaxis"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  					<result property="isOnline" column="is_online"/>
+   </resultMap>
+	<resultMap id="tcmDiseaseDTOMap" type="com.wyzy.hospital.tcm.dto.TcmDiseaseDTO">
+		<id property="diseaseId" column="disease_id"/>
+		<result property="diseaseName" column="disease_name"/>
+		<result property="introduce" column="introduce"/>
+		<result property="reason" column="reason"/>
+		<result property="symptom" column="symptom"/>
+		<result property="diagnosis" column="diagnosis"/>
+		<result property="prophylaxis" column="prophylaxis"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+	<insert id="insertTcmDisease">
+		insert into tcm_disease(disease_id,disease_name,introduce,reason,symptom,diagnosis,prophylaxis,del_flag,create_time,update_time,is_online)
+		values (#{tcmDisease.diseaseId},#{tcmDisease.diseaseName},#{tcmDisease.introduce},#{tcmDisease.reason},#{tcmDisease.symptom},#{tcmDisease.diagnosis}
+		,#{tcmDisease.prophylaxis},#{tcmDisease.delFlag},#{tcmDisease.createTime},#{tcmDisease.updateTime},#{tcmDisease.isOnline})
+	</insert>
+	<select id="selectById" resultMap="tcmDiseaseMap">
+		select disease_id,disease_name,
+		introduce,reason,symptom,diagnosis,prophylaxis,del_flag,create_time,update_time,is_online
+		from tcm_disease where disease_id = #{diseaseId}
+	</select>
+	<select id="pageTcmDiseaseAPP" resultMap="tcmDiseaseDTOMap">
+		select disease_id,disease_name,
+		introduce,reason,symptom,diagnosis,prophylaxis,create_time,update_time,is_online
+		from tcm_disease where is_online = 1 and del_flag = 0 ORDER BY update_time DESC
+	</select>
+	<select id="pageDisease" resultMap="tcmDiseaseDTOMap">
+		select disease_id,disease_name,is_online,
+		introduce,reason,symptom,diagnosis,prophylaxis,create_time,update_time
+		from tcm_disease where del_flag = 0 ORDER BY update_time DESC
+	</select>
+	<update id="updateTcmDiseaseById">
+		update tcm_disease set is_online = #{isOnline} where disease_id = #{diseaseId}
+	</update>
+	<select id="selectTcmDiseaseByName" resultMap="tcmDiseaseMap">
+		select disease_id,disease_name,
+		introduce,reason,symptom,diagnosis,
+		prophylaxis,del_flag,create_time,update_time
+		from tcm_disease where disease_name = #{diseaseName}
+	</select>
+	<select id="selectTcmDiseaseDTOByName" resultMap="tcmDiseaseDTOMap">
+		select disease_id,disease_name,
+		introduce,reason,symptom,diagnosis,
+		prophylaxis,del_flag,create_time,update_time,is_online
+		from tcm_disease where disease_name = #{diseaseName}
+	</select>
+	<delete id="deleteTcmDiseaseById">
+		DELETE FROM tcm_disease WHERE disease_id = #{diseaseId}
+	</delete>
+	<update id="updatePojoById">
+		update tcm_disease
+		set
+		<if test="tcmDisease.diseaseId != null and tcmDisease.diseaseId != ''">
+			disease_id = #{tcmDisease.diseaseId},
+		</if>
+		<if test="tcmDisease.diseaseName != null and tcmDisease.diseaseName != ''">
+			disease_name = #{tcmDisease.diseaseName},
+		</if>
+		<if test="tcmDisease.introduce != null and tcmDisease.introduce != ''">
+			introduce = #{tcmDisease.introduce},
+		</if>
+		<if test="tcmDisease.reason != null and tcmDisease.reason != ''">
+			reason = #{tcmDisease.reason},
+		</if>
+		<if test="tcmDisease.symptom != null and tcmDisease.symptom != ''">
+			symptom = #{tcmDisease.symptom},
+		</if>
+		<if test="tcmDisease.diagnosis != null and tcmDisease.diagnosis != ''">
+			diagnosis = #{tcmDisease.diagnosis},
+		</if>
+		<if test="tcmDisease.prophylaxis != null and tcmDisease.prophylaxis != ''">
+			prophylaxis = #{tcmDisease.prophylaxis},
+		</if>
+		<if test="tcmDisease.createTime != null">
+			create_time = #{tcmDisease.createTime},
+		</if>
+			del_flag = #{tcmDisease.delFlag},
+			update_time = #{tcmDisease.updateTime},
+			is_online = #{tcmDisease.isOnline}
+		 where disease_id = #{tcmDisease.diseaseId}
+	</update>
+	<select id="selectByPojo" resultMap="tcmDiseaseDTOMap">
+		select disease_id,disease_name,
+			   introduce,reason,symptom,diagnosis,prophylaxis,del_flag,create_time,update_time,is_online
+		from tcm_disease
+		<where>
+			<if test="pojo.diseaseId != null and pojo.diseaseId != ''">
+				 disease_id = #{pojo.diseaseId}
+			</if>
+			<if test="pojo.diseaseName != null and pojo.diseaseName != ''">
+				and disease_name like concat('%',#{pojo.diseaseName},'%')
+			</if>
+			<if test="pojo.introduce != null and pojo.introduce != ''">
+				and introduce like concat('%',#{pojo.introduce},'%')
+			</if>
+			<if test="pojo.reason != null and pojo.reason != ''">
+				and reason like concat('%',#{pojo.reason},'%')
+			</if>
+			<if test="pojo.symptom != null and pojo.symptom != ''">
+				and symptom like concat('%',#{pojo.symptom},'%')
+			</if>
+			<if test="pojo.diagnosis != null and pojo.diagnosis != ''">
+				and diagnosis like concat('%',#{pojo.diagnosis},'%')
+			</if>
+			<if test="pojo.prophylaxis != null and pojo.prophylaxis != ''">
+				and prophylaxis like concat('%',#{pojo.prophylaxis},'%')
+			</if>
+			<if test="pojo.delFlag != null and pojo.delFlag != ''">
+				and del_flag like concat('%',#{pojo.delFlag},'%')
+			</if>
+			<if test="pojo.createTime != null and pojo.createTime != ''">
+				and create_time like concat('%',#{pojo.createTime},'%')
+			</if>
+			<if test="pojo.updateTime != null and pojo.updateTime != ''">
+				and update_time like concat('%',#{pojo.updateTime},'%')
+			</if>
+			and is_online = 1 and del_flag = 0
+		</where>
+
+	</select>
+</mapper>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.integration.mapper.BpIntegralMapper">
+
+  <resultMap id="bpIntegralMap" type="com.wyzy.hospital.integration.entity.BpIntegral">
+                  <id property="id" column="id"/>
+                        <result property="typeId" column="type_id"/>
+	  					<result property="typeName" column="type_name"/>
+	  					<result property="memberId" column="member_id"/>
+                        <result property="phone" column="phone"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="fluctuate" column="fluctuate"/>
+                        <result property="obtainIntegral" column="obtain_integral"/>
+                        <result property="monetary" column="monetary"/>
+                        <result property="orderId" column="order_id"/>
+	         	        <result property="expiration" column="expiration"/>
+	  					<result property="continueNumber" column="continue_number"/>
+  </resultMap>
+
+	<resultMap id="bpIntegralDTOMap" type="com.wyzy.hospital.integration.dto.BpIntegralDTO">
+		<id property="id" column="id"/>
+		<result property="typeId" column="type_id"/>
+		<result property="typeName" column="type_name"/>
+		<result property="memberId" column="member_id"/>
+		<result property="phone" column="phone"/>
+		<result property="createTime" column="create_time"/>
+		<result property="fluctuate" column="fluctuate"/>
+		<result property="obtainIntegral" column="obtain_integral"/>
+		<result property="monetary" column="monetary"/>
+		<result property="orderId" column="order_id"/>
+		<result property="expiration" column="expiration"/>
+		<result property="continueNumber" column="continue_number"/>
+	</resultMap>
+
+	<resultMap id="bpIntegralVOMap" type="com.wyzy.hospital.integration.vo.BpIntegralVO">
+		<id property="id" column="id"/>
+		<result property="memberId" column="member_id"/>
+		<result property="phone" column="phone"/>
+		<result property="totalIntegral" column="totalIntegral"/>
+		<result property="usingIntegral" column="usingIntegral"/>
+		<result property="residualintegral" column="residualintegral"/>
+		<result property="frozenintegral" column="frozenintegral"/>
+		<result property="overdue" column="overdue"/>
+	</resultMap>
+
+
+	<sql id="selectAll">
+		id,type_id,type_name,phone,create_time,fluctuate,obtain_integral,monetary,order_id,member_id
+	</sql>
+
+	<select id="selectByPhoneAndtypeId" resultMap="bpIntegralMap">
+		select <include refid="selectAll"/>,expiration,continue_number from bp_integral
+		<where>
+			<if test="typeName != null and typeName != ''">
+				And type_name = #{typeName}
+			</if>
+			<if test="phone != null and phone != ''">
+				And phone = #{phone}
+			</if>
+		</where>
+		ORDER BY id DESC
+	</select>
+	<select id="selectBpIntegralGather" resultMap="bpIntegralVOMap">
+		select
+		integral.id,
+		       integral.member_id,
+		integral.phone,
+		integral.totalIntegral,
+		integral.usingIntegral,
+		integral.frozenintegral,
+		integral.totalIntegral + integral.usingIntegral + integral.frozenintegral - integral.overdue AS residualintegral,
+		integral.overdue
+		from
+		(select bp.phone,
+		        bp.member_id,
+		max(bp.id) id,
+		sum(bp.积分总量) AS totalIntegral,
+		sum(bp.使用积分) AS usingIntegral,
+		sum(bp.冻结积分) AS frozenintegral,
+		sum(bp.过期积分) AS overdue
+		from
+		(select
+		id,
+		member_id,
+		phone,
+		expiration,
+		CASE WHEN fluctuate = 0 THEN obtain_integral ELSE 0 END AS 积分总量,
+		CASE WHEN fluctuate = 1 THEN obtain_integral ELSE 0 END AS 使用积分,
+		CASE WHEN fluctuate = 2 THEN obtain_integral ELSE 0 END AS 冻结积分,
+		CASE WHEN expiration &lt; #{time} THEN obtain_integral ELSE 0 END AS 过期积分
+		from bp_integral
+		<where>
+			<if test="phone != null and phone != ''">
+				phone = #{phone}
+			</if>
+		</where>
+		)bp
+		GROUP BY bp.phone
+		)integral
+		<where>
+			<if test="minIntegral != null">
+				integral.totalIntegral >= #{minIntegral}
+			</if>
+			<if test="maxIntegral != null">
+				AND integral.totalIntegral &lt;= #{maxIntegral}
+			</if>
+		</where>
+		ORDER BY integral.id DESC
+	</select>
+	<select id="selectSortByIntegralAndPhone" resultMap="bpIntegralVOMap">
+		select
+		integral.id,
+		integral.phone,
+		integral.totalIntegral,
+		integral.usingIntegral,
+		integral.frozenintegral,
+		integral.totalIntegral + integral.usingIntegral + integral.frozenintegral - integral.overdue AS residualintegral,
+		integral.overdue
+		from
+		(select bp.phone,
+		MAX(bp.id) id,
+		sum(bp.积分总量) AS totalIntegral,
+		sum(bp.使用积分) AS usingIntegral,
+		sum(bp.冻结积分) AS frozenintegral,
+		sum(bp.过期积分) AS overdue
+		from
+		(select
+		id,
+		phone,
+		expiration,
+		CASE WHEN fluctuate = 0 THEN obtain_integral ELSE 0 END AS 积分总量,
+		CASE WHEN fluctuate = 1 THEN obtain_integral ELSE 0 END AS 使用积分,
+		CASE WHEN fluctuate = 2 THEN obtain_integral ELSE 0 END AS 冻结积分,
+		CASE WHEN expiration &lt; #{time} THEN obtain_integral ELSE 0 END AS 过期积分
+		from bp_integral
+		ORDER BY id DESC
+		)bp
+		GROUP BY bp.phone
+		ORDER BY bp.id DESC
+		)integral
+		<where>
+			<if test="minIntegral != null">
+				integral.totalIntegral >= #{minIntegral}
+			</if>
+			<if test="maxIntegral != null">
+				AND integral.totalIntegral &lt;= #{maxIntegral}
+			</if>
+		</where>
+			${sql}
+	</select>
+	<select id="selectBpIntegralPage" resultMap="bpIntegralMap">
+		select
+			id,type_id,type_name,member_id,phone,create_time,fluctuate,expiration,continue_number,
+			case when fluctuate = 1 and obtain_integral > 0 then obtain_integral*-1
+     	when fluctuate = 2 and obtain_integral > 0 then obtain_integral*-1
+     		else obtain_integral end as obtain_integral,
+			monetary,order_id
+		from bp_integral ORDER BY create_time DESC
+	</select>
+	<select id="selectTypeNameList" resultType="java.lang.String">
+		select
+			type_name
+		from bp_integral GROUP BY type_name
+	</select>
+	<select id="selectDateNumber" resultMap="bpIntegralMap">
+		select id,type_id,type_name,member_id,phone,create_time,fluctuate,
+			obtain_integral,monetary,order_id,expiration,continue_number
+		from bp_integral where type_id = #{typeId} and
+		create_time like concat('%',#{yesterdayDate},'%') and member_id = #{memberId}
+	</select>
+	<select id="revenueExpenditureDetails" resultMap="bpIntegralDTOMap">
+		select id,type_id,type_name,member_id,phone,create_time,fluctuate,
+			obtain_integral,monetary,order_id,expiration,continue_number
+		from bp_integral where member_id = #{memberId}
+		and create_time like concat(#{date},'%')
+	</select>
+	<select id="selectExecutionTimes" resultType="java.lang.Integer">
+		SELECT COUNT(*) from bp_integral WHERE type_id = #{typeId} and create_time like concat(#{date},'%') and member_id = #{memberId} group by type_name
+	</select>
+	<select id="selectDeductionByMemberId" resultType="java.lang.Integer">
+		select b.residualintegral from
+		(select
+		integral.totalIntegral + integral.usingIntegral + integral.frozenintegral - integral.overdue AS residualintegral
+		from
+		(select
+		max(bp.id) id,
+		sum(bp.积分总量) AS totalIntegral,
+		sum(bp.使用积分) AS usingIntegral,
+		sum(bp.冻结积分) AS frozenintegral,
+		sum(bp.过期积分) AS overdue
+		from
+		(select
+		id,
+		expiration,
+		CASE WHEN fluctuate = 0 THEN obtain_integral ELSE 0 END AS 积分总量,
+		CASE WHEN fluctuate = 1 THEN obtain_integral ELSE 0 END AS 使用积分,
+		CASE WHEN fluctuate = 2 THEN obtain_integral ELSE 0 END AS 冻结积分,
+		CASE WHEN expiration &lt; #{time} THEN obtain_integral ELSE 0 END AS 过期积分
+		from bp_integral
+		where member_id = #{memberId}
+		)bp
+		)integral
+		ORDER BY integral.id DESC) b
+	</select>
+</mapper>

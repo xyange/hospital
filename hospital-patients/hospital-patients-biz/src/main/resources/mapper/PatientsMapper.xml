@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.patients.mapper.PatientsMapper">
+
+  <resultMap id="patientsMap" type="com.wyzy.hospital.patients.entity.Patients">
+                  <id property="id" column="id"/>
+                        <result property="patientName" column="patient_name"/>
+                        <result property="idNumber" column="ID_number"/>
+                        <result property="iphone" column="iphone"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="height" column="height"/>
+                        <result property="weight" column="weight"/>
+                        <result property="disease" column="disease"/>
+                        <result property="allergy" column="allergy"/>
+                        <result property="surgery" column="surgery"/>
+                        <result property="habits" column="habits"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="createDate" column="create_date"/>
+                        <result property="updateDate" column="update_date"/>
+            </resultMap>
+
+	<select id="SelectMedicalRecord"   resultMap="LookMedicalRecord">
+	select p.patient_name,p.ID_number,p.iphone,p.disease,p.allergy,p.habits,p.surgery,m.content,m.doctor_id,m.hospital_id,m.time FROM patients p INNER JOIN medical_record m ON p.id=m.patients_id
+    where p.patient_name=#{name,jdbcType=VARCHAR} and p.iphone=#{iphone,jdbcType=VARCHAR}
+	</select>
+
+
+	<resultMap id="LookMedicalRecord" type="com.wyzy.hospital.patients.dto.PatientsDto">
+		<id property="id" column="id"/>
+		<result property="patientName" column="patient_name"/>
+		<result property="idNumber" column="ID_number"/>
+		<result property="iphone" column="iphone"/>
+		<result property="disease" column="disease"/>
+		<result property="allergy" column="allergy"/>
+		<result property="surgery" column="surgery"/>
+		<result property="habits" column="habits"/>
+		<collection  property="medicalRecordList" ofType="com.wyzy.hospital.patients.entity.MedicalRecord">
+			<id property="id" column="id"/>
+			<result property="patientsId" column="patients_id"/>
+			<result property="doctorId" column="doctor_id"/>
+			<result property="content" column="content"/>
+			<result property="hospitalId" column="hospital_id"/>
+			<result property="time" column="time"/>
+		</collection>
+
+
+
+	</resultMap>
+
+
+
+
+
+</mapper>

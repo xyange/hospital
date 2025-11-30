@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.SysDicMapper">
+
+	<resultMap id="sysDictMap" type="com.wyzy.hospital.admin.api.entity.SysDic">
+		<id property="id" column="id"/>
+		<result property="type" column="type"/>
+		<result property="description" column="description"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remarks" column="remarks"/>
+		<result property="delFlag" column="del_flag"/>
+	</resultMap>
+
+	<resultMap id="sysDicRecovd" type="com.wyzy.hospital.admin.api.dto.SysDicDTO" >
+		<id property="id" column="id"/>
+		<result property="value" column="value"/>
+		<result property="label" column="label"/>
+	</resultMap>
+
+	<select id="getAllDoctorType" resultMap="sysDicRecovd">
+		select * from sys_dic_item where dic_id = 46
+	</select>
+
+	<select id="getAllConsultationType" resultMap="sysDicRecovd">
+		select * from sys_dic_item where dic_id = 49
+	</select>
+</mapper>

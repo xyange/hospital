@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyPhotoMapper">
+
+  <resultMap id="cyPhotoMap" type="com.wyzy.hospital.cyclopedia.entity.CyPhoto">
+                  <id property="photoId" column="photo_id"/>
+                        <result property="imageName" column="image_name"/>
+                        <result property="imageSrc" column="image_src"/>
+                        <result property="imageCode" column="image_code"/>
+            </resultMap>
+
+	<resultMap id="cyPhotoDTOMap" type="com.wyzy.hospital.cyclopedia.dto.CyPhotoDTO">
+		<id property="photoId" column="photo_id"/>
+		<result property="imageName" column="image_name"/>
+		<result property="imageSrc" column="image_src"/>
+		<result property="imageCode" column="image_code"/>
+	</resultMap>
+
+<select id="selectCyclopediaImage" resultType="com.wyzy.hospital.cyclopedia.dto.CyPhotoDTO">
+	select photo_id,image_name,image_src,image_code FROM cy_photo WHERE image_code=#{imageCode}
+</select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.OrderSettingMapper">
+
+  <resultMap id="orderSettingMap" type="com.wyzy.hospital.psychology.api.entity.OrderSetting">
+                  <id property="orderId" column="order_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="orderTime" column="order_time"/>
+                        <result property="already" column="already"/>
+                        <result property="dateTime" column="date_time"/>
+  </resultMap>
+    <resultMap id="orderSettingDTOMap" type="com.wyzy.hospital.psychology.api.dto.OrderSettingDTO">
+        <id property="orderId" column="order_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="dateTime" column="date_time"/>
+    </resultMap>
+    <select id="selectByOrderSettingDTOId" resultMap="orderSettingDTOMap">
+        SELECT order_id,doctor_id,order_time,date_time FROM order_setting where order_id = #{orderId} and already = 0
+    </select>
+    <update id="updateAlreadyByOrderId">
+        update order_setting set already = 1 where order_id = #{orderId}
+    </update>
+</mapper>

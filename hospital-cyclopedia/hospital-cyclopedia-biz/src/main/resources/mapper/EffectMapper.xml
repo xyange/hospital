@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.EffectMapper">
+
+
+	<resultMap id="lookMyTag" type="com.wyzy.hospital.cyclopedia.dto.EffectDTO">
+		<id property="effectId" column="effect_id"/>
+		<result property="effectName" column="effect_name"/>
+		<collection property="tagDTOList" resultMap="tagList"/>
+	</resultMap>
+	<resultMap id="tagList" type="com.wyzy.hospital.cyclopedia.dto.TagDTO">
+		<id property="tagId" column="tag_id"/>
+		<result property="tagName" column="tag_name"/>
+		<result property="tagImage" column="tag_image"/>
+	</resultMap>
+
+
+	<select id="lookMyEffecTag" resultMap="lookMyTag">
+	      SELECT et.tag_id,e.effect_id,e.effect_name,tag_name,tag_image FROM effect_tag as et left join effect e on et.effect_id=e.effect_id
+	left  join tag t on t.tag_id=et.tag_id where et.effect_id=#{eid};
+    </select>
+
+	<select id="selectEffect" resultType="com.wyzy.hospital.cyclopedia.dto.EffectDTO">
+		select effect_id,effect_name  FROM effect
+	</select>
+
+</mapper>

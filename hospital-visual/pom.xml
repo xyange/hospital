@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~
+  ~
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the wyzy.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author:  wyzy
+  ~
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wyzy</groupId>
+		<artifactId>hospital</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>hospital-visual</artifactId>
+	<description>图形化功能模块</description>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>hospital-bi-platform</module>
+		<module>hospital-codegen</module>
+		<module>hospital-daemon-elastic-job</module>
+		<module>hospital-daemon-quartz</module>
+		<module>hospital-oa-platform</module>
+		<module>hospital-pay-platform</module>
+		<module>hospital-monitor</module>
+		<module>hospital-mp-platform</module>
+		<module>hospital-sso-client-demo</module>
+		<module>hospital-sentinel-dashboard</module>
+		<module>hospital-tx-manager</module>
+		<module>hospital-xxl-job-admin</module>
+		<module>hospital-coupon</module>
+	</modules>
+</project>

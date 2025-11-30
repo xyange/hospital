@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.CounselTypeMapper">
+
+  <resultMap id="counselTypeMap" type="com.wyzy.hospital.psychology.api.entity.CounselType">
+                  <id property="counselId" column="counsel_id"/>
+                        <result property="counselName" column="counsel_name"/>
+            </resultMap>
+</mapper>

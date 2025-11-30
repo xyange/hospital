@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.CaseHistoryMapper">
+
+  <resultMap id="caseHistoryMap" type="com.wyzy.hospital.admin.api.entity.CaseHistory">
+                  <id property="caseHistoryId" column="case_history_id"/>
+                        <result property="memberId" column="member_id"/>
+                        <result property="cardId" column="card_id"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="departmentId" column="department_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="clinicTime" column="clinic_time"/>
+                        <result property="symptom" column="symptom"/>
+                        <result property="recipe" column="recipe"/>
+                        <result property="inspection" column="inspection"/>
+            </resultMap>
+
+  <select id="selectPatientNameByMemberId" resultType="com.wyzy.hospital.admin.api.dto.PatientCardDTO">
+      SELECT wpc.card_id cardId,wpc.member_id memberId,wpc.patient_name patientName,wpc.patient_id_card patientIdCard FROM wyzy_patient_card wpc
+      <where>
+          <if test="memberId!= 0 and  memberId != null ">
+              wpc.member_id = #{memberId}
+          </if>
+          <if test="cardId!= 0 and  cardId != null ">
+              and wpc.card_id = #{cardId}
+          </if>
+      </where>
+    </select>
+    
+    <select id="selectPatientNum" resultType="integer">
+            select  count(*) from wyzy_case_history wch
+            <where>
+                <if test="cardId != null and  cardId != 0">
+                        wch.card_id = #{ cardId }
+                </if>
+            </where>
+    </select>
+
+   <select id="selectCaseHistoryByCardId" resultType="com.wyzy.hospital.admin.api.dto.CaseHistoryDTO">
+       SELECT DISTINCT
+               wch.*,
+               wpc.patient_name,
+               wpc.patient_id_card,
+               hp.hospital_name,
+               dep.department_name,
+               doc.doctor_name,
+               dic.label as inquireType
+       FROM
+               wyzy_case_history wch
+                       JOIN wyzy_patient_card wpc ON wch.card_id = wpc.card_id
+                       JOIN hospitals hp ON wch.hospital_id = hp.id
+                       JOIN departments dep ON dep.id = wch.department_id
+                       JOIN doctor doc ON doc.doctor_id = wch.doctor_id
+                       JOIN wyzy_online_inquiry_record woir ON woir.inquiry_id = wch.inquiry_id
+                       JOIN sys_dic_item dic ON dic.id = woir.inquire_type
+       <where>
+           <if test="cardId!=null and  cardId != 0 ">
+               wch.card_id = #{ cardId }
+           </if>
+       </where>
+
+   </select>
+
+  <select id="selectPatientNameByCardId" resultType="com.wyzy.hospital.admin.api.dto.PatientCardDTO">
+
+      SELECT wpc.card_id cardId,wpc.member_id memberId,wpc.patient_name patientName,wpc.patient_id_card patientIdCard FROM wyzy_patient_card wpc
+      <where>
+          <if test="memberId!= 0 and  memberId != null ">
+              wpc.member_id = #{memberId}
+          </if>
+      </where>
+    </select>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.DepartDiseasesMapper">
+
+  <resultMap id="departDiseasesMap" type="com.wyzy.hospital.cyclopedia.entity.DepartDiseases">
+                  <id property="departDiseasesId" column="depart_diseases_id"/>
+                        <result property="departDisDeparmentId" column="depart_diseases"/>
+                        <result property="departDisDiseasesId" column="depart_dis_diseases_id"/>
+            </resultMap>
+
+</mapper>

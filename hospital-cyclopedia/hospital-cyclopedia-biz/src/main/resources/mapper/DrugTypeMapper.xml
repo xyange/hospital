@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.DrugTypeMapper">
+
+  <resultMap id="drugTypeMap" type="com.wyzy.hospital.cyclopedia.entity.DrugType">
+                  <id property="id" column="id"/>
+                        <result property="drugTypeName" column="drug_type_name"/>
+                        <result property="drugDetailsId" column="drug_details_id"/>
+            </resultMap>
+
+
+
+
+	<resultMap id="drugTypeMapList" type="com.wyzy.hospital.cyclopedia.dto.DrugTypeCompanyDrugDTO">
+		<id property="id" column="id"/>
+		<result property="drugTypeName" column="drug_type_name"/>
+		<result property="cyReagentId" column="cy_reagent_id"/>
+		<result property="cyReagentName" column="cy_reagent_name"/>
+		<result property="compayName" column="compay_name"/>
+	</resultMap>
+
+<select id="selectDrugTypeCompanyDrug" resultMap="drugTypeMapList">
+	select t.id,t.drug_type_name,r.cy_reagent_id,r.cy_reagent_name,c.compay_name
+from drug_type t LEFT JOIN (SELECT*FROM cy_reagent WHERE del_struts!='1') r ON t.id=r.cy_drug_type_id LEFT JOIN cy_compay c ON r.cy_company_id=c.compay_id
+where t.id=#{tid} AND r.exist_struts='1'AND r.audit_struts='1'
+</select>
+
+</mapper>

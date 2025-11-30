@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.wyzy.hospital.common.sentinel.SentinelAutoConfiguration,\
+    com.wyzy.hospital.common.sentinel.handle.GlobalBizExceptionHandler

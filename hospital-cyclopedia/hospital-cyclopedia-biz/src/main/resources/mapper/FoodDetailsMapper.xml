@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.FoodDetailsMapper">
+
+  <resultMap id="foodDetailsMap" type="com.wyzy.hospital.cyclopedia.dto.FoodDetailsDTO">
+	                    <id property="foodId" column="food_id"/>
+	                    <result property="foodName" column="food_name"/>
+	                    <result property="foodKcal" column="food_kcal"/>
+	                    <result property="foodKilojoules" column="food_kilojoules"/>
+	                    <result property="foodHeat" column="food_heat"/>
+	                    <result property="foodProtein" column="food_protein"/>
+	                    <result property="foodFat" column="food_fat"/>
+	                    <result property="foodCarbohydrates" column="food_carbohydrates"/>
+	                    <result property="foodCholesterol" column="food_cholesterol"/>
+	                    <result property="foodDietaryFiber" column="food_dietary_fiber"/>
+	                    <result property="foodIron" column="food_iron"/>
+	                    <result property="foodCalcium" column="food_calcium"/>
+	                    <result property="foodPotassium" column="food_potassium"/>
+	                    <result property="foodMagnesium" column="food_magnesium"/>
+	                    <result property="foodAcid" column="food_acid"/>
+	                    <result property="foodZinc" column="food_zinc"/>
+	                    <result property="foodPurine" column="food_purine"/>
+	                    <result property="foodSodium" column="food_sodium"/>
+	                    <result property="foodSaturatedFat" column="food_saturated_fat"/>
+	                    <result property="foodGi" column="food_GI"/>
+	                    <result property="foodGl" column="food_GL"/>
+	                    <result property="foodLevelId" column="food_level_id"/>
+	                    <result property="foodImage" column="food_image"/>
+	                    <result property="foodReferralRate" column="food_referral_rate"/>
+	                    <result property="foodExistStatus" column="food_exist_status"/>
+	                    <result property="foodAuditStatus" column="food_audit_status"/>
+	                    <result property="foodUploadAdmin" column="food_upload_admin"/>
+	                    <result property="foodExamineAdmin" column="food_examine_admin"/>
+	                    <result property="foodCheckPassTime" column="food_check_pass_time"/>
+	                    <result property="foodAuditTime" column="food_audit_time"/>
+	                    <result property="foodUploadTime" column="food_upload_time"/>
+	                    <result property="createTime" column="create_time"/>
+	                    <result property="updateTime" column="update_time"/>
+	                    <collection property="foodOneLevelDTOList" resultMap="selectFirstFoodBack"/>
+	                    <collection property="foodTwoLevelDTOList" resultMap="selectTwoFoodBack"/>
+            </resultMap>
+	       <resultMap id="selectFirstFoodBack" type="com.wyzy.hospital.cyclopedia.dto.FoodOneLevelDTO">
+		                 <id property="fid" column="fid"/>
+		                 <result property="fname" column="fname"/>
+	       </resultMap>
+	         <resultMap id="selectTwoFoodBack" type="com.wyzy.hospital.cyclopedia.dto.FoodTwoLevelDTO">
+		                 <id property="cid" column="cid"/>
+		                 <result property="cname" column="cname"/>
+	         </resultMap>
+
+
+
+
+	<!--根据营养元素，降序升序二级表-->
+
+	<select id="bySqlSelectFood" resultMap="foodDetailsMap">
+		           select c.id cid ,c.food_level_name cname,d.* FROM food_level f LEFT JOIN food_level c ON f.id=c.parent_id
+                   LEFT JOIN food_details d ON c.id=d.food_level_id WHERE c.id=#{cid} AND food_audit_status='1' AND `food_exist_status`='1'
+                    ORDER BY ${sql}
+	</select>
+
+	<!--根据营养元素，降序升序一级表（一级）-->
+	<select id="bySqlSelectAllFood" resultMap="foodDetailsMap">
+                   SELECT f.id fid ,f.food_level_name fname,d.* FROM food_level f LEFT JOIN food_level c ON f.id=c.parent_id
+                   LEFT JOIN food_details d ON c.id=d.food_level_id WHERE f.id=#{fid} AND food_audit_status='1' AND `food_exist_status`='1'
+                    ORDER BY ${sql}
+    </select>
+
+    <!--后台审核状态-->
+	<update id="alterFoodStatus" >
+		update food_details set
+		<if test="foodDetailsDTO.foodName != null and foodDetailsDTO.foodName != ''">
+			food_name = #{foodDetailsDTO.foodName},
+		</if>
+		<if test="foodDetailsDTO.foodKcal != null and foodDetailsDTO.foodKcal != ''">
+			food_kcal = #{foodDetailsDTO.foodKcal},
+		</if>
+		<if test="foodDetailsDTO.foodKilojoules != null and foodDetailsDTO.foodKilojoules != ''">
+			food_kilojoules = #{foodDetailsDTO.foodKilojoules},
+		</if>
+		<if test="foodDetailsDTO.foodHeat != null and foodDetailsDTO.foodHeat != ''">
+			food_heat = #{foodDetailsDTO.foodHeat},
+		</if>
+		<if test="foodDetailsDTO.foodDietaryFiber != null and foodDetailsDTO.foodDietaryFiber != ''">
+			food_dietary_fiber = #{foodDetailsDTO.foodDietaryFiber},
+		</if>
+		<if test="foodDetailsDTO.foodCarbohydrates != null and foodDetailsDTO.foodCarbohydrates != ''">
+			food_carbohydrates = #{foodDetailsDTO.foodCarbohydrates},
+		</if>
+		<if test="foodDetailsDTO.foodCholesterol != null and foodDetailsDTO.foodCholesterol != ''">
+			food_cholesterol = #{foodDetailsDTO.foodCholesterol},
+		</if>
+
+		<if test="foodDetailsDTO.foodCalcium != null and foodDetailsDTO.foodCalcium != ''">
+			food_calcium = #{foodDetailsDTO.foodCalcium},
+		</if>
+		<if test="foodDetailsDTO.foodIron != null and foodDetailsDTO.foodIron != ''">
+			food_iron = #{foodDetailsDTO.foodIron},
+		</if>
+		<if test="foodDetailsDTO.foodPotassium != null and foodDetailsDTO.foodPotassium != ''">
+			food_potassium = #{foodDetailsDTO.foodPotassium},
+		</if>
+		<if test="foodDetailsDTO.foodMagnesium != null and foodDetailsDTO.foodMagnesium != ''">
+			food_magnesium = #{foodDetailsDTO.foodMagnesium},
+		</if>
+		<if test="foodDetailsDTO.foodAcid != null and foodDetailsDTO.foodAcid != ''">
+			food_acid = #{foodDetailsDTO.foodAcid},
+		</if>
+		<if test="foodDetailsDTO.foodZinc != null and foodDetailsDTO.foodZinc != ''">
+			food_zinc = #{foodDetailsDTO.foodZinc},
+		</if>
+		<if test="foodDetailsDTO.foodPurine != null and foodDetailsDTO.foodPurine != ''">
+			food_purine = #{foodDetailsDTO.foodPurine},
+		</if>
+		<if test="foodDetailsDTO.foodSodium != null and foodDetailsDTO.foodSodium != ''">
+			food_sodium = #{foodDetailsDTO.foodSodium},
+		</if>
+		<if test="foodDetailsDTO.foodSaturatedFat != null and foodDetailsDTO.foodSaturatedFat != ''">
+			food_saturated_fat = #{foodDetailsDTO.foodSaturatedFat},
+		</if>
+
+		<if test="foodDetailsDTO.foodGi != null and foodDetailsDTO.foodGi != ''">
+			food_GI = #{foodDetailsDTO.foodGi},
+		</if>
+		<if test="foodDetailsDTO.foodGl != null and foodDetailsDTO.foodGl != ''">
+			food_GL = #{foodDetailsDTO.foodGl},
+		</if>
+		<if test="foodDetailsDTO.foodLevelId != null and foodDetailsDTO.foodLevelId != ''">
+			food_level_id = #{foodDetailsDTO.foodLevelId},
+		</if>
+		<if test="foodDetailsDTO.createTime != null ">
+			create_time = #{foodDetailsDTO.createTime},
+		</if>
+		<if test="foodDetailsDTO.updateTime != null ">
+			update_time = #{foodDetailsDTO.updateTime},
+		</if>
+		<if test="foodDetailsDTO.foodReferralRate != null and foodDetailsDTO.foodReferralRate != ''">
+			food_referral_rate = #{foodDetailsDTO.foodReferralRate},
+		</if>
+
+		<if test="foodDetailsDTO.foodUploadAdmin != null and foodDetailsDTO.foodUploadAdmin != ''">
+			food_upload_admin = #{foodDetailsDTO.foodUploadAdmin},
+		</if>
+
+		<if test="foodDetailsDTO.foodUploadTime != null ">
+			food_upload_time = #{foodDetailsDTO.foodUploadTime},
+		</if>
+		<if test="foodDetailsDTO.foodCheckPassTime != null ">
+			food_check_pass_time = #{foodDetailsDTO.foodCheckPassTime},
+		</if>
+		<if test="foodDetailsDTO.foodAuditTime != null ">
+			food_aud it_time = #{foodDetailsDTO.foodAuditTime},
+		</if>
+		<if test="foodDetailsDTO.foodExistStatus != null and foodDetailsDTO.foodExistStatus != ''">
+			food_exist_status = #{foodDetailsDTO.foodExistStatus},
+		</if>
+		<if test="foodDetailsDTO.foodImage != null and foodDetailsDTO.foodImage != ''">
+			food_image = #{foodDetailsDTO.foodImage},
+		</if>
+
+		<if test="foodDetailsDTO.foodExamineAdmin != null and foodDetailsDTO.foodExamineAdmin != ''">
+			food_examine_admin = #{foodDetailsDTO.foodExamineAdmin},
+		</if>
+		<if test="foodDetailsDTO.foodAuditStatus!= null and foodDetailsDTO.foodAuditStatus != ''">
+			food_audit_status=#{foodDetailsDTO.foodAuditStatus}
+		</if>
+		 where food_id=#{foodDetailsDTO.foodId}
+	</update>
+
+	<!--重新提交-->
+	<update id="ReSubmitFoodStatus" >
+		update food_details set
+		<if test="foodDetailsDTO.foodName != null and foodDetailsDTO.foodName != ''">
+			food_name = #{foodDetailsDTO.foodName},
+		</if>
+		<if test="foodDetailsDTO.foodKcal != null and foodDetailsDTO.foodKcal != ''">
+			food_kcal = #{foodDetailsDTO.foodKcal},
+		</if>
+		<if test="foodDetailsDTO.foodKilojoules != null and foodDetailsDTO.foodKilojoules != ''">
+			food_kilojoules = #{foodDetailsDTO.foodKilojoules},
+		</if>
+		<if test="foodDetailsDTO.foodHeat != null and foodDetailsDTO.foodHeat != ''">
+			food_heat = #{foodDetailsDTO.foodHeat},
+		</if>
+		<if test="foodDetailsDTO.foodDietaryFiber != null and foodDetailsDTO.foodDietaryFiber != ''">
+			food_dietary_fiber = #{foodDetailsDTO.foodDietaryFiber},
+		</if>
+		<if test="foodDetailsDTO.foodCarbohydrates != null and foodDetailsDTO.foodCarbohydrates != ''">
+			food_carbohydrates = #{foodDetailsDTO.foodCarbohydrates},
+		</if>
+		<if test="foodDetailsDTO.foodCholesterol != null and foodDetailsDTO.foodCholesterol != ''">
+			food_cholesterol = #{foodDetailsDTO.foodCholesterol},
+		</if>
+
+		<if test="foodDetailsDTO.foodCalcium != null and foodDetailsDTO.foodCalcium != ''">
+			food_calcium = #{foodDetailsDTO.foodCalcium},
+		</if>
+		<if test="foodDetailsDTO.foodIron != null and foodDetailsDTO.foodIron != ''">
+			food_iron = #{foodDetailsDTO.foodIron},
+		</if>
+		<if test="foodDetailsDTO.foodPotassium != null and foodDetailsDTO.foodPotassium != ''">
+			food_potassium = #{foodDetailsDTO.foodPotassium},
+		</if>
+		<if test="foodDetailsDTO.foodMagnesium != null and foodDetailsDTO.foodMagnesium != ''">
+			food_magnesium = #{foodDetailsDTO.foodMagnesium},
+		</if>
+		<if test="foodDetailsDTO.foodAcid != null and foodDetailsDTO.foodAcid != ''">
+			food_acid = #{foodDetailsDTO.foodAcid},
+		</if>
+		<if test="foodDetailsDTO.foodZinc != null and foodDetailsDTO.foodZinc != ''">
+			food_zinc = #{foodDetailsDTO.foodZinc},
+		</if>
+		<if test="foodDetailsDTO.foodPurine != null and foodDetailsDTO.foodPurine != ''">
+			food_purine = #{foodDetailsDTO.foodPurine},
+		</if>
+		<if test="foodDetailsDTO.foodSodium != null and foodDetailsDTO.foodSodium != ''">
+			food_sodium = #{foodDetailsDTO.foodSodium},
+		</if>
+		<if test="foodDetailsDTO.foodSaturatedFat != null and foodDetailsDTO.foodSaturatedFat != ''">
+			food_saturated_fat = #{foodDetailsDTO.foodSaturatedFat},
+		</if>
+
+		<if test="foodDetailsDTO.foodGi != null and foodDetailsDTO.foodGi != ''">
+			food_GI = #{foodDetailsDTO.foodGi},
+		</if>
+		<if test="foodDetailsDTO.foodGl != null and foodDetailsDTO.foodGl != ''">
+			food_GL = #{foodDetailsDTO.foodGl},
+		</if>
+		<if test="foodDetailsDTO.foodLevelId != null and foodDetailsDTO.foodLevelId != ''">
+			food_level_id = #{foodDetailsDTO.foodLevelId},
+		</if>
+		<if test="foodDetailsDTO.createTime != null ">
+			create_time = #{foodDetailsDTO.createTime},
+		</if>
+		<if test="foodDetailsDTO.updateTime != null ">
+			update_time = #{foodDetailsDTO.updateTime},
+		</if>
+		<if test="foodDetailsDTO.foodReferralRate != null and foodDetailsDTO.foodReferralRate != ''">
+			food_referral_rate = #{foodDetailsDTO.foodReferralRate},
+		</if>
+
+		<if test="foodDetailsDTO.foodUploadAdmin != null and foodDetailsDTO.foodUploadAdmin != ''">
+			food_upload_admin = #{foodDetailsDTO.foodUploadAdmin},
+		</if>
+
+		<if test="foodDetailsDTO.foodUploadTime != null ">
+			food_upload_time = #{foodDetailsDTO.foodUploadTime},
+		</if>
+		<if test="foodDetailsDTO.foodCheckPassTime != null ">
+			food_check_pass_time = #{foodDetailsDTO.foodCheckPassTime},
+		</if>
+		<if test="foodDetailsDTO.foodAuditTime != null ">
+			food_audit_time = #{foodDetailsDTO.foodAuditTime},
+		</if>
+		<if test="foodDetailsDTO.foodExistStatus != null and foodDetailsDTO.foodExistStatus != ''">
+			food_exist_status = #{foodDetailsDTO.foodExistStatus},
+		</if>
+		<if test="foodDetailsDTO.foodImage != null and foodDetailsDTO.foodImage != ''">
+			food_image = #{foodDetailsDTO.foodImage},
+		</if>
+
+		<if test="foodDetailsDTO.foodExamineAdmin != null and foodDetailsDTO.foodExamineAdmin != ''">
+			food_examine_admin = #{foodDetailsDTO.foodExamineAdmin},
+		</if>
+		<if test="foodDetailsDTO.foodAuditStatus!= null and foodDetailsDTO.foodAuditStatus != ''">
+			food_audit_status=#{foodDetailsDTO.foodAuditStatus}
+		</if>
+		where food_id=#{foodDetailsDTO.foodId}
+	</update>
+
+	<!-- 食物上线下线-->
+	<update id="updateFoodStatus" >
+		update food_details set food_exist_status=#{foodExistStatus} where food_id=#{foodId}
+	</update>
+
+	<select id="getByFoodName" resultType="java.lang.String">
+		SELECT food_name from food_details WHERE food_name=#{foodName}
+	</select>
+
+</mapper>

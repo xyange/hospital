@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.DoctorAdeptMapper">
+
+  <resultMap id="doctorAdeptMap" type="com.wyzy.hospital.psychology.api.entity.DoctorAdept">
+      <id property="id" column="id"/>
+      <result property="doctorId" column="doctor_id"/>
+      <result property="adeptId" column="adept_id"/>
+  </resultMap>
+    <select id="selectAdeptIdByCategoryId" resultType="java.lang.Integer">
+        select count(*) from doctor_adept where adept_id = #{categoryId}
+    </select>
+    <select id="pageDoctorAdept" resultType="com.wyzy.hospital.psychology.api.dto.DoctorAdeptDTO">
+
+        select ad.id,
+               ad.doctor_id,
+               ad.adept_id,
+               ca.category_name as adept_name,
+               ca.adept_detail
+        from doctor_adept ad,psychology_category ca where ad.adept_id = ca.category_id
+    </select>
+    <select id="selectDoctorAdeptByDoctorAdept" resultMap="doctorAdeptMap">
+        select id,doctor_id,adept_id from doctor_adept where doctor_id = #{doctorAdept.doctorId} and adept_id = #{doctorAdept.adeptId}
+    </select>
+</mapper>

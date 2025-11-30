@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.EnDiseasesMapper">
+
+  <resultMap id="enDiseasesMap" type="com.wyzy.hospital.admin.api.entity.EnDiseases">
+                  <id property="id" column="id"/>
+                        <result property="diseaseName" column="disease_name"/>
+                        <result property="diseaseNicknames" column="disease_nicknames"/>
+                        <result property="departmentId" column="department_id"/>
+                        <result property="content" column="content"/>
+                        <result property="symptom" column="symptom"/>
+                        <result property="diseaseCause" column="disease_cause"/>
+                        <result property="img" column="img"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+
+
+    <select id="selectDiseasesAndArticlesByName" resultMap="enMyDiseasesMap">
+        SELECT d.id,d.content,d.create_time,d.department_id,d.disease_cause,d.disease_name,a.* from en_diseases d LEFT JOIN en_articles a
+          ON d.id=a.en_diseases_id  WHERE d.disease_name=#{diseaseName}
+    </select>
+
+
+    <resultMap id="enMyDiseasesMap" type="com.wyzy.hospital.admin.api.dto.EnDiseasesDTO">
+        <id property="id" column="id"/>
+        <result property="diseaseName" column="disease_name"/>
+        <result property="diseaseNicknames" column="disease_nicknames"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="content" column="content"/>
+        <result property="symptom" column="symptom"/>
+        <result property="diseaseCause" column="disease_cause"/>
+        <result property="img" column="img"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <collection property="enArticlesList" ofType="com.wyzy.hospital.admin.api.entity.EnArticles">
+            <id property="id" column="id"/>
+            <result property="articleName" column="article_name"/>
+            <result property="articleLevel" column="article_level"/>
+            <result property="articleContent" column="article_content"/>
+            <result property="articleVideo" column="article_video"/>
+            <result property="articleImg" column="article_img"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="enDiseasesId" column="en_diseases_id"/>
+        </collection>
+    </resultMap>
+
+
+
+
+</mapper>

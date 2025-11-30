@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DoctorServiceMapper">
+
+  <resultMap id="doctorServiceMap" type="com.wyzy.hospital.admin.api.entity.DoctorServe">
+                  <id property="docId" column="doctor_id"/>
+                        <result property="serviceId" column="service_id"/>
+                        <result property="price" column="price"/>
+                        <result property="income" column="income"/>
+            </resultMap>
+
+    <insert id="save">
+        INSERT INTO doctor_serve
+        <set>
+            doctor_id=#{doctorServe.docId},
+            service_id = #{doctorServe.serviceId},
+            price = #{doctorServe.price},
+            income = #{doctorServe.income}
+        </set>
+    </insert>
+</mapper>

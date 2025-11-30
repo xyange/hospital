@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.PhysicalFitnessMapper">
+
+  <resultMap id="physicalFitnessMap" type="com.wyzy.hospital.admin.api.entity.PhysicalFitness">
+                  <id property="id" column="id"/>
+                        <result property="memberId" column="member_id"/>
+                        <result property="name" column="name"/>
+                        <result property="sex" column="sex"/>
+                        <result property="height" column="height"/>
+                        <result property="weight" column="weight"/>
+                        <result property="bodyFat" column="body_fat"/>
+                        <result property="age" column="age"/>
+            </resultMap>
+    <resultMap id="physicalFitnessDTOMap" type="com.wyzy.hospital.admin.api.dto.PhysicalFitnessDTO">
+        <id property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="height" column="height"/>
+        <result property="weight" column="weight"/>
+        <result property="bodyFat" column="body_fat"/>
+        <result property="age" column="age"/>
+    </resultMap>
+    <select id="getByMemberId" resultMap="physicalFitnessDTOMap">
+        select id,member_id,name,height,weight,body_fat,age,
+               CASE sex
+                   WHEN '0' THEN '男'
+                   WHEN '1' THEN '女'
+                   ELSE '未知' END as sex
+               from physical_fitness where member_id = #{memberId}
+    </select>
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+            http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.wyzy</groupId>
+        <artifactId>hospital-cyclopedia</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>hospital-cyclopedia-biz</artifactId>
+	<properties>
+		<hospital.version>1.0.0</hospital.version>
+	</properties>
+    <dependencies>
+        <!--必备: undertow容器-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <!--必备: spring boot web-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--必备: 注册中心客户端-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--必备: 配置中心客户端-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!--必备: 操作数据源相关-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-data</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--必备：pigx安全模块-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-security</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+		<!--必备：xss 过滤模块-->
+		<dependency>
+			<groupId>com.wyzy</groupId>
+			<artifactId>hospital-common-xss</artifactId>
+			<version>${hospital.version}</version>
+		</dependency>
+        <!--必备: sentinel 依赖-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-sentinel</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--必备: feign 依赖-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-feign</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--必备: 依赖api模块-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-cyclopedia-api</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--mybatis-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+        <!-- druid 连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <!--数据库-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--必备: log 依赖-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-log</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--选配: swagger文档-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-common-swagger</artifactId>
+			<version>${hospital.version}</version>
+        </dependency>
+        <!--测试: spring boot test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>com.wyzy</groupId>
+			<artifactId>hospital-common-mybatis</artifactId>
+			<version>${hospital.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

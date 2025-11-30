@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmInternalMapper">
+
+  <resultMap id="tcmInternalMap" type="com.wyzy.hospital.tcm.entity.TcmInternal">
+                  <id property="id" column="id"/>
+                        <result property="internalsuperId" column="internalsuper_id"/>
+                        <result property="diseaseName" column="disease_name"/>
+                        <result property="manifestation" column="manifestation"/>
+                        <result property="treatment" column="treatment"/>
+                        <result property="recipeId" column="recipe_id"/>
+                        <result property="compose" column="compose"/>
+                        <result property="compatibility" column="compatibility"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  <result property="isOnline" column="is_online"/>
+            </resultMap>
+	<resultMap id="tcmInternalDTOMap" type="com.wyzy.hospital.tcm.dto.TcmInternalDTO">
+		<id property="id" column="id"/>
+		<result property="internalsuperId" column="internalsuper_id"/>
+		<result property="oneId" column="oneId"/>
+		<result property="oneName" column="oneName"/>
+		<result property="twoName" column="twoName"/>
+		<result property="diseaseName" column="disease_name"/>
+		<result property="manifestation" column="manifestation"/>
+		<result property="treatment" column="treatment"/>
+		<result property="recipeId" column="recipe_id"/>
+		<result property="compose" column="compose"/>
+		<result property="compatibility" column="compatibility"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+
+	<sql id="selectAll">
+		id,internalsuper_id,disease_name,manifestation,treatment,recipe_id,compose,compatibility,is_online,create_time,update_time
+	</sql>
+
+	<!--通过内科学二级分类IDinternalsuperId查询内科学表-->
+	<select id="selectAllByInternalsuperId" resultMap="tcmInternalDTOMap">
+		select <include refid="selectAll"/>,st.oneName,st.twoName
+		from
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =3 and t.type = 3 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_internal inl
+		where st.sort_id = inl.internalsuper_id AND internalsuper_id = #{internalsuperId} ORDER BY update_time DESC
+	</select>
+	<select id="getById" resultMap="tcmInternalDTOMap">
+		select <include refid="selectAll"/>,st.oneName,st.twoName
+		from
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =3 and t.type = 3 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_internal inl
+		where inl.del_flag = 0 and st.sort_id = inl.internalsuper_id AND inl.id = #{id}
+	</select>
+	<select id="getTcmInternalPage" resultMap="tcmInternalDTOMap">
+		select <include refid="selectAll"/>,st.oneName,st.twoName
+		from
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =3 and t.type = 3 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_internal inl
+		where inl.del_flag = 0 and st.sort_id = inl.internalsuper_id ORDER BY update_time DESC
+	</select>
+	<select id="selectInternalOneTwoId" resultMap="tcmInternalDTOMap">
+		select
+			id,internalsuper_id,disease_name,
+			manifestation,treatment,recipe_id,
+			compose,compatibility,is_online,
+			create_time,update_time,
+			st.oneId,st.oneName,st.twoName
+		from
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =3 and t.type = 3 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_internal inl
+		where inl.del_flag = 0 and is_online = 1 and st.sort_id = inl.internalsuper_id ORDER BY update_time DESC
+	</select>
+	<insert id="insertTcmInternal">
+		insert into tcm_internal(id,internalsuper_id,disease_name,manifestation,treatment,recipe_id,compose,compatibility,del_flag,create_time,update_time)
+		values (#{tcmInternal.id},#{tcmInternal.internalsuperId},#{tcmInternal.diseaseName},#{tcmInternal.manifestation},#{tcmInternal.treatment},
+		#{tcmInternal.recipeId},#{tcmInternal.compose},#{tcmInternal.compatibility},#{tcmInternal.delFlag},#{tcmInternal.createTime},#{tcmInternal.updateTime})
+	</insert>
+	<select id="selectTcmInternalByName" resultMap="tcmInternalMap">
+		select id,internalsuper_id,disease_name,manifestation,treatment,
+			recipe_id,compose,compatibility,del_flag,create_time,update_time
+			from tcm_internal where disease_name = #{diseaseName}
+	</select>
+	<select id="selectTcmInternalDTOByName" resultMap="tcmInternalDTOMap">
+			select inte.id,inte.internalsuper_id,st.oneId,st.oneName,st.twoName,inte.disease_name,inte.manifestation,inte.treatment,
+			inte.recipe_id,inte.compose,inte.compatibility,inte.del_flag,inte.create_time,inte.update_time from
+			(select id,internalsuper_id,disease_name,manifestation,treatment,
+			recipe_id,compose,compatibility,del_flag,create_time,update_time
+			from tcm_internal where disease_name = #{diseaseName}) inte
+		LEFT JOIN
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t
+		where s.type =3 and t.type = 3 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		on st.sort_id = inte.internalsuper_id
+	</select>
+	<update id="updateTcmInternalById">
+		update tcm_internal set is_online = #{isOnline} where id = #{id}
+	</update>
+	<update id="updatePojoById">
+		update tcm_internal
+		set id = #{tcmInternal.id},
+		<if test="tcmInternal.internalsuperId != null and tcmInternal.internalsuperId != ''">
+			internalsuper_id = #{tcmInternal.internalsuperId},
+		</if>
+		<if test="tcmInternal.diseaseName != null and tcmInternal.diseaseName != ''">
+			disease_name = #{tcmInternal.diseaseName},
+		</if>
+		<if test="tcmInternal.manifestation != null and tcmInternal.manifestation != ''">
+			manifestation = #{tcmInternal.manifestation},
+		</if>
+		<if test="tcmInternal.manifestation != null and tcmInternal.manifestation != ''">
+			manifestation = #{tcmInternal.manifestation},
+		</if>
+		<if test="tcmInternal.recipeId != null and tcmInternal.recipeId != ''">
+			recipe_id = #{tcmInternal.recipeId},
+		</if>
+		<if test="tcmInternal.compose != null and tcmInternal.compose != ''">
+			compose = #{tcmInternal.compose},
+		</if>
+		<if test="tcmInternal.compatibility != null and tcmInternal.compatibility != ''">
+			compatibility = #{tcmInternal.compatibility},
+		</if>
+		<if test="tcmInternal.createTime != null">
+			create_time = #{tcmInternal.createTime},
+		</if>
+			del_flag = #{tcmInternal.delFlag},
+			is_online = #{tcmInternal.isOnline},
+			update_time = #{tcmInternal.updateTime}
+		where id = #{tcmInternal.id}
+	</update>
+
+</mapper>

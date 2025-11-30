@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.PsychologyImgMapper">
+	<select id="listImg" resultType="com.wyzy.hospital.psychology.api.entity.PsychologyImg">
+		SELECT img.id,
+			   img.enable,
+			   img.hyperlinks,
+			   img.img_name AS imgName,
+			   img.img_type AS imgType,
+			   img.img_url  AS imgUrl
+		FROM wyzy_psychology.doctor_psychologist_img img
+		WHERE enable=1 AND img_type=#{imgType}
+	</select>
+</mapper>

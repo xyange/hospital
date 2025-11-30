@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.wyzy.hospital.common.log.LogAutoConfiguration
+org.springframework.context.ApplicationContextInitializer=\
+    com.wyzy.hospital.common.log.init.ApplicationLoggerInitializer

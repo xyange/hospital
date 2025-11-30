@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.RegisterRecordMapper">
+
+  <resultMap id="registerRecordMap" type="com.wyzy.hospital.admin.api.entity.RegisterRecord">
+                  <id property="registerId" column="register_id"/>
+                        <result property="cardId" column="card_id"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="departmentId" column="department_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="registerTime" column="register_time"/>
+                        <result property="registerCode" column="register_code"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+    <select id="getPrivateDoctorDetail" resultType="java.util.Map">
+        SELECT dsp.doctor_id AS doctorId,dsp.personal_introduction AS personalIntroduction,dsp.price_day_numbers AS priceDayNumbers,
+        dsp.serve_introduction AS serveIntroduction
+        FROM doctor_serve_private dsp
+        <where>
+            <if test="doctorId != null">
+                AND  dsp.doctor_id=#{doctorId}
+            </if>
+            <if test="doctorName != null and doctorName != ''">
+                AND dsp.doctor_id = (SELECT doctor.doctor_id FROM doctor WHERE doctor.doctor_name=#{doctorName})
+            </if>
+        </where>
+    </select>
+    <resultMap id="registerRecordDTOMap" type="com.wyzy.hospital.admin.api.dto.RegisterRecordDTO">
+        <id property="registerId" column="register_id"/>
+        <result property="cardId" column="card_id"/>
+        <result property="hospitalId" column="hospital_id"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="registerCode" column="register_code"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectPojoByCardId" resultMap="registerRecordDTOMap">
+        select
+        register_id,card_id,hospital_id,department_id,doctor_id,register_time,register_code,create_time,update_time
+        from
+        wyzy_register_record
+        where
+        <if test="cardId == null and userId !=null">
+            card_id in (
+            SELECT
+            card_id
+            from
+            wyzy_patient_card pc
+            where pc.member_id =(SELECT meb.member_id FROM wyzy_member meb WHERE  meb.user_id=#{userId})
+            )
+        </if>
+        <if test="cardId != null">
+            card_id = #{cardId}
+        </if>
+        ORDER BY update_time DESC
+    </select>
+
+</mapper>

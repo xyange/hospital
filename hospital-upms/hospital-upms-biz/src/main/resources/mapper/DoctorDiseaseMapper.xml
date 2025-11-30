@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DoctorDiseaseMapper">
+
+  <resultMap id="doctorDiseaseMap" type="com.wyzy.hospital.admin.api.entity.DoctorDisease">
+                        <id property="doctorId" column="doctor_id"/>
+                        <result property="diseaseId" column="disease_id"/>
+  </resultMap>
+
+</mapper>

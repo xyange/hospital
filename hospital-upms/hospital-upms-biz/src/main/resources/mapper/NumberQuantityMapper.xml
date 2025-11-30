@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.NumberQuantityMapper">
+    <resultMap id="NumberQuantityDetailsMap" type="com.wyzy.hospital.admin.api.dto.numberquantity.NumberQuantityDetailsDTO">
+        <id column="doctorId" property="doctorId"/>
+        <result column="doctorName" property="doctorName"/>
+        <result column="professionalTitleId" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="peopleNumber" property="peopleNumber"/>
+        <result column="adept" property="adept"/>
+        <result column="registrationFee" property="registrationFee"/>
+        <result column="totalQuantity" property="totalQuantity"/>
+        <result column="surplusQuantity" property="surplusQuantity"/>
+        <result column="timeSlot" property="timeSlot"/>
+        <result column="orderDate" property="orderDate"/>
+        <result column="numberAllocationTime" property="numberAllocationTime"/>
+        <collection property="serve" resultMap="DoctorServeMap"/>
+    </resultMap>
+    <resultMap id="DoctorServeMap" type="com.wyzy.hospital.admin.api.dto.doctor.DoctorServeDTO">
+        <id column="serviceId" property="serviceId"/>
+        <result column="serveName" property="serveName"/>
+        <result column="docId" property="docId"/>
+        <result column="price" property="price"/>
+    </resultMap>
+    <select id="getNumberQuantity" resultType="com.wyzy.hospital.admin.api.dto.numberquantity.NumberQuantityDTO">
+        SELECT quantity.*,
+               ho.hospital_name    AS hospitalName,
+               dep.department_name AS departmentName,
+               doc.doctor_name     AS doctorName
+        FROM (SELECT quantity.hospital_id            AS hospitalId,
+                     quantity.deportment_id          AS deportmentId,
+                     quantity.doctor_id              AS doctorId,
+                     quantity.order_date             AS orderDate,
+                     quantity.number_allocation_time AS numberAllocationTime,
+                     SUM(quantity.total_quantity)      AS totalQuantity,
+                     SUM(quantity.surplus_quantity)  AS surplusQuantity
+              FROM wzyz_number_quantity quantity
+        <where>
+            <if test="hospitalId != null">
+                AND quantity.hospital_id = #{hospitalId}
+            </if>
+            <if test="hospitalName != null and hospitalName != ''">
+                AND quantity.hospital_id = (SELECT h.id FROM hospitals h WHERE h.hospital_name=#{hospitalName})
+            </if>
+
+            <if test="deportmentId != null">
+                AND quantity.deportment_id = #{deportmentId}
+            </if>
+            <if test="deportmentName != null and deportmentName != ''">
+                AND quantity.deportment_id = (SELECT dep.id FROM departments dep WHERE dep.department_name=#{deportmentName})
+            </if>
+                AND quantity.order_date >= CURRENT_DATE()
+                AND quantity.order_date &lt;= DATE_SUB(CURRENT_DATE(), INTERVAL -#{nearDays} + 1 DAY)
+              GROUP BY quantity.order_date
+        </where>
+                     ) quantity,
+             hospitals ho,
+             departments dep,
+             doctor doc
+        WHERE ho.id = quantity.hospitalId
+          AND dep.id = quantity.deportmentId
+          AND doc.doctor_id = quantity.doctorId
+    </select>
+
+    <select id="getNumberQuantityDetail" resultMap="NumberQuantityDetailsMap">
+        SELECT quantity.*,
+
+               doc.doctor_name                                                                                   AS doctorName,
+               doc.people_number                                                                                 AS peopleNumber,
+               doc.professional_title_id                                                                         AS professionalTitleId,
+               dic.label                                                                                         AS professionalTitle,
+               (
+                       SELECT GROUP_CONCAT(disease.disease_name)
+                       FROM disease
+                       WHERE disease.id IN
+                             (SELECT dd.disease_id
+                              FROM doctor_disease dd
+                              WHERE dd.doctor_id = doc.doctor_id)
+                       )                                                                                         AS adept,
+               (SELECT ds.price FROM doctor_serve ds WHERE ds.doctor_id = doc.doctor_id AND ds.service_id = 126) AS
+                                                                                                                    registrationFee,
+        serve.service_id AS serviceId,
+        (SELECT dic.label FROM sys_dic_item dic WHERE serve.service_id=dic.id) AS serveName,
+        doc.doctor_id AS docId,
+        serve.price
+        FROM (SELECT quantity.doctor_id              AS doctorId,
+                     quantity.order_date             AS orderDate,
+                     quantity.number_allocation_time AS numberAllocationTime,
+                     quantity.total_quantity         AS totalQuantity,
+                     quantity.surplus_quantity       AS surplusQuantity,
+                     quantity.time_slot              AS timeSlot
+              FROM wzyz_number_quantity quantity
+        <where>
+            <if test="hospitalId != null">
+                AND quantity.hospital_id = #{hospitalId}
+            </if>
+            <if test="hospitalName != null and hospitalName != ''">
+                AND quantity.hospital_id = (SELECT hop.id FROM hospitals hop WHERE hop.hospital_name=#{hospitalName})
+            </if>
+            <if test="deportmentId != null">
+                AND quantity.deportment_id = #{deportmentId}
+            </if>
+            <if test="deportmentName != null and deportmentName != ''">
+                AND quantity.deportment_id = (SELECT dep.id FROM departments dep WHERE dep.department_name=#{deportmentName})
+            </if>
+                AND quantity.order_date = #{registrationDate}
+        </where>
+        ) quantity,
+             doctor doc LEFT JOIN doctor_serve serve ON serve.doctor_id=doc.doctor_id,
+             sys_dic_item dic
+        WHERE doc.doctor_id = quantity.doctorId
+          AND doc.professional_title_id = dic.id
+    </select>
+
+    <update id="minusDateNumberQuantity">
+        UPDATE wzyz_number_quantity SET surplus_quantity=surplus_quantity-1
+        WHERE hospital_id=#{hospitalId}
+        AND deportment_id=#{deportmentId}
+        AND doctor_id=#{doctorId}
+        AND order_date=#{registrationDate}
+        AND time_slot=#{timeSlot}
+    </update>
+
+
+    <select id="getDetailNumberQuantity" resultType="java.lang.Integer">
+        SELECT surplus_quantity
+        FROM wzyz_number_quantity
+        WHERE hospital_id = #{hospitalId}
+          AND deportment_id = #{deportmentId}
+          AND doctor_id = #{doctorId}
+          AND order_date = #{date}
+          AND time_slot = #{timeSlot}
+    </select>
+
+</mapper>

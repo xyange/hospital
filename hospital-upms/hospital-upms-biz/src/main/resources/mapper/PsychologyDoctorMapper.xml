@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.PsychologyDoctorMapper">
+
+    <resultMap id="doctorMap" type="com.wyzy.hospital.admin.api.entity.Doctor">
+        <id property="doctorId" column="doctor_id"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="sex" column="sex"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="professionalTitleId" column="professional_title_id"/>
+        <result property="area" column="area"/>
+        <result property="peopleNumber" column="people_number"/>
+        <result property="saleMan" column="sale_man"/>
+        <result property="salePhone" column="sale_phone"/>
+        <result property="experience" column="experience"/>
+        <result property="phone" column="phone"/>
+        <result property="wellKnown" column="well_known"/>
+        <result property="awards" column="awards"/>
+        <result property="status" column="status"/>
+        <result property="source" column="source"/>
+        <result property="passDate" column="pass_date"/>
+        <result property="workYears" column="work_years"/>
+        <result property="idCard" column="id_card"/>
+        <result property="professionalCertificate" column="professional_certificate"/>
+        <result property="avatar" column="avatar"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <select id="getPsychologyDoctorIds" resultMap="doctorMap">
+        SELECT doctor_id,doctor_name,sex,department_id,professional_title_id,area,people_number,sale_man,
+        sale_phone,experience,phone,well_known,awards,status,source,pass_date,work_years,
+        id_card,professional_certificate,avatar,del_flag
+         FROM doctor WHERE doctor_type=144 and del_flag = 0
+        <if test="sex != null and sex != ''">
+            and sex  = #{sex}
+        </if>
+        <if test="area != null and area != ''">
+            and area  = #{area}
+        </if>
+    </select>
+    <select id="getPsychologyByDoctorId" resultMap="doctorMap">
+        SELECT doctor_id,doctor_name,sex,department_id,professional_title_id,area,people_number,sale_man,
+        sale_phone,experience,phone,well_known,awards,status,source,pass_date,work_years,
+        id_card,professional_certificate,avatar,del_flag
+        FROM doctor WHERE doctor_id = #{doctorId} AND doctor_type=144 and del_flag = 0
+    </select>
+</mapper>

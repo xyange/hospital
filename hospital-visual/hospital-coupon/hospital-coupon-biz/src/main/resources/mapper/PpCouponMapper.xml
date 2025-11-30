@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.coupon.mapper.PpCouponMapper">
+
+  <resultMap id="ppCouponMap" type="com.wyzy.hospital.coupon.entity.PpCoupon">
+                  <id property="couponId" column="coupon_id"/>
+                        <result property="couponName" column="coupon_name"/>
+                        <result property="couponCode" column="coupon_code"/>
+                        <result property="couponImage" column="coupon_image"/>
+                        <result property="couponRemarks" column="coupon_remarks"/>
+                        <result property="couponFullDiscountMoney" column="coupon_full_discount_money"/>
+                        <result property="couponFullMoney" column="coupon_full_money"/>
+                        <result property="couponDirectMoney" column="coupon_direct_money"/>
+                        <result property="couponDiscountNum" column="coupon_discount_num"/>
+                        <result property="couponDiscountMoney" column="coupon_discount_money"/>
+                        <result property="couponNumber" column="coupon_number"/>
+                        <result property="couponReceiveNum" column="coupon_receive_num"/>
+                        <result property="couponUsedNum" column="coupon_used_num"/>
+                        <result property="couponOverdateNum" column="coupon_overDate_num"/>
+                        <result property="couponLimitNum" column="coupon_limit_num"/>
+                        <result property="couponGrantStruts" column="coupon_grant_struts"/>
+                        <result property="couponDel" column="coupon_del"/>
+                        <result property="couponAduitStruts" column="coupon_aduit_struts"/>
+                        <result property="couponAduitCause" column="coupon_aduit_cause"/>
+                        <result property="couponExistStruts" column="coupon_exist_struts"/>
+                        <result property="couponRange" column="coupon_range"/>
+                        <result property="couponType" column="coupon_type"/>
+                        <result property="couponEffectiveDate" column="coupon_effective_date"/>
+                        <result property="couponInvalidDate" column="coupon_invalid_date"/>
+                        <result property="couponStartDate" column="coupon_start_date"/>
+                        <result property="couponOverDate" column="coupon_over_date"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+	<resultMap id="ppCouponDtoMap" type="com.wyzy.hospital.coupon.dto.PpCouponDTO">
+		<id property="couponId" column="coupon_id"/>
+		<result property="couponName" column="coupon_name"/>
+		<result property="couponCode" column="coupon_code"/>
+		<result property="couponImage" column="coupon_image"/>
+		<result property="couponRemarks" column="coupon_remarks"/>
+		<result property="couponFullDiscountMoney" column="coupon_full_discount_money"/>
+		<result property="couponFullMoney" column="coupon_full_money"/>
+		<result property="couponDirectMoney" column="coupon_direct_money"/>
+		<result property="couponDiscountNum" column="coupon_discount_num"/>
+		<result property="couponDiscountMoney" column="coupon_discount_money"/>
+		<result property="couponNumber" column="coupon_number"/>
+		<result property="couponReceiveNum" column="coupon_receive_num"/>
+		<result property="couponUsedNum" column="coupon_used_num"/>
+		<result property="couponOverdateNum" column="coupon_overDate_num"/>
+		<result property="couponLimitNum" column="coupon_limit_num"/>
+		<result property="couponGrantStruts" column="coupon_grant_struts"/>
+		<result property="couponDel" column="coupon_del"/>
+		<result property="couponAduitStruts" column="coupon_aduit_struts"/>
+		<result property="couponAduitCause" column="coupon_aduit_cause"/>
+		<result property="couponExistStruts" column="coupon_exist_struts"/>
+		<result property="couponRange" column="coupon_range"/>
+		<result property="couponType" column="coupon_type"/>
+		<result property="couponUnclaimed" column="unclaimed"/>
+		<result property="couponEffectiveDate" column="coupon_effective_date"/>
+		<result property="couponInvalidDate" column="coupon_invalid_date"/>
+		<result property="couponStartDate" column="coupon_start_date"/>
+		<result property="couponOverDate" column="coupon_over_date"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+   <!--优惠券审核(后台)-->
+
+	<select id="selectCouponAduit" resultMap="ppCouponDtoMap">
+             SELECT coupon_id ,coupon_name,coupon_effective_date,coupon_invalid_date,coupon_type,coupon_number,coupon_range,coupon_apply_admin,coupon_aduit_struts,coupon_aduit_cause
+ FROM pp_coupon  WHERE coupon_aduit_struts='0' and coupon_del!='1'
+   </select>
+
+	<!--查一个优惠券审核状态-->
+	<update id="updateCouponAduitStruts">
+		update pp_coupon set coupon_aduit_struts=#{couponAduitStruts} where coupon_id=#{couponId}
+	</update>
+	<!--优惠券审核后台条件查询-->
+	<select id="byConditionAuditCoupon" resultMap="ppCouponDtoMap">
+          SELECT coupon_id ,coupon_name,coupon_effective_date, coupon_number,coupon_range,coupon_apply_admin,coupon_aduit_struts,coupon_aduit_cause
+      FROM pp_coupon
+		  <where>
+			  <if test="couponType!=null and couponType!=''">
+				 coupon_type=#{couponType}
+			  </if>
+			  <if test="couponName!=null and couponName!=''">
+				  and coupon_name like concat('%',#{couponName},'%')
+			  </if>
+			  and coupon_aduit_struts='0'and coupon_del!='1'
+		  </where>
+   </select>
+
+	<!--优惠券列表(后台)-->
+	<select id="selectCouponTable" resultMap="ppCouponDtoMap">
+		SELECT
+       pu.coupon_id,
+       pu.coupon_name,
+       pu.coupon_code,
+       pu.coupon_type,
+       pu.coupon_grant_struts,
+       pu.coupon_effective_date,pu.coupon_invalid_date,
+       pu.unclaimed,
+       pu.coupon_receive_num,
+       sum(pu.used) coupon_used_num,
+       sum(pu.expire) coupon_overDate_num,
+       pu.coupon_exist_struts
+      FROM (
+        SELECT
+          pc.coupon_id,pc.coupon_name,pc.coupon_code,pc.coupon_type,pc.coupon_grant_struts,
+          pc.coupon_effective_date,pc.coupon_invalid_date,
+          (coupon_number-coupon_receive_num)unclaimed,pc.coupon_receive_num,pc.coupon_exist_struts,
+          pc.coupon_aduit_struts,pc.coupon_del,
+        CASE WHEN uc.up_ifuse = 1 THEN 1 ELSE 0 END as 'used',
+        CASE WHEN uc.up_ifuse = 2 THEN 1 ELSE 0 END as 'expire'
+      FROM pp_coupon pc
+      JOIN  user_coupon uc
+      ON pc.coupon_code=uc.up_coupon_code ) pu
+      WHERE pu.coupon_aduit_struts='1' AND pu.coupon_del!='1'
+      GROUP BY pu.coupon_code
+	</select>
+
+	<!--优惠券列表上下线-->
+	<update id="updateCouponExistStruts">
+		update pp_coupon set coupon_exist_struts=#{couponExistStruts} where coupon_id=#{couponId}
+	</update>
+
+	<!--优惠券后台列表条件查询-->
+	<select id="ConditionCouponTable" resultMap="ppCouponDtoMap">
+		SELECT
+		pu.coupon_id,
+		pu.coupon_name,
+		pu.coupon_code,
+		pu.coupon_type,
+		pu.coupon_grant_struts,
+		pu.coupon_effective_date,pu.coupon_invalid_date,
+		pu.unclaimed,
+		pu.coupon_receive_num,
+		sum(pu.used) coupon_used_num,
+		sum(pu.expire) coupon_overDate_num,
+		pu.coupon_exist_struts
+		FROM (
+		SELECT
+		pc.coupon_id,pc.coupon_name,pc.coupon_code,pc.coupon_type,pc.coupon_grant_struts,
+		pc.coupon_effective_date,pc.coupon_invalid_date,
+		(coupon_number-coupon_receive_num)unclaimed,pc.coupon_receive_num,pc.coupon_exist_struts,
+		pc.coupon_aduit_struts,pc.coupon_del,
+		CASE WHEN uc.up_ifuse = 1 THEN 1 ELSE 0 END as 'used',
+		CASE WHEN uc.up_ifuse = 2 THEN 1 ELSE 0 END as 'expire'
+		FROM pp_coupon pc
+		JOIN  user_coupon uc
+		ON pc.coupon_code=uc.up_coupon_code ) pu
+		<where>
+			<if test="couponType!=null and couponType!=''">
+				pu.coupon_type=#{couponType}
+			</if>
+			<if test="couponGrantStruts!=null and couponGrantStruts!=''">
+				and pu.coupon_grant_struts=#{couponGrantStruts}
+			</if>
+			<if test="couponName!=null and couponName!=''">
+				and pu.coupon_name like concat('%',#{couponName},'%')
+			</if>
+			and pu.coupon_aduit_struts='1'AND pu.coupon_del!='1'
+		</where>
+		GROUP BY pu.coupon_code
+	</select>
+
+	<!--优惠券审核列表(后台)-->
+	<select id="selectCouponAuditTable" resultMap="ppCouponMap">
+		 SELECT coupon_id ,coupon_name,coupon_effective_date,coupon_invalid_date,coupon_type,coupon_number,coupon_range,
+		 coupon_apply_admin,coupon_aduit_struts,coupon_aduit_cause
+         FROM pp_coupon WHERE coupon_aduit_struts!='0' and coupon_del!='1'
+	</select>
+
+
+	<!--优惠券审核列表(条件查询)-->
+	<select id="ConditionCouponAduitTable" resultMap="ppCouponDtoMap">
+		SELECT coupon_id ,coupon_name,coupon_effective_date,coupon_invalid_date,coupon_type,coupon_number,coupon_range,
+		coupon_apply_admin,coupon_aduit_struts,coupon_aduit_cause
+		FROM pp_coupon
+		<where>
+			<if test="couponType!=null and couponType!=''">
+				coupon_type=#{couponType}
+			</if>
+			<if test="couponAduitStruts!=null and couponAduitStruts!=''">
+				coupon_aduit_struts=#{couponAduitStruts}
+			</if>
+			<if test="couponName!=null and couponName!=''">
+				and coupon_name like concat('%',#{couponName},'%')
+			</if>
+			and coupon_aduit_struts!='0'and coupon_del!='1'
+		</where>
+	</select>
+
+	<!--优惠券后台查名称-->
+	<select id="selectCouponName" resultType="java.lang.String">
+		select coupon_name from pp_coupon where coupon_name=#{couponName}
+	</select>
+
+	<!--根据优惠券码查优惠券-->
+	<select id="queryCouponByCode" resultMap="ppCouponMap">
+		select * from pp_coupon coupon_code = #{couponCode}
+	</select>
+
+
+
+	<!--重新审核(修改审核状态)-->
+	<update id="reSubmitCouponAuditStruts">
+		update pp_coupon set coupon_aduit_struts=#{couponAduitStruts} where coupon_id=#{couponId}
+	</update>
+
+	<!--根据id查看未通过审核原因-->
+	<select id="selectAduitCause" resultType="java.lang.String">
+		SELECT coupon_aduit_cause from pp_coupon  WHERE coupon_id=#{couponId} AND coupon_aduit_struts=2
+	</select>
+
+	<!--根据id修改审核原因-->
+	<update id="addAduitCause">
+		update pp_coupon set coupon_aduit_cause=#{couponAduitCause} where coupon_id=#{couponId}
+	</update>
+
+	<!--查询优惠券限领数量-->
+	<select id="selectLimitNum" resultType="java.lang.Integer">
+		SELECT coupon_limit_num FROM pp_coupon WHERE coupon_code=#{couponCode}
+	</select>
+
+	<!--根据couponCode修改-->
+	<update id="updateCouponReceiveNum" >
+		update pp_coupon set coupon_receive_num = coupon_receive_num + 1 where coupon_code=#{couponCode}
+	</update>
+
+	<!--获取优惠券现存数-->
+     <select id="selectUnclaimedByCode" resultType="java.lang.Integer">
+       SELECT
+	(
+		coupon_number - coupon_receive_num
+	) unclaimed
+FROM
+	pp_coupon
+WHERE
+	coupon_code=#{couponCode}
+
+     </select>
+
+	<select id="selectUseCoupon" resultMap="ppCouponDtoMap">
+	 select coupon_id,coupon_code,coupon_image,coupon_remarks
+	 FROM pp_coupon  WHERE coupon_del='0'AND coupon_aduit_struts='1' AND coupon_exist_struts='1'
+</select>
+</mapper>

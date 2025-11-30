@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.patients.mapper.MedicalRecordMapper">
+
+  <resultMap id="medicalRecordMap" type="com.wyzy.hospital.patients.entity.MedicalRecord">
+                  <id property="id" column="id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="patientsId" column="patients_id"/>
+                        <result property="content" column="content"/>
+                        <result property="patientsFamilyId" column="patients_family_id"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="time" column="time"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="img" column="img"/>
+            </resultMap>
+
+	<select id="SelectFamilyMedical" parameterType="Integer" resultMap="LookFamilyMedical">
+		 select f.*,m.content from medical_record m LEFT JOIN patients_family f on m.patients_family_id=f.id
+          WHERE f.id=#{fid}
+	</select>
+
+	<delete id="deletePatientsFamily" parameterType="Integer" >
+		delete from medical_record where patients_family_id=#{fid}
+	</delete>
+
+
+	<resultMap id="LookFamilyMedical" type="com.wyzy.hospital.patients.dto.MedicalRecordDto">
+		<id property="id" column="id"/>
+		<result property="doctorId" column="doctor_id"/>
+		<result property="patientsId" column="patients_id"/>
+		<result property="content" column="content"/>
+		<result property="patientsFamilyId" column="patients_family_id"/>
+		<result property="hospitalId" column="hospital_id"/>
+		<result property="time" column="time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="img" column="img"/>
+		<collection  property="patientsFamilyList" ofType="com.wyzy.hospital.patients.entity.PatientsFamily">
+			<id property="id" column="id"/>
+			<result property="familyPatientName" column="family_patient_name"/>
+		</collection>
+	</resultMap>
+
+
+
+
+</mapper>

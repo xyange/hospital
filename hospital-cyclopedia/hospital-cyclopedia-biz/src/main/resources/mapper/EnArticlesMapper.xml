@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.EnArticlesMapper">
+
+  <resultMap id="enArticlesMap" type="com.wyzy.hospital.cyclopedia.entity.EnArticles">
+                  <id property="id" column="id"/>
+                        <result property="articleName" column="article_name"/>
+                        <result property="articleLevel" column="article_level"/>
+                        <result property="articleContent" column="article_content"/>
+                        <result property="articleVideo" column="article_video"/>
+                        <result property="articleImg" column="article_img"/>
+                        <result property="enDiseasesId" column="en_diseases_id"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+<!--	<select id="selectLikeName" resultType="com.wyzy.hospital.cyclopedia.entity.EnArticles">
+		select *from en_articles
+		<where>
+			<if test="articleName != null and articleName != ''">
+				and article_name like concat('%',#{articleName},'%')
+			</if>
+		</where>
+		ORDER BY RAND() LIMIT 3
+	</select>
+
+	<resultMap id="enMyDiseasesMap" type="com.wyzy.hospital.cyclopedia.dto.EnArticlesDTO">
+		<id property="id" column="id"/>
+		<result property="articleName" column="article_name"/>
+		<result property="articleLevel" column="article_level"/>
+		<result property="articleContent" column="article_content"/>
+		<result property="articleVideo" column="article_video"/>
+		<result property="articleImg" column="article_img"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="enDiseasesId" column="en_diseases_id"/>
+		<collection property="enDiseasesList" ofType="com.wyzy.hospital.cyclopedia.entity.CyDiseases">
+			<id property="id" column="id"/>
+			<result property="diseaseName" column="disease_name"/>
+			<result property="diseaseNicknames" column="disease_nicknames"/>
+			<result property="departmentId" column="department_id"/>
+			<result property="content" column="content"/>
+			<result property="symptom" column="symptom"/>
+			<result property="diseaseCause" column="disease_cause"/>
+			<result property="img" column="img"/>
+			<result property="createTime" column="create_time"/>
+			<result property="updateTime" column="update_time"/>
+		</collection>
+	</resultMap>-->
+
+
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmSortMapper">
+
+	<resultMap id="tcmSortMap" type="com.wyzy.hospital.tcm.entity.TcmSort">
+		<id property="sortId" column="sort_id"/>
+		<result property="superiorId" column="superior_id"/>
+		<result property="sortName" column="sort_name"/>
+		<result property="type" column="type"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="introduce" column="introduce"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+	<!--中药-->
+	<resultMap id="tcmSortCmMap" type="com.wyzy.hospital.tcm.vo.TcmCmVO">
+		<id property="id" column="id"/>
+		<result property="chinamedicineName" column="chinamedicine_name"/>
+		<result property="drugProperties" column="drug_properties"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+	<resultMap id="cmTcmSortVO" type="com.wyzy.hospital.tcm.vo.TcmSortVO">
+		<result property="sortId" column="sort_id"/>
+		<result property="sortName" column="sort_name"/>
+		<result property="superiorId" column="superior_id"/>
+		<collection property="tcmCmVOList" resultMap="tcmSortCmMap"/>
+	</resultMap>
+
+	<!--内科学-->
+	<resultMap id="tcmSortInternalMap" type="com.wyzy.hospital.tcm.vo.TcmInternalVO">
+		<id property="id" column="id"/>
+		<result property="diseaseName" column="disease_name"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+	<resultMap id="internalTcmSortVO" type="com.wyzy.hospital.tcm.vo.TcmSortVO">
+		<result property="sortId" column="sort_id"/>
+		<result property="sortName" column="sort_name"/>
+		<result property="superiorId" column="superior_id"/>
+		<collection property="tcmInternalVOList" resultMap="tcmSortInternalMap"/>
+	</resultMap>
+
+	<sql id="query_all">
+		sort_id,superior_id,sort_name,type,del_flag,create_time,update_time
+	</sql>
+
+	<!--根据分类ID集合，查询内科学表数据表列表-->
+	<select id="selectInternalTcmSortVOBySortIdList" resultMap="internalTcmSortVO">
+		SELECT s.sort_id,s.sort_name,s.superior_id,i.id,i.disease_name,i.is_online FROM
+		(select * from tcm_sort where del_flag = 0 AND type = 3 and sort_id in
+		<foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+			#{id}
+		</foreach>) s
+		LEFT JOIN
+		(select internalsuper_id,id,disease_name,is_online from tcm_internal where is_online = 1) i ON i.internalsuper_id = s.sort_id;
+	</select>
+
+	<!--根据分类ID集合，查询中药表数据表列表-->
+	<select id="selectCmTcmSortVOBySortIdList" resultMap="cmTcmSortVO">
+		SELECT s.sort_id,s.sort_name,s.superior_id,c.id,c.chinamedicine_name,c.drug_properties,c.is_online FROM
+		(select * from tcm_sort where del_flag = 0 AND type = 2 and sort_id in
+		<foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+			#{id}
+		</foreach>) s
+		LEFT JOIN
+		(select id,chinamedicine_name,drug_properties,secondlevel_id,is_online from tcm_cm where is_online = 1) c ON c.secondlevel_id=s.sort_id;
+	</select>
+	<select id="selectTcmSortByName" resultMap="tcmSortMap">
+		select sort_id,superior_id,sort_name,type,
+			create_time,update_time,del_flag,introduce
+			from tcm_sort where sort_name = #{sortName}
+	</select>
+	<select id="selectTcmSortAll" resultMap="tcmSortMap">
+		select sort_id,superior_id,sort_name,type,del_flag,introduce,create_time,update_time from tcm_sort where del_flag = 0
+	</select>
+	<update id="updatePojoById" >
+		UPDATE
+		tcm_sort
+		SET
+		<if test="tcmSort.sortId != null and tcmSort.sortId != ''">
+			sort_id=#{tcmSort.sortId},
+		</if>
+		<if test="tcmSort.superiorId != null and tcmSort.superiorId != ''">
+			superior_id=#{tcmSort.superiorId},
+		</if>
+		<if test="tcmSort.sortName != null and tcmSort.sortName != ''">
+			sort_name=#{tcmSort.sortName},
+		</if>
+		<if test="tcmSort.type != null and tcmSort.type != ''">
+			type=#{tcmSort.type},
+		</if>
+		<if test="tcmSort.introduce != null and tcmSort.introduce != ''">
+			introduce=#{tcmSort.introduce},
+		</if>
+		<if test="tcmSort.createTime != null">
+			create_time=#{tcmSort.createTime},
+		</if>
+			del_flag=#{tcmSort.delFlag},
+			update_time=#{tcmSort.updateTime}
+		WHERE sort_id=#{tcmSort.sortId}
+	</update>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author:  wyzy
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.department.mapper.HosdepDetailMapper">
+
+  <resultMap id="hosdepDetailMap" type="com.wyzy.hospital.department.entity.HosdepDetail">
+                  <id property="departmentsId" column="departments_id"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="chiefid" column="chiefid"/>
+                        <result property="introduce" column="introduce"/>
+                        <result property="position" column="position"/>
+                        <result property="photo" column="photo"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+	<insert id="saveHosdepDetail">
+		insert into hosdep_detail(departments_id,hospital_id,chiefid,introduce,position,photo) values (#{departmentsId},#{hospitalId},#{chiefid},#{introduce},#{position},#{photo})
+	</insert>
+
+	<select id="getByHosdepDetail" resultMap="hosdepDetailMap">
+		select * from hosdep_detail
+		<where>
+			<if test="departmentsId != null and departmentsId != ''">
+				and departments_id = #{departmentsId}
+			</if>
+			<if test="hospitalId != null and hospitalId != ''">
+				and hospital_id = #{hospitalId}
+			</if>
+			<if test="chiefid != null and chiefid != ''">
+				and chiefid = #{chiefid}
+			</if>
+			<if test="introduce != null and introduce != ''">
+				and introduce like concat('%',#{introduce},'%')
+			</if>
+			<if test="position != null and position != ''">
+				and position like concat('%',#{position},'%')
+			</if>
+			<if test="createTime != null and createTime != ''">
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				and update_time = #{updateTime}
+			</if>
+		</where>
+	</select>
+</mapper>

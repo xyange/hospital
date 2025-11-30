@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmRecipeMapper">
+
+  <resultMap id="tcmRecipeMap" type="com.wyzy.hospital.tcm.entity.TcmRecipe">
+                  <id property="recipeId" column="recipe_id"/>
+                        <result property="recipesuperId" column="recipesuper_id"/>
+                        <result property="recipeName" column="recipe_name"/>
+                        <result property="source" column="source"/>
+                        <result property="compose" column="compose"/>
+                        <result property="usages" column="usages"/>
+                        <result property="functions" column="functions"/>
+                        <result property="indications" column="Indications"/>
+                        <result property="mechanism" column="mechanism"/>
+                        <result property="recipeAnalysis" column="recipe_analysis"/>
+                        <result property="compatibility" column="compatibility"/>
+                        <result property="characteristic" column="characteristic"/>
+                        <result property="dialecticalPoints" column="dialectical_points"/>
+                        <result property="tabooUse" column="taboo_use"/>
+                        <result property="attachedParty" column="attached_party"/>
+                        <result property="identify" column="identify"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  <result property="isOnline" column="is_online"/>
+            </resultMap>
+	<resultMap id="tcmRecipeDTOMap" type="com.wyzy.hospital.tcm.dto.TcmRecipeDTO">
+		<id property="recipeId" column="recipe_id"/>
+		<result property="recipesuperName" column="recipesuper_name"/>
+		<result property="recipeName" column="recipe_name"/>
+		<result property="source" column="source"/>
+		<result property="compose" column="compose"/>
+		<result property="usages" column="usages"/>
+		<result property="functions" column="functions"/>
+		<result property="indications" column="Indications"/>
+		<result property="mechanism" column="mechanism"/>
+		<result property="recipeAnalysis" column="recipe_analysis"/>
+		<result property="compatibility" column="compatibility"/>
+		<result property="characteristic" column="characteristic"/>
+		<result property="dialecticalPoints" column="dialectical_points"/>
+		<result property="tabooUse" column="taboo_use"/>
+		<result property="attachedParty" column="attached_party"/>
+		<result property="identify" column="identify"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+	<select id="selectTcmRecipeByName" resultMap="tcmRecipeMap">
+		select recipe_id,recipesuper_id,recipe_name,source,compose,usages,functions,Indications,mechanism,recipe_analysis,
+		compatibility,characteristic,dialectical_points,taboo_use,attached_party,identify,del_flag,create_time,update_time
+		from tcm_recipe where recipe_name = #{recipeName}
+	</select>
+	<select id="selectTcmRecipeDTOByName" resultMap="tcmRecipeDTOMap">
+		select re.recipe_id,re.recipesuper_id,super.recipesuper_name,re.recipe_name,re.source,re.compose,
+		re.usages,re.functions,re.Indications,re.mechanism,re.recipe_analysis,
+		re.compatibility,re.characteristic,re.dialectical_points,re.taboo_use,
+		re.attached_party,re.identify,re.del_flag,re.create_time,re.update_time
+		from
+		(select recipe_id,recipesuper_id,recipe_name,source,compose,usages,functions,Indications,mechanism,recipe_analysis,
+		compatibility,characteristic,dialectical_points,taboo_use,attached_party,identify,del_flag,create_time,update_time
+		from tcm_recipe where recipe_name = #{recipeName}) re
+		LEFT JOIN
+		(SELECT id,recipesuper_name from tcm_recipesuper where del_flag = 0) super
+		on super.id = re.recipesuper_id
+	</select>
+	<insert id="insertTcmRecipe">
+		insert into tcm_recipe(recipe_id,recipesuper_id,recipe_name,source,compose,usages,functions,Indications,mechanism,recipe_analysis,
+		compatibility,characteristic,dialectical_points,taboo_use,attached_party,identify,del_flag,create_time,update_time)
+		values (#{tcmRecipe.recipeId},#{tcmRecipe.recipesuperId},#{tcmRecipe.recipeName},#{tcmRecipe.source},#{tcmRecipe.compose},
+		#{tcmRecipe.usages},#{tcmRecipe.functions},#{tcmRecipe.indications},#{tcmRecipe.mechanism},#{tcmRecipe.recipeAnalysis},
+		#{tcmRecipe.compatibility},#{tcmRecipe.characteristic},#{tcmRecipe.dialecticalPoints},#{tcmRecipe.tabooUse},#{tcmRecipe.attachedParty},
+		#{tcmRecipe.identify},#{tcmRecipe.delFlag},#{tcmRecipe.createTime},#{tcmRecipe.updateTime})
+	</insert>
+	<update id="updateTcmRecipeById">
+		update tcm_recipe set is_online = #{isOnline} where recipe_id = #{recipeId}
+	</update>
+	<select id="selectNumberByrecipesuperId" resultMap="tcmRecipeMap">
+		select count (*) from tcm_recipe where recipesuper_id = #{recipesuperId} and del_flag = 0
+	</select>
+	<select id="selectAllDTO" resultMap="tcmRecipeDTOMap">
+		select recipe_id,recipesuper_id,recipesuper_name,recipe_name,source,compose,usages,functions,Indications,
+		mechanism,recipe_analysis,compatibility,characteristic,dialectical_points,taboo_use,
+		attached_party,identify,del_flag,create_time,update_time,is_online
+		from tcm_recipe,(SELECT id,recipesuper_name from tcm_recipesuper where del_flag = 0) super
+		where del_flag = 0 and super.id = recipesuper_id	ORDER BY recipe_id DESC
+	</select>
+	<select id="selectAllDTOAPP" resultMap="tcmRecipeDTOMap">
+		select recipe_id,recipesuper_id,recipesuper_name,recipe_name,source,compose,usages,functions,Indications,
+		mechanism,recipe_analysis,compatibility,characteristic,dialectical_points,taboo_use,
+		attached_party,identify,del_flag,create_time,update_time,is_online
+		from tcm_recipe,(SELECT id,recipesuper_name from tcm_recipesuper where del_flag = 0) super
+		where is_online = 1 and del_flag = 0 and super.id = recipesuper_id	ORDER BY recipe_id DESC
+	</select>
+	<select id="selectAllTcmRecipeByrecipesuperId" resultMap="tcmRecipeDTOMap">
+		SELECT recipe_id,recipesuper_name,recipe_name,source,compose,usages,functions,Indications,
+		mechanism,recipe_analysis,compatibility,characteristic,dialectical_points,taboo_use,
+		attached_party,identify from tcm_recipe e ,tcm_recipesuper r
+		where e.recipesuper_id = #{recipesuperId}
+		and r.id = e.recipesuper_id ORDER BY recipe_id DESC
+	</select>
+	<update id="updatePojoById">
+		update
+		tcm_recipe
+		set
+		<if test="tcmRecipe.recipeId != null and tcmRecipe.recipeId != ''">
+			recipe_id = #{tcmRecipe.recipeId},
+		</if>
+		<if test="tcmRecipe.recipesuperId != null and tcmRecipe.recipesuperId != ''">
+		recipesuper_id = #{tcmRecipe.recipesuperId},
+		</if>
+		<if test="tcmRecipe.recipeName != null and tcmRecipe.recipeName != ''">
+		recipe_name = #{tcmRecipe.recipeName},
+		</if>
+		<if test="tcmRecipe.source != null and tcmRecipe.source != ''">
+		source = #{tcmRecipe.source},
+		</if>
+		<if test="tcmRecipe.compose != null and tcmRecipe.compose != ''">
+		compose = #{tcmRecipe.compose},
+		</if>
+		<if test="tcmRecipe.usages != null and tcmRecipe.usages != ''">
+		usages = #{tcmRecipe.usages},
+		</if>
+		<if test="tcmRecipe.functions != null and tcmRecipe.functions != ''">
+		functions = #{tcmRecipe.functions},
+		</if>
+		<if test="tcmRecipe.indications != null and tcmRecipe.indications != ''">
+		Indications = #{tcmRecipe.indications},
+		</if>
+		<if test="tcmRecipe.mechanism != null and tcmRecipe.mechanism != ''">
+		mechanism = #{tcmRecipe.mechanism},
+		</if>
+		<if test="tcmRecipe.recipeAnalysis != null and tcmRecipe.recipeAnalysis != ''">
+		recipe_analysis = #{tcmRecipe.recipeAnalysis},
+		</if>
+		<if test="tcmRecipe.compatibility != null and tcmRecipe.compatibility != ''">
+		compatibility = #{tcmRecipe.compatibility},
+		</if>
+		<if test="tcmRecipe.characteristic != null and tcmRecipe.characteristic != ''">
+		characteristic = #{tcmRecipe.characteristic},
+		</if>
+		<if test="tcmRecipe.dialecticalPoints != null and tcmRecipe.dialecticalPoints != ''">
+		dialectical_points = #{tcmRecipe.dialecticalPoints},
+		</if>
+		<if test="tcmRecipe.tabooUse != null and tcmRecipe.tabooUse != ''">
+		taboo_use = #{tcmRecipe.tabooUse},
+		</if>
+		<if test="tcmRecipe.attachedParty != null and tcmRecipe.attachedParty != ''">
+		attached_party = #{tcmRecipe.attachedParty},
+		</if>
+		<if test="tcmRecipe.identify != null and tcmRecipe.identify != ''">
+		identify = #{tcmRecipe.identify},
+		</if>
+		<if test="tcmRecipe.createTime != null">
+		create_time = #{tcmRecipe.createTime},
+		</if>
+		del_flag = #{tcmRecipe.delFlag},
+		update_time = #{tcmRecipe.updateTime},
+		is_online = #{tcmRecipe.isOnline}
+		where recipe_id = #{tcmRecipe.recipeId}
+	</update>
+</mapper>

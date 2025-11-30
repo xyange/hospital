@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyDiseasesMapper">
+
+  <resultMap id="cyDiseasesMap" type="com.wyzy.hospital.cyclopedia.entity.CyDiseases">
+                  <id property="disId" column="dis_id"/>
+                        <result property="disName" column="dis_name"/>
+                        <result property="disNicknames" column="dis_nicknames"/>
+                        <result property="disContent" column="dis_content"/>
+                        <result property="disSymptom" column="dis_symptom"/>
+                        <result property="disCause" column="dis_cause"/>
+	                    <result property="disUploadAdmin" column="dis_upload_admin"/>
+	                    <result property="disCheckAdmin" column="dis_check_admin"/>
+	                    <result property="disProtect" column="dis_protect"/>
+	                    <result property="disSeeDoctor" column="dis_see_doctor"/>
+	                    <result property="disTreatment" column="dis_treatment"/>
+	                    <result property="disDelStruts" column="dis_del_struts"/>
+	                    <result property="disExistStruts" column="dis_exist_struts"/>
+	                    <result property="disUploadTime" column="dis_upload_time"/>
+	                    <result property="disCheckPassTime" column="dis_check_pass_time"/>
+                        <result property="disImage" column="dis_img"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+
+	<resultMap id="cyDiseasesDtoMap" type="com.wyzy.hospital.cyclopedia.dto.CyDiseasesDTO">
+		<id property="disId" column="dis_id"/>
+		<result property="disName" column="dis_name"/>
+		<result property="disNicknames" column="dis_nicknames"/>
+		<result property="disContent" column="dis_content"/>
+		<result property="disSymptom" column="dis_symptom"/>
+		<result property="disCause" column="dis_cause"/>
+		<result property="disUploadAdmin" column="dis_upload_admin"/>
+		<result property="disCheckAdmin" column="dis_check_admin"/>
+		<result property="disProtect" column="dis_protect"/>
+		<result property="disSeeDoctor" column="dis_see_doctor"/>
+		<result property="disTreatment" column="dis_treatment"/>
+		<result property="disCheckStruts" column="dis_check_struts"/>
+		<result property="disDelStruts" column="dis_del_struts"/>
+		<result property="disExistStruts" column="dis_exist_struts"/>
+		<result property="disUploadTime" column="dis_upload_time"/>
+		<result property="disCheckPassTime" column="dis_check_pass_time"/>
+		<result property="disImage" column="dis_image"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="departmentName" column="department_name"/>
+		<collection property="cyDepartmentDTOList" resultMap="departmentDtoMap"/>
+	</resultMap>
+	<resultMap id="departmentDtoMap" type="com.wyzy.hospital.cyclopedia.dto.CyDepartmentDTO">
+		<id property="departmentId" column="department_id"/>
+		<result property="departmentName" column="department_name"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="departmentLevel" column="department_level"/>
+	</resultMap>
+
+	<select id="selectRandDiseases" resultType="com.wyzy.hospital.cyclopedia.dto.CyDiseasesDTO">
+select cd.dis_id
+     , cd.dis_name
+     , cd.dis_nicknames
+     , (SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+        FROM cy_department dep
+        WHERE dep.department_id IN
+              (SELECT ddis.depart_dis_deparment_id
+               FROM depart_diseases ddis
+               WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name
+     , cd.dis_content
+     , cd.dis_symptom
+     , cd.dis_cause
+     , cd.dis_image
+FROM cy_diseases cd
+where dis_del_struts != 1
+  AND dis_exist_struts != 2
+  AND dis_check_struts = 1
+GROUP BY cd.dis_id
+ORDER BY RAND()
+LIMIT 9
+	</select>
+
+	<select id="selectNumberEnDiseases" resultType="Integer">
+SELECT
+	COUNT(
+		CASE
+		WHEN dis_del_struts !=1
+		AND dis_exist_struts !=2 AND
+		dis_check_struts =1 THEN
+			1
+		ELSE
+			NULL
+		END
+	) count
+FROM
+	cy_diseases;
+	</select>
+
+	<!--疾病百科审核-->
+	<select id="selectCheckDiseases" resultMap="cyDiseasesDtoMap">
+  select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,(SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+        FROM cy_department dep
+        WHERE dep.department_id IN
+              (SELECT ddis.depart_dis_deparment_id
+               FROM depart_diseases ddis
+               WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,cd.dis_upload_time,cd.dis_upload_admin,cd.dis_check_struts
+	   FROM (SELECT * FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+       INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+       WHERE cd.dis_check_struts='0' GROUP BY cd.dis_id
+	</select>
+
+	<!--疾病百科审核(查询)-->
+	<select id="byConditionDiseasesBackstage" resultMap="cyDiseasesDtoMap">
+		select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,(SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+		FROM cy_department dep
+		WHERE dep.department_id IN
+		(SELECT ddis.depart_dis_deparment_id
+		FROM depart_diseases ddis
+		WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,cd.dis_upload_time,cd.dis_upload_admin,cd.dis_check_struts
+		FROM (SELECT * FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+		INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+		<where>
+
+			<if test="minTime !=null">
+				<![CDATA[  cd.dis_upload_time >= #{minTime} ]]>
+			</if>
+			<if test="maxTime!=null">
+				<![CDATA[ AND cd.dis_upload_time <= #{maxTime} ]]>
+			</if>
+			<if test="disName!=null and disName!=''">
+				AND cd.dis_name like concat('%',#{disName},'%')
+			</if>
+			<if test="uploadAdmin!=null and uploadAdmin!=''">
+				AND cd.dis_upload_admin like concat('%',#{uploadAdmin},'%')
+			</if>
+
+		</where>
+		AND  cd.dis_check_struts='0' GROUP BY cd.dis_id ORDER BY cd.dis_upload_time ASC
+	</select>
+
+	<!-- 疾病百科列表-->
+	<select id="selectCyDiseasesTable" resultMap="cyDiseasesDtoMap">
+		 select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,
+	    (SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+         FROM cy_department dep
+        WHERE dep.department_id IN
+              (SELECT ddis.depart_dis_deparment_id
+               FROM depart_diseases ddis
+               WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,cd.dis_check_pass_time,cd.dis_check_admin,cd.dis_exist_struts
+        FROM (SELECT*FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+	    INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+	    WHERE cd.dis_check_struts='1' GROUP BY cd.dis_id
+</select>
+
+	<!--疾病百科列表(查询)-->
+	<select id="byConditionDiseasesTable" resultMap="cyDiseasesDtoMap">
+		select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,
+		(SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+		FROM cy_department dep
+		WHERE dep.department_id IN
+		(SELECT ddis.depart_dis_deparment_id
+		FROM depart_diseases ddis
+		WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,cd.dis_check_pass_time,cd.dis_check_admin,cd.dis_exist_struts
+		FROM (SELECT*FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+		INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+		<where>
+
+			<if test="minTime !=null">
+				<![CDATA[  cd.dis_check_pass_time >= #{minTime} ]]>
+			</if>
+			<if test="maxTime!=null">
+				<![CDATA[ AND cd.dis_check_pass_time <= #{maxTime} ]]>
+			</if>
+			<if test="disName!=null and disName!=''">
+				AND cd.dis_name like concat('%',#{disName},'%')
+			</if>
+			<if test="disCheckAdmin!=null and disCheckAdmin!=''">
+				AND cd.dis_check_admin like concat('%',#{disCheckAdmin},'%')
+			</if>
+
+		</where>
+		AND cd.dis_check_struts='1' GROUP BY cd.dis_id ORDER BY cd.dis_check_pass_time ASC
+	</select>
+
+
+
+	<!-- 疾病百科审核列表 -->
+<select id="selectCyDiseasesCheckTable" resultMap="cyDiseasesDtoMap">
+         select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,
+						(SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+               FROM cy_department dep
+               WHERE dep.department_id IN
+              (SELECT ddis.depart_dis_deparment_id
+               FROM depart_diseases ddis
+               WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,
+						cd.dis_upload_time,cd.dis_upload_admin,cd.dis_check_struts
+    FROM (SELECT*FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+	INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id where cd.dis_check_struts='2' GROUP BY cd.dis_id
+</select>
+
+	<!--疾病百科审核列表(查询)-->
+	<select id="theCondDisBackTable" resultMap="cyDiseasesDtoMap">
+		select cd.dis_id,cd.dis_name,cd.dis_nicknames,ce.department_id,
+		(SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+		FROM cy_department dep
+		WHERE dep.department_id IN
+		(SELECT ddis.depart_dis_deparment_id
+		FROM depart_diseases ddis
+		WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,
+		cd.dis_upload_time,cd.dis_upload_admin,cd.dis_check_struts
+		FROM (SELECT*FROM cy_diseases WHERE dis_del_struts!=1) cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+		INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+		<where>
+
+			<if test="minTime !=null">
+				<![CDATA[  cd.dis_upload_time >= #{minTime} ]]>
+			</if>
+			<if test="maxTime!=null">
+				<![CDATA[ AND cd.dis_upload_time <= #{maxTime} ]]>
+			</if>
+			<if test="disName!=null and disName!=''">
+				AND cd.dis_name like concat('%',#{disName},'%')
+			</if>
+			<if test="uploadAdmin!=null and uploadAdmin!=''">
+				AND cd.dis_upload_admin like concat('%',#{uploadAdmin},'%')
+			</if>
+
+		</where>
+		AND cd.dis_check_struts='2' GROUP BY cd.dis_id ORDER BY cd.dis_upload_time ASC
+	</select>
+
+<!--根据疾病disId查详情-->
+	<select id="queryCyDiseasesById" resultMap="cyDiseasesDtoMap">
+    	  select cd.dis_id,cd.dis_name,cd.dis_nicknames,  (SELECT GROUP_CONCAT(dep.department_name SEPARATOR '、')
+         FROM cy_department dep
+        WHERE dep.department_id IN
+              (SELECT ddis.depart_dis_deparment_id
+               FROM depart_diseases ddis
+               WHERE ddis.depart_dis_diseases_id = cd.dis_id)) AS department_name,
+        cd.dis_upload_time,cd.dis_upload_admin,cd.dis_check_pass_time,cd.dis_cause,
+        cd.dis_content,cd.dis_protect,cd.dis_see_doctor,cd.dis_symptom,cd.dis_treatment
+        FROM cy_diseases cd INNER JOIN  depart_diseases dd ON cd.dis_id=dd.depart_dis_diseases_id
+        INNER  JOIN (SELECT department_id ,department_name FROM cy_department WHERE department_level=2) ce ON dd.depart_dis_deparment_id=ce.department_id
+	    WHERE cd.dis_id=#{disId} GROUP BY cd.dis_id
+</select>
+
+	<!--疾病百科审核——修改审核状态-->
+
+	<update id="updateDiseasesCheckStruts">
+	update cy_diseases set
+		<if test="cyDiseasesDTO.disName != null and cyDiseasesDTO.disName != ''">
+			dis_name = #{cyDiseasesDTO.disName},
+		</if>
+		<if test="cyDiseasesDTO.disNicknames != null and cyDiseasesDTO.disNicknames != ''">
+			dis_nicknames = #{cyDiseasesDTO.disNicknames},
+		</if>
+		<if test="cyDiseasesDTO.disSymptom != null and cyDiseasesDTO.disSymptom != ''">
+			dis_symptom = #{cyDiseasesDTO.disSymptom},
+		</if>
+		<if test="cyDiseasesDTO.disCause != null and cyDiseasesDTO.disCause != ''">
+			dis_cause = #{cyDiseasesDTO.disCause},
+		</if>
+		<if test="cyDiseasesDTO.disUploadAdmin != null and cyDiseasesDTO.disUploadAdmin != ''">
+			dis_upload_admin = #{cyDiseasesDTO.disUploadAdmin},
+		</if>
+		<if test="cyDiseasesDTO.disCheckAdmin != null and cyDiseasesDTO.disCheckAdmin != ''">
+			dis_check_admin = #{cyDiseasesDTO.disCheckAdmin},
+		</if>
+		<if test="cyDiseasesDTO.disProtect != null and cyDiseasesDTO.disProtect != ''">
+			dis_protect = #{cyDiseasesDTO.disProtect},
+		</if>
+		<if test="cyDiseasesDTO.disSeeDoctor != null and cyDiseasesDTO.disSeeDoctor != ''">
+			dis_see_doctor = #{cyDiseasesDTO.disSeeDoctor},
+		</if>
+		<if test="cyDiseasesDTO.disTreatment != null and cyDiseasesDTO.disTreatment != ''">
+			dis_treatment = #{cyDiseasesDTO.disTreatment},
+		</if>
+		<if test="cyDiseasesDTO.disDelStruts != null and cyDiseasesDTO.disDelStruts != ''">
+			dis_del_struts = #{cyDiseasesDTO.disDelStruts},
+		</if>
+
+		<if test="cyDiseasesDTO.disExistStruts != null and cyDiseasesDTO.disExistStruts != ''">
+			dis_exist_struts = #{cyDiseasesDTO.disExistStruts},
+		</if>
+		<if test="cyDiseasesDTO.disUploadTime != null">
+			dis_upload_time = #{cyDiseasesDTO.disUploadTime},
+		</if>
+		<if test="cyDiseasesDTO.disImage != null and cyDiseasesDTO.disImage != ''">
+			dis_img = #{cyDiseasesDTO.disImage},
+		</if>
+		<if test="cyDiseasesDTO.createTime != null">
+			create_time = #{cyDiseasesDTO.createTime},
+		</if>
+		<if test="cyDiseasesDTO.updateTime != null">
+			update_time = #{cyDiseasesDTO.updateTime},
+		</if>
+		<if test="cyDiseasesDTO.disCheckPassTime != null">
+			dis_check_pass_time = #{cyDiseasesDTO.disCheckPassTime},
+		</if>
+		<if test="cyDiseasesDTO.disCheckStruts != null and cyDiseasesDTO.disCheckStruts != ''">
+			dis_check_struts = #{cyDiseasesDTO.disCheckStruts}
+		</if>
+
+	 where dis_id= #{cyDiseasesDTO.disId}
+    </update>
+
+	<!-- 疾病百科审核列表——重新提交 -->
+	<update id="ReSubmitDiseasesCheckStruts">
+	update cy_diseases set dis_check_struts=#{disCheckStruts} where dis_id=#{disId}
+    </update>
+
+
+	<!--疾病百科列表——上线/下线-->
+	<update id="updateDisExistStruts">
+	update cy_diseases set
+		<if test="cyDiseasesDTO.disName != null and cyDiseasesDTO.disName != ''">
+			dis_name = #{cyDiseasesDTO.disName},
+		</if>
+		<if test="cyDiseasesDTO.disNicknames != null and cyDiseasesDTO.disNicknames != ''">
+			dis_nicknames = #{cyDiseasesDTO.disNicknames},
+		</if>
+		<if test="cyDiseasesDTO.disSymptom != null and cyDiseasesDTO.disSymptom != ''">
+			dis_symptom = #{cyDiseasesDTO.disSymptom},
+		</if>
+		<if test="cyDiseasesDTO.disCause != null and cyDiseasesDTO.disCause != ''">
+			dis_cause = #{cyDiseasesDTO.disId},
+		</if>
+		<if test="cyDiseasesDTO.disUploadAdmin != null and cyDiseasesDTO.disUploadAdmin != ''">
+			dis_upload_admin = #{cyDiseasesDTO.disUploadAdmin},
+		</if>
+		<if test="cyDiseasesDTO.disCheckAdmin != null and cyDiseasesDTO.disCheckAdmin != ''">
+			dis_check_admin = #{cyDiseasesDTO.disCheckAdmin},
+		</if>
+		<if test="cyDiseasesDTO.disProtect != null and cyDiseasesDTO.disProtect != ''">
+			dis_protect = #{cyDiseasesDTO.disProtect},
+		</if>
+		<if test="cyDiseasesDTO.disSeeDoctor != null and cyDiseasesDTO.disSeeDoctor != ''">
+			dis_see_doctor = #{cyDiseasesDTO.disSeeDoctor},
+		</if>
+		<if test="cyDiseasesDTO.disTreatment != null and cyDiseasesDTO.disTreatment != ''">
+			dis_treatment = #{cyDiseasesDTO.disTreatment},
+		</if>
+		<if test="cyDiseasesDTO.disDelStruts != null and cyDiseasesDTO.disDelStruts != ''">
+			dis_del_struts = #{cyDiseasesDTO.disDelStruts},
+		</if>
+
+		<if test="cyDiseasesDTO.disExistStruts != null and cyDiseasesDTO.disExistStruts != ''">
+			dis_exist_struts = #{cyDiseasesDTO.disExistStruts},
+		</if>
+		<if test="cyDiseasesDTO.disUploadTime != null">
+			dis_upload_time = #{cyDiseasesDTO.disUploadTime},
+		</if>
+		<if test="cyDiseasesDTO.disImage != null and cyDiseasesDTO.disImage != ''">
+			dis_img = #{cyDiseasesDTO.disImage},
+		</if>
+		<if test="cyDiseasesDTO.createTime != null">
+			create_time = #{cyDiseasesDTO.createTime},
+		</if>
+		<if test="cyDiseasesDTO.updateTime != null">
+			update_time = #{cyDiseasesDTO.updateTime},
+		</if>
+		<if test="cyDiseasesDTO.disCheckTime != null">
+			dis_check_time = #{cyDiseasesDTO.disCheckTime},
+		</if>
+		<if test="cyDiseasesDTO.disCheckPassTime != null">
+			dis_check_pass_time = #{cyDiseasesDTO.disCheckPassTime},
+		</if>
+		<if test="cyDiseasesDTO.disCheckStruts != null and cyDiseasesDTO.disCheckStruts != ''">
+			dis_check_struts = #{cyDiseasesDTO.disCheckStruts}
+		</if>
+	 where dis_id=#{disId}
+    </update>
+
+
+	<!-- 根据疾病查id-->
+	<select id="getNameById" parameterType="String" resultType="com.wyzy.hospital.cyclopedia.entity.CyDiseases">
+		select dis_id from  cy_diseases where dis_name=#{disName}
+	</select>
+
+	<select id="getBydisName" resultType="java.lang.String">
+	select dis_name FROM cy_diseases WHERE dis_name =#{disName}
+</select>
+
+</mapper>

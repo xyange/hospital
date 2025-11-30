@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyReagentDetailsMapper">
+
+  <resultMap id="cyReagentDetailsMap" type="com.wyzy.hospital.cyclopedia.entity.CyReagentDetails">
+                  <id property="cyReagentDetailsId" column="cy_reagent_details_id"/>
+                        <result property="cyReagentId" column="cy_reagent_id"/>
+	                    <result property="drugAlias" column="drug_alias"/>
+	                    <result property="crowdMedication" column="crowd_medication"/>
+	                    <result property="drugOther" column="drug_other"/>
+                        <result property="indications" column="Indications"/>
+                        <result property="takeMethod" column="take_method"/>
+                        <result property="medicineHint" column="medicine_hint"/>
+                        <result property="contraindication" column="contraindication"/>
+                        <result property="drugUnit" column="drug_unit"/>
+                        <result property="adverseReactions" column="adverse_reactions"/>
+                        <result property="drugDose" column="drug_dose"/>
+                        <result property="drugInteractions" column="drug_interactions"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+</mapper>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyReagentMapper">
+
+  <resultMap id="cyReagentMap" type="com.wyzy.hospital.cyclopedia.entity.CyReagent">
+                  <id property="cyReagentId" column="cy_reagent_id"/>
+                        <result property="cyReagentName" column="cy_reagent_name"/>
+                        <result property="cyCompanyId" column="cy_company_id"/>
+                        <result property="cyDrugTypeId" column="cy_drug_type_id"/>
+	                    <result property="uploadAdmin" column="upload_admin"/>
+	                    <result property="auditStruts" column="audit_struts"/>
+	                    <result property="auditAdmin" column="audit_admin"/>
+	                    <result property="delStruts" column="del_struts"/>
+	                    <result property="existStruts" column="exist_struts"/>
+	                    <result property="reUploadTime" column="re_upload_time"/>
+	                    <result property="reCheckPassTime" column="re_check_pass_time"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+	<resultMap id="cyMyReagentMap" type="com.wyzy.hospital.cyclopedia.dto.CyReagentDTO">
+		<id property="cyReagentId" column="cy_reagent_id"/>
+		<result property="cyReagentName" column="cy_reagent_name"/>
+		<result property="uploadAdmin" column="upload_admin"/>
+		<result property="auditStruts" column="audit_struts"/>
+		<result property="auditAdmin" column="audit_admin"/>
+		<result property="delStruts" column="del_struts"/>
+		<result property="existStruts" column="exist_struts"/>
+		<result property="reCheckPassTime" column="re_check_pass_time"/>
+		<result property="reAuditTime" column="re_audit_time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<collection property="cyCompanyDTOList" resultMap="CyMyCompanyDTO"/>
+		<collection property="cyReagenDetailsDTOList" resultMap="CyMyReagenDetailsDTO"/>
+	</resultMap>
+	<resultMap id="CyMyReagenDetailsDTO" type="com.wyzy.hospital.cyclopedia.dto.CyReagenDetailsDTO">
+		<id property="cyReagentDetailsId" column="cy_reagent_details_id"/>
+		<result property="indications" column="Indications"/>
+		<result property="takeMethod" column="take_method"/>
+		<result property="medicineHint" column="medicine_hint"/>
+		<result property="contraindication" column="contraindication"/>
+		<result property="drugUnit" column="drug_unit"/>
+		<result property="adverseReactions" column="adverse_reactions"/>
+		<result property="drugDose" column="drug_dose"/>
+		<result property="drugInteractions" column="drug_interactions"/>
+	</resultMap>
+	<resultMap id="CyMyCompanyDTO" type="com.wyzy.hospital.cyclopedia.dto.CyCompanyDTO">
+		<id property="compayId" column="compay_id"/>
+		<result property="compayName" column="compay_name"/>
+	</resultMap>
+
+	<!--上线下线状态-->
+	<update id="uploadDrugExitsDtatus" >
+		update cy_reagent set exist_struts=#{existStruts} where cy_reagent_id=#{cyReagentId}
+	</update>
+
+	<!--药品百科审核状态-->
+<update id="updateDrugAuditDtatus">
+	update cy_reagent set
+	<if test="cyReagentDTO.cyReagentName != null and cyReagentDTO.cyReagentName != ''">
+		cy_reagent_name = #{cyReagentDTO.cyReagentName},
+	</if>
+	<if test="cyReagentDTO.uploadAdmin != null and cyReagentDTO.uploadAdmin != ''">
+		upload_admin = #{cyReagentDTO.uploadAdmin},
+	</if>
+	<if test="cyReagentDTO.auditAdmin != null and cyReagentDTO.auditAdmin != ''">
+		audit_admin = #{cyReagentDTO.auditAdmin},
+	</if>
+	<if test="cyReagentDTO.delStruts != null and cyReagentDTO.delStruts != ''">
+		del_struts = #{cyReagentDTO.delStruts},
+	</if>
+	<if test="cyReagentDTO.existStruts != null and cyReagentDTO.existStruts != ''">
+		exist_struts = #{cyReagentDTO.existStruts},
+	</if>
+	<if test="cyReagentDTO.reUploadTime != null ">
+		re_upload_time = #{cyReagentDTO.reUploadTime},
+	</if>
+	<if test="cyReagentDTO.reCheckPassTime != null ">
+		re_check_pass_time = #{cyReagentDTO.reCheckPassTime},
+	</if>
+	<if test="cyReagentDTO.reAuditTime != null ">
+		re_audit_time = #{cyReagentDTO.reAuditTime},
+	</if>
+	<if test="cyReagentDTO.createTime != null ">
+		create_time = #{cyReagentDTO.createTime},
+	</if>
+	<if test="cyReagentDTO.updateTime != null ">
+		update_time = #{cyReagentDTO.updateTime},
+	</if>
+	<if test="cyReagentDTO.existStruts != null and cyReagentDTO.existStruts != ''">
+		exist_struts = #{cyReagentDTO.existStruts},
+	</if>
+	<if test="cyReagentDTO.auditStruts != null and cyReagentDTO.auditStruts != ''">
+		audit_struts = #{cyReagentDTO.auditStruts}
+	</if>
+	 where cy_reagent_id=#{cyReagentDTO.cyReagentId}
+</update>
+
+	<!--重新提交-->
+	<update id="reSubmitDrugAudit">
+	update cy_reagent set
+		<if test="cyReagentDTO.cyReagentName != null and cyReagentDTO.cyReagentName != ''">
+			cy_reagent_name = #{cyReagentDTO.cyReagentName},
+		</if>
+		<if test="cyReagentDTO.uploadAdmin != null and cyReagentDTO.uploadAdmin != ''">
+			upload_admin = #{cyReagentDTO.uploadAdmin},
+		</if>
+		<if test="cyReagentDTO.auditAdmin != null and cyReagentDTO.auditAdmin != ''">
+			audit_admin = #{cyReagentDTO.auditAdmin},
+		</if>
+		<if test="cyReagentDTO.delStruts != null and cyReagentDTO.delStruts != ''">
+			del_struts = #{cyReagentDTO.delStruts},
+		</if>
+		<if test="cyReagentDTO.existStruts != null and cyReagentDTO.existStruts != ''">
+			exist_struts = #{cyReagentDTO.existStruts},
+		</if>
+		<if test="cyReagentDTO.reUploadTime != null ">
+			re_upload_time = #{cyReagentDTO.reUploadTime},
+		</if>
+		<if test="cyReagentDTO.reCheckPassTime != null ">
+			re_check_pass_time = #{cyReagentDTO.reCheckPassTime},
+		</if>
+		<if test="cyReagentDTO.createTime != null ">
+			create_time = #{cyReagentDTO.createTime},
+		</if>
+		<if test="cyReagentDTO.updateTime != null ">
+			update_time = #{cyReagentDTO.updateTime},
+		</if>
+		<if test="cyReagentDTO.existStruts != null and cyReagentDTO.existStruts != ''">
+			exist_struts = #{cyReagentDTO.existStruts},
+		</if>
+		<if test="cyReagentDTO.auditStruts != null and cyReagentDTO.auditStruts != ''">
+			audit_struts = #{cyReagentDTO.auditStruts}
+		</if>
+	where cy_reagent_id=#{cyReagentDTO.cyReagentId}
+    </update>
+
+	<!--根据公司药品id查看药品详细信息-->
+	<select id="selectCompanyReagenDetails" resultMap="cyMyReagentMap">
+		 SELECT r.cy_reagent_id,r.cy_reagent_name,c.compay_id,c.compay_name,rd.cy_reagent_details_id,rd.Indications,
+ rd.adverse_reactions,rd.contraindication,rd.drug_dose,rd.drug_unit,rd.drug_interactions,rd.medicine_hint,rd.take_method
+ FROM cy_reagent r LEFT JOIN cy_compay c ON r.cy_company_id=c.compay_id LEFT JOIN cy_reagent_details rd ON r.cy_reagent_id=rd.cy_reagent_id
+ WHERE r.cy_reagent_id=#{rid}
+	</select>
+
+<select id="getByName" resultType="java.lang.String">
+	select cy_reagent_name FROM cy_reagent WHERE cy_reagent_name =#{cyReagentName}
+</select>
+
+</mapper>
+
+

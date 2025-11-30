@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.pharmacy.mapper.ProductMapper">
+
+  <resultMap id="productMap" type="com.wyzy.hospital.pharmacy.entity.Product">
+                  <id property="productId" column="product_id"/>
+                        <result property="shopId" column="shop_id"/>
+                        <result property="productImage" column="product_image"/>
+                        <result property="sliderImage" column="slider_image"/>
+                        <result property="productName" column="product_name"/>
+                        <result property="productInfo" column="product_info"/>
+                        <result property="productText" column="product_text"/>
+                        <result property="keyword" column="keyword"/>
+                        <result property="barCode" column="bar_code"/>
+                        <result property="cateId" column="cate_id"/>
+                        <result property="price" column="price"/>
+                        <result property="vipPrice" column="vip_price"/>
+                        <result property="otPrice" column="ot_price"/>
+                        <result property="postage" column="postage"/>
+                        <result property="unitName" column="unit_name"/>
+                        <result property="sort" column="sort"/>
+                        <result property="sales" column="sales"/>
+                        <result property="stock" column="stock"/>
+                        <result property="isShow" column="is_show"/>
+                        <result property="isHot" column="is_hot"/>
+                        <result property="isBenefit" column="is_benefit"/>
+                        <result property="isBest" column="is_best"/>
+                        <result property="isNew" column="is_new"/>
+                        <result property="addTime" column="add_time"/>
+                        <result property="isPostage" column="is_postage"/>
+                        <result property="isDel" column="is_del"/>
+                        <result property="merUse" column="mer_use"/>
+                        <result property="giveIntegral" column="give_integral"/>
+                        <result property="cost" column="cost"/>
+                        <result property="isSeckill" column="is_seckill"/>
+                        <result property="isBargain" column="is_bargain"/>
+                        <result property="isGood" column="is_good"/>
+                        <result property="isSub" column="is_sub"/>
+                        <result property="virtualSales" column="virtual_sales"/>
+                        <result property="browse" column="browse"/>
+                        <result property="codePath" column="code_path"/>
+                        <result property="sourceLink" column="source_link"/>
+                        <result property="videoLink" column="video_link"/>
+                        <result property="tempId" column="temp_id"/>
+                        <result property="specType" column="spec_type"/>
+                        <result property="activity" column="activity"/>
+            </resultMap>
+
+	<select id="getProductListByCate" resultType="com.wyzy.hospital.pharmacy.dto.ProductDTO">
+		SELECT product_id,shop_id,product_image,product_name,cate_id,price
+		FROM ph_product group by product_name having cate_id in
+		<foreach collection="cates" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		order by price
+	</select>
+
+	<select id="getShopProductListByCate" resultType="com.wyzy.hospital.pharmacy.dto.ProductDTO">
+		SELECT product_id,shop_id,product_image,product_name,cate_id,price
+		FROM ph_product where cate_id in
+		<foreach collection="cates" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		<if test="shopId != null and shopId != ''">
+			AND shop_id = #{shopId}
+		</if>
+		order by price
+	</select>
+
+
+</mapper>

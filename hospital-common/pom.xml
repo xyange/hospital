@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wyzy</groupId>
+		<artifactId>hospital</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>hospital-common</artifactId>
+	<packaging>pom</packaging>
+
+	<description>公共聚合模块</description>
+
+	<modules>
+		<module>hospital-common-bom</module>
+		<module>hospital-common-core</module>
+		<module>hospital-common-data</module>
+		<module>hospital-common-datasource</module>
+		<module>hospital-common-feign</module>
+		<module>hospital-common-gateway</module>
+		<module>hospital-common-gray</module>
+		<module>hospital-common-job</module>
+		<module>hospital-common-log</module>
+		<module>hospital-common-oss</module>
+		<module>hospital-common-security</module>
+		<module>hospital-common-sentinel</module>
+		<module>hospital-common-sequence</module>
+		<module>hospital-common-swagger</module>
+		<module>hospital-common-test</module>
+		<module>hospital-common-transaction</module>
+		<module>hospital-common-xss</module>
+		<module>hospital-common-mybatis</module>
+	</modules>
+</project>

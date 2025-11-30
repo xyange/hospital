@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmRecipesuperMapper">
+
+  <resultMap id="tcmRecipesuperMap" type="com.wyzy.hospital.tcm.entity.TcmRecipesuper">
+                  <id property="id" column="id"/>
+                        <result property="recipesuperName" column="recipesuper_name"/>
+	  					<result property="delFlag" column="del_flag"/>
+	  					<result property="introduce" column="introduce"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+  </resultMap>
+
+	<resultMap id="tcmRecipesuperDTOMap" type="com.wyzy.hospital.tcm.dto.TcmRecipesuperDTO">
+		<id property="id" column="id"/>
+		<result property="recipesuperName" column="recipesuper_name"/>
+		<result property="recipesuperNumber" column="recipesuperNumber"/>
+		<result property="introduce" column="introduce"/>
+	</resultMap>
+
+	<select id="selectTcmRecipesuperByName" resultMap="tcmRecipesuperMap">
+		select id,recipesuper_name,del_flag,introduce,create_time,update_time from tcm_recipesuper where recipesuper_name = #{recipesuperName}
+	</select>
+	<insert id="insertTcmRecipesuper">
+		insert into tcm_recipesuper (id,recipesuper_name,del_flag,introduce,create_time,update_time)
+		values (#{tcmRecipesuper.id},#{tcmRecipesuper.recipesuperName},
+		#{tcmRecipesuper.delFlag},#{tcmRecipesuper.introduce},
+		#{tcmRecipesuper.createTime},#{tcmRecipesuper.updateTime})
+	</insert>
+	<select id="selectAll" resultMap="tcmRecipesuperDTOMap">
+		SELECT super.id,
+			   super.recipesuper_name,
+			   count(recipe.recipesuper_id) AS recipesuperNumber
+		from
+			(select id,recipesuper_name,introduce,del_flag,create_time,update_time from tcm_recipesuper where del_flag = 0) super
+		LEFT JOIN
+			tcm_recipe recipe
+		ON super.id = recipe.recipesuper_id
+		GROUP BY super.recipesuper_name
+		ORDER BY super.id DESC
+	</select>
+	<update id="updatePojoById">
+update tcm_recipesuper set
+		<if test="tcmRecipesuper.id != null and tcmRecipesuper.id != ''">
+		id = #{tcmRecipesuper.id},
+		</if>
+		<if test="tcmRecipesuper.recipesuperName != null and tcmRecipesuper.recipesuperName != ''">
+		recipesuper_name = #{tcmRecipesuper.recipesuperName},
+		</if>
+		<if test="tcmRecipesuper.introduce != null and tcmRecipesuper.introduce != ''">
+		introduce = #{tcmRecipesuper.introduce},
+		</if>
+		<if test="tcmRecipesuper.createTime != null">
+		create_time = #{tcmRecipesuper.createTime},
+		</if>
+		del_flag = #{tcmRecipesuper.delFlag},
+		update_time = #{tcmRecipesuper.updateTime}
+		where id = #{tcmRecipesuper.id}
+	</update>
+</mapper>

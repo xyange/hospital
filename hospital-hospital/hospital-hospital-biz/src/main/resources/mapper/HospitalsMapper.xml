@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.hospital.mapper.HospitalsMapper">
+
+  <resultMap id="hospitalsMap" type="com.wyzy.hospital.hospital.entity.Hospitals">
+                  <id property="id" column="id"/>
+                        <result property="name" column="name"/>
+                        <result property="tel" column="tel"/>
+                        <result property="grade" column="grade"/>
+                        <result property="workdayRegistrationTime" column="workday_registration_time"/>
+                        <result property="weekendRegistrationTime" column="weekend_registration_time"/>
+                        <result property="workdayOutpatientTime" column="workday_outpatient_time"/>
+                        <result property="weekendOutpatientTime" column="weekend_outpatient_time"/>
+                        <result property="emergencyTime" column="emergency_time"/>
+                        <result property="province" column="province"/>
+                        <result property="city" column="city"/>
+                        <result property="address" column="address"/>
+                        <result property="images" column="images"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="delFlag" column="del_flag"/>
+                        <result property="specialDepartments" column="special_departments"/>
+                        <result property="isPublic" column="is_public"/>
+                        <result property="description" column="description"/>
+                        <result property="buildTime" column="build_time"/>
+                        <result property="uuid" column="uuid"/>
+                        <result property="type" column="type"/>
+                        <result property="contact" column="contact"/>
+                        <result property="contactPhone" column="contact_phone"/>
+                        <result property="salesman" column="salesman"/>
+                        <result property="salesmanPhone" column="salesman_phone"/>
+                        <result property="onlineDoctorNumber" column="online_doctor_number"/>
+						<result property="advantage" column="advantage"/>
+						<result property="honor" column="honor"/>
+            </resultMap>
+
+	<select id="listHospitalsByName" resultMap="hospitalsMap">
+		SELECT h.id,h.name FROM hospitals h
+		<where>
+			<if test="_parameter != null and _parameter != ''">
+				<bind name="hospitalName" value="'%' + name + '%'"/>
+				h.name LIKE #{hospitalName}
+			</if>
+		</where>
+	</select>
+</mapper>

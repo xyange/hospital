@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DiseaseMapper">
+    <resultMap id="diseaseMap" type="com.wyzy.hospital.admin.api.entity.Disease">
+        <id property="id" column="id"/>
+        <result property="diseaseName" column="disease_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="common" column="common"/>
+        <result property="showOnDoctor" column="show_on_doctor"/>
+        <result property="severity" column="severity"/>
+        <result property="sortCode" column="sort_code"/>
+    </resultMap>
+    <resultMap id="commonDiseaseMap" type="com.wyzy.hospital.admin.api.entity.Disease">
+        <id property="id" column="id"/>
+        <result property="diseaseName" column="disease_name"/>
+    </resultMap>
+    <!--app患者端 显示在医生页 查常见疾病-->
+    <select id="appListCommonDiseaseOnDoctor" resultMap="commonDiseaseMap">
+        SELECT dis.id, dis.disease_name
+        FROM disease dis
+        WHERE dis.show_on_doctor = 1
+          AND dis.common = 1
+        ORDER BY sort_code
+    </select>
+    <!--app患者端 显示在本地附近页 查常见疾病-->
+    <select id="appListCommonDiseaseOnNeighborhood" resultType="com.wyzy.hospital.admin.api.vo.AppDiseaseVO">
+        SELECT dis.id, dis.disease_name AS diseaseName
+        FROM disease dis
+        WHERE dis.show_on_neighborhood = 1
+          AND dis.common = 1
+        ORDER BY sort_code
+    </select>
+
+</mapper>

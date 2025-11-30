@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.patients.mapper.PatientsFamilyMapper">
+
+  <resultMap id="patientsFamilyMap" type="com.wyzy.hospital.patients.entity.PatientsFamily">
+                  <id property="id" column="id"/>
+                        <result property="familyPatientName" column="family_patient_name"/>
+                        <result property="patientsId" column="patients_id"/>
+                        <result property="familyIdNumber" column="family_ID_number"/>
+                        <result property="familyIphone" column="family_iphone"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="familyHeight" column="family_height"/>
+                        <result property="familyWeight" column="family_weight"/>
+                        <result property="familyDisease" column="family_disease"/>
+                        <result property="familyAllergy" column="family_allergy"/>
+                        <result property="familySurgery" column="family_surgery"/>
+                        <result property="familyHabits" column="family_habits"/>
+                        <result property="hospitalId" column="hospital_id"/>
+                        <result property="createDate" column="create_date"/>
+                        <result property="updateDate" column="update_date"/>
+            </resultMap>
+
+	<select id="SelectPatientsFamily" parameterType="Integer" resultMap="LookFamilyMedical">
+          select f.* from patients_family f LEFT JOIN patients p  on f.patients_id=p.id where f.patients_id=#{patientsId}
+
+	</select>
+
+	<select id="SelectPatientsAndFamilyMedical" parameterType="Integer" resultMap="LookFamilyMedical">
+         select p.patient_name,f.family_iphone,f.family_patient_name,f.family_ID_number,m.* from  patients p INNER JOIN
+  patients_family f on p.id=f.patients_id INNER JOIN medical_record m  on m.patients_family_id=f.id where p.id=#{pid}
+
+	</select>
+
+	<select id="SelectFamilyMedical" parameterType="Integer" resultMap="LookFamilyMedical">
+		 select f.*,m.content from medical_record m INNER JOIN patients_family f on m.patients_family_id=f.id
+          WHERE f.id=#{fid}
+	</select>
+
+<!--	<delete id="DeletePatientsFamily" parameterType="Integer" >
+        DELETE f,m FROM patients_family f LEFT JOIN medical_record m on f.id=m.patients_family_id
+      WHERE f.id={fid}
+	</delete>-->
+
+	<resultMap id="LookFamilyMedical" type="com.wyzy.hospital.patients.dto.PatientsFamilyDto">
+		<id property="id" column="id"/>
+		<result property="familyPatientName" column="family_patient_name"/>
+		<result property="patientsId" column="patients_id"/>
+		<result property="familyIdNumber" column="family_ID_number"/>
+		<result property="familyIphone" column="family_iphone"/>
+		<result property="doctorId" column="doctor_id"/>
+		<result property="familyHeight" column="family_height"/>
+		<result property="familyWeight" column="family_weight"/>
+		<result property="familyDisease" column="family_disease"/>
+		<result property="familyAllergy" column="family_allergy"/>
+		<result property="familySurgery" column="family_surgery"/>
+		<result property="familyHabits" column="family_habits"/>
+		<result property="hospitalId" column="hospital_id"/>
+		<result property="createDate" column="create_date"/>
+		<result property="updateDate" column="update_date"/>
+		<collection  property="patientsList" ofType="com.wyzy.hospital.patients.entity.Patients">
+			<id property="id" column="id"/>
+			<result property="patientName" column="patient_name"/>
+		</collection>
+		<collection  property="medicalRecordList" ofType="com.wyzy.hospital.patients.entity.MedicalRecord">
+			<id property="id" column="id"/>
+			<result property="doctorId" column="doctor_id"/>
+			<result property="patientsId" column="patients_id"/>
+			<result property="patientsFamilyId" column="patients_family_id"/>
+			<result property="content" column="content"/>
+			<result property="hospitalId" column="hospital_id"/>
+			<result property="time" column="time"/>
+			<result property="createTime" column="create_time"/>
+			<result property="updateTime" column="update_time"/>
+		</collection>
+
+	</resultMap>
+
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ClinicDiagnosisConnectMapper">
+
+  <resultMap id="clinicDiagnosisConnectMap" type="com.wyzy.hospital.admin.api.entity.ClinicDiagnosisConnect">
+                  <id property="id" column="id"/>
+                        <result property="clinicId" column="clinic_id"/>
+                        <result property="diagnosisId" column="diagnosis_id"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+</mapper>

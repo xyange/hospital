@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.HospitalsMapper">
+
+    <resultMap id="hospitalsMap" type="com.wyzy.hospital.admin.api.entity.Hospitals">
+        <id property="id" column="id"/>
+        <result property="uuid" column="uuid"/>
+        <result property="hospitalName" column="hospital_name"/>
+        <result property="hospitalTel" column="hospital_tel"/>
+        <result property="registrationTime" column="registration_time"/>
+        <result property="registrationDate" column="registration_date"/>
+        <result property="outpatientTime" column="outpatient_time"/>
+        <result property="emergencyTime" column="emergency_time"/>
+        <result property="area" column="area"/>
+        <result property="address" column="address"/>
+        <result property="lon" column="lon"/>
+        <result property="lat" column="lat"/>
+        <result property="hospitalImages" column="hospital_images"/>
+        <result property="specialDepartments" column="special_departments"/>
+        <result property="buildTime" column="build_time"/>
+        <result property="natureFlag" column="nature_flag"/>
+        <result property="fixedPointFlag" column="fixed_point_flag"/>
+        <result property="gradeFlag" column="grade_flag"/>
+        <result property="contact" column="contact"/>
+        <result property="contactPhone" column="contact_phone"/>
+        <result property="salesmanId" column="salesman_id"/>
+        <result property="salesmanPhone" column="salesman_phone"/>
+        <result property="onlineDoctorNumber" column="online_doctor_number"/>
+        <result property="description" column="description"/>
+        <result property="advantage" column="advantage"/>
+        <result property="honor" column="honor"/>
+        <result property="onlineTime" column="online_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="approve" column="approve"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <select id="getHospitalList" resultType="com.wyzy.hospital.admin.api.dto.hospital.AppHospitalDTO">
+        SELECT h.id,h.hospital_name,h.grade_flag, h.nature_flag, h.fixed_point_flag, h.hospital_images, h.address,h.hospital_tel,h.registration_date,h.registration_time,h.online_doctor_number
+        FROM wyzy.hospitals as h
+        <if test="param1.departmentId != null and param1.departmentId != ''">
+            left join hospital_department as hd on h.id=hd.hospital_id
+        </if>
+        <where>
+            <if test="param1.departmentId != null and param1.departmentId != ''">
+                AND hd.departments_id=#{param1.departmentId}
+            </if>
+            <if test="param1.gradeFlag != null and param1.gradeFlag != ''">
+                AND h.grade_flag = #{param1.gradeFlag}
+            </if>
+            <if test="param1.natureFlag != null and param1.natureFlag != ''">
+                AND h.nature_flag = #{param1.natureFlag}
+            </if>
+            <if test="param1.fixedPointFlag != null and param1.fixedPointFlag != ''">
+                AND h.fixed_point_flag = #{param1.fixedPointFlag}
+            </if>
+            <if test="param1.hospitalName != null and param1.hospitalName != ''">
+                AND h.hospital_name like concat('%',#{param1.hospitalName},'%')
+            </if>
+            <if test="param1.doctorNumberStart != null and param1.doctorNumberStart != ''">
+                AND h.online_doctor_number between #{param1.doctorNumberStart} and #{param1.doctorNumberEnd}
+            </if>
+
+        </where>
+
+    </select>
+
+    <select id="appDetail" resultType="com.wyzy.hospital.admin.api.dto.hospital.HospitalDetailDTO">
+        SELECT h.id,
+               h.hospital_name,
+               h.hospital_tel,
+               h.registration_time,
+               h.registration_date,
+               h.outpatient_time,
+               h.emergency_time,
+               h.grade_flag,
+               h.nature_flag,
+               h.address,
+               h.lon,
+               h.lat,
+               h.hospital_images,
+               h.special_departments,
+               h.online_doctor_number,
+               h.description
+        FROM wyzy.hospitals as h
+        where h.id = #{param1}
+    </select>
+    <select id="getNeighborhoodHospitals" resultType="com.wyzy.hospital.admin.api.dto.HospitalNeighborhoodDTO">
+        SELECT hosp.id                                              AS hospitalId,
+        hosp.hospital_name                                          AS hospitalName,
+        hosp.hospital_images                                        AS hospitalIcon,
+        (SELECT GROUP_CONCAT(dep.department_name)
+        FROM departments dep
+        WHERE dep.id IN (SELECT hospDep.departments_id
+        FROM hospital_department hospDep
+        WHERE hospDep.hospital_id = hosp.id))                       AS deportments,
+        hosp.address                                                AS address,
+        hosp.area                                                   AS areaName,
+        hosp.lon,
+        hosp.lat
+        FROM hospitals hosp
+        <where>
+            <if test="minMaxLngLat != null">
+                AND hosp.lon >=#{minMaxLngLat.minlng}
+                AND hosp.lon &lt;=#{minMaxLngLat.maxlng}
+                AND hosp.lat >=#{minMaxLngLat.minlat}
+                AND hosp.lat &lt;=#{minMaxLngLat.maxlat}
+            </if>
+
+            <if test="area != null and area != ''">
+                AND hosp.area = #{area}
+            </if>
+            <if test="deportmentId != null">
+                AND hosp.id IN
+                (SELECT dep.hospital_id FROM hospital_department dep WHERE dep.departments_id = #{deportmentId})
+            </if>
+
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWordValue" value="'%' + keyWord + '%'"/>
+                AND (hosp.hospital_name LIKE #{keyWordValue}
+                OR
+                LOCATE(#{keyWord}, (SELECT GROUP_CONCAT(doctor.doctor_name)
+                FROM doctor
+                WHERE doctor.doctor_id IN
+                (SELECT attr.doctor_id
+                FROM doctor_attribution attr
+                WHERE attr.attribution_type = 131
+                AND attr.attribution_id = hosp.id)
+                )))
+            </if>
+        </where>
+    </select>
+</mapper>

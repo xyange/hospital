@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~
+  ~
+  ~   Redistribution and use in source and binary forms, with or without
+  ~   modification, are permitted provided that the following conditions are met:
+  ~
+  ~   Redistributions of source code must retain the above copyright notice,
+  ~   this list of conditions and the following disclaimer.
+  ~   Redistributions in binary form must reproduce the above copyright
+  ~   notice, this list of conditions and the following disclaimer in the
+  ~   documentation and/or other materials provided with the distribution.
+  ~   Neither the name of the wyzy.com developer nor the names of its
+  ~   contributors may be used to endorse or promote products derived from
+  ~   this software without specific prior written permission.
+  ~   Author:  wyzy
+  ~
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wyzy</groupId>
+		<artifactId>hospital-common</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>hospital-common-security</artifactId>
+	<packaging>jar</packaging>
+
+	<description>安全工具类</description>
+
+
+	<dependencies>
+		<!--工具类核心包-->
+		<dependency>
+			<groupId>com.wyzy</groupId>
+			<artifactId>hospital-common-core</artifactId>
+		</dependency>
+		<!--安全模块-->
+		<dependency>
+			<groupId>org.springframework.security.oauth.boot</groupId>
+			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+		</dependency>
+		<!--feign-->
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-core</artifactId>
+		</dependency>
+		<!--aop-->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		<!--缓存依赖-->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+		<!--upms fegin 调用相关工具类-->
+        <dependency>
+            <groupId>com.wyzy</groupId>
+            <artifactId>hospital-upms-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

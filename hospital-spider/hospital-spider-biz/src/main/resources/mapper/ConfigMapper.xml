@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.spider.mapper.ConfigMapper">
+
+  <resultMap id="configMap" type="com.wyzy.hospital.spider.entity.Config">
+                  <id property="id" column="id"/>
+                        <result property="spiderCode" column="spider_code"/>
+                        <result property="spiderName" column="spider_name"/>
+                        <result property="entryUrls" column="entry_urls"/>
+                        <result property="targetRegex" column="target_regex"/>
+                        <result property="cascade" column="cascade"/>
+                        <result property="tableName" column="table_name"/>
+                        <result property="domain" column="domain"/>
+                        <result property="charset" column="charset"/>
+                        <result property="sleepTime" column="sleep_time"/>
+                        <result property="retryTimes" column="retry_times"/>
+                        <result property="threadCount" column="thread_count"/>
+                        <result property="useProxy" column="use_proxy"/>
+                        <result property="showLog" column="show_log"/>
+            </resultMap>
+</mapper>

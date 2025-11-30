@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.PsychologistRecommendDetailMapper">
+
+	<resultMap id="AppDoctorParticulars" type="com.wyzy.hospital.psychology.api.dto.PsychologistRecommendDetailDTO">
+		<result column="doctor_id" property="doctorId"/>
+		<result column="price" property="price"/>
+		<result column="job" property="job"/>
+		<result column="area" property="area"/>
+		<result property="timeLength" column="time_length"/>
+		<result property="workRoomName" column="work_room_name"/>
+		<result property="workRoomImg" column="work_room_img"/>
+		<result property="workRoomAddress" column="work_room_address"/>
+		<result property="workRoomPhone" column="work_room_phone"/>
+		<collection property="serveDTOList" resultMap="serveDTOList"/>
+		<collection property="categoryAndIntroduceDTOList" resultMap="categoryAndIntroduceDTOList"/>
+		<collection property="doctorHonorDTOList" resultMap="doctorHonorDTOList"/>
+		<collection property="counselTypeDTOList" resultMap="counselTypeDTOList"/>
+		<collection property="doctorTrainingDTOList" resultMap="doctorTrainingDTOList"/>
+		<collection property="doctorInterviewDTOList" resultMap="doctorInterviewDTOList"/>
+	</resultMap>
+
+	<resultMap id="serveDTOList" type="com.wyzy.hospital.psychology.api.dto.ServeDTO">
+		<result property="serveName" column="serve_name"/>
+	</resultMap>
+	<resultMap id="psychologyCategoryDTOList" type="com.wyzy.hospital.psychology.api.dto.PsychologyCategoryDTO">
+		<result property="categoryName" column="category_name"/>
+	</resultMap>
+	<resultMap id="doctorHonorDTOList" type="com.wyzy.hospital.psychology.api.dto.DoctorHonorDTO">
+		<result property="honorName" column="honor_name"/>
+	</resultMap>
+	<resultMap id="counselTypeDTOList" type="com.wyzy.hospital.psychology.api.dto.CounselTypeDTO">
+		<result column="counsel_name" property="counselName"/>
+	</resultMap>
+	<resultMap id="categoryAndIntroduceDTOList" type="com.wyzy.hospital.psychology.api.dto.categoryAndIntroduceDTO">
+		<result property="categoryName" column="category_name"/>
+		<result property="adeptDetail" column="adept_detail"/>
+	</resultMap>
+	<resultMap id="doctorTrainingDTOList" type="com.wyzy.hospital.psychology.api.dto.DoctorTrainingDTO">
+		<result property="trainingName" column="training_name"/>
+		<result property="startDate" column="start_date"/>
+		<result property="endDate" column="end_date"/>
+	</resultMap>
+	<resultMap id="doctorInterviewDTOList" type="com.wyzy.hospital.psychology.api.dto.DoctorInterviewDTO">
+		<result property="interviewTitle" column="interview_title"/>
+		<result property="interviewContent" column="interview_content"/>
+	</resultMap>
+	<select id="selectRecommendDoctorParticulars" resultMap="AppDoctorParticulars">
+		select
+			setting.doctor_id,setting.order_time,setting.date_time, -- 预约时间
+			detail.price, -- 价格
+			CASE
+				WHEN job = 0 THEN '咨询师'
+				WHEN job = 1 THEN '讲师'
+			ELSE '其他' END as job, -- 职位
+			detail.time_length,detail.work_room_name, -- 咨询时长,线下工作室名字
+			detail.work_room_img,detail.work_room_address, -- 线下工作室图片,工作室详细地址
+			detail.work_room_longitude,detail.work_room_latitude, -- 工作室经度,工作室纬度
+			detail.work_room_phone,detail.area, -- 工作室电话,区域
+			adca.category_name,adca.adept_detail, -- 擅长,介绍
+			coty.counsel_name, -- 咨询类型名称
+			ser.serve_name, -- 诊疗方式
+			honor.honor_name, -- 荣誉
+			culti.cultivation as training_name,culti.start_date,culti.end_date,
+			interview.Interview_title,interview.Interview_content
+		from
+			order_setting setting -- 预约时间
+			LEFT JOIN
+			(SELECT
+				doctor_id,price,job,detail_img, -- 价格,医生详情图片
+				time_length,work_room_name, -- 咨询时长,线下工作室名字
+				work_room_img,work_room_address, -- 线下工作室图片,工作室详细地址
+				work_room_longitude,work_room_latitude, -- 工作室经度,工作室纬度
+				work_room_phone,area -- 工作室电话,区域
+			FROM doctor_detail ) detail -- 线下工作室
+			on setting.doctor_id = detail.doctor_id
+			LEFT JOIN
+			(SELECT
+				adept.doctor_id,category.category_name,category.adept_detail
+			FROM
+				(SELECT doctor_id,adept_id FROM doctor_adept) adept
+				LEFT JOIN
+			psychology_category category
+			ON adept.adept_id = category.category_id) adca	-- 擅长
+			ON setting.doctor_id = adca.doctor_id
+			LEFT JOIN
+			(SELECT
+				counsel.doctor_id,type.counsel_name
+			from
+				(select doctor_id,counsel_type_id from doctor_counsel) counsel
+			LEFT JOIN
+			counsel_type type
+			ON type.counsel_id = counsel.counsel_type_id
+			) coty -- 咨询类型名称
+			ON setting.doctor_id = coty.doctor_id
+			LEFT JOIN
+			(SELECT ds.doctor_id,s.serve_name
+			from
+			(SELECT doctor_id,serve_id from doctor_serve) ds
+			LEFT JOIN
+			serve s ON ds.serve_id = s.serve_id) ser -- 诊疗方式
+			ON setting.doctor_id = ser.doctor_id
+			LEFT JOIN
+			(SELECT doctor_id,honor_name FROM doctor_honor) honor -- 荣誉
+			ON setting.doctor_id = honor.doctor_id
+			LEFT JOIN
+			(SELECT doctor_id,CONCAT(college,' ',profession)  as cultivation,start_date,end_date
+				FROM doctor_education
+			union all
+			select doctor_id,training_name as cultivation,start_date,end_date
+			from doctor_training
+			ORDER BY start_date DESC) culti
+			ON setting.doctor_id = culti.doctor_id
+			LEFT JOIN
+			(SELECT doctor_id,Interview_title,Interview_content,sort_code FROM doctor_interview) interview
+			ON setting.doctor_id = interview.doctor_id
+			where setting.doctor_id = #{doctorId}
+	</select>
+	<resultMap id="MonthDate" type="com.wyzy.hospital.psychology.api.entity.MonthDate">
+		<result column="date_time" property="dateTime"/>
+		<collection property="time" ofType="java.lang.String"/>
+	</resultMap>
+	<resultMap id="time" type="java.lang.String">
+	</resultMap>
+	<select id="getDatime" resultMap="MonthDate">
+		SELECT order_time as `time`,date_time from order_setting where  already = 0 and doctor_id =#{doctorId} AND date_time like concat(#{format},'%')
+	</select>
+</mapper>

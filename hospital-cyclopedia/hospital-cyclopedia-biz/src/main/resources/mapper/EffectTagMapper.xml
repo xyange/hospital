@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.EffectTagMapper">
+
+  <resultMap id="effectTagMap" type="com.wyzy.hospital.cyclopedia.entity.EffectTag">
+                  <id property="id" column="id"/>
+                        <result property="effectId" column="effect_id"/>
+                        <result property="tagId" column="tag_id"/>
+            </resultMap>
+
+</mapper>

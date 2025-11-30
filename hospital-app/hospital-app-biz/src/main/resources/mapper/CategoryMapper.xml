@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.app.mapper.CategoryMapper">
+
+  <resultMap id="categoryMap" type="com.wyzy.hospital.app.api.entity.Category">
+                  <id property="categoryId" column="category_id"/>
+                        <result property="pid" column="pid"/>
+                        <result property="level" column="level"/>
+                        <result property="ancestors" column="ancestors"/>
+                        <result property="categoryName" column="category_name"/>
+                        <result property="sort" column="sort"/>
+                        <result property="type" column="type"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="delFlag" column="del_flag"/>
+            </resultMap>
+</mapper>

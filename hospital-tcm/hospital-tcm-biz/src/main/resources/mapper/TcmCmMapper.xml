@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmCmMapper">
+
+  <resultMap id="tcmCmMap" type="com.wyzy.hospital.tcm.entity.TcmCm">
+                  <id property="id" column="id"/>
+                        <result property="chinamedicineName" column="chinamedicine_name"/>
+                        <result property="secondlevelId" column="secondlevel_id"/>
+                        <result property="picture" column="picture"/>
+                        <result property="basicContent" column="basic_content"/>
+	  					<result property="drugProperties" column="drug_properties"/>
+                        <result property="application" column="application"/>
+                        <result property="compatibility" column="compatibility"/>
+                        <result property="recipeId" column="recipe_id"/>
+                        <result property="pharmacology" column="pharmacology"/>
+                        <result property="processing" column="processing"/>
+                        <result property="characters" column="characters"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+						<result property="isOnline" column="is_online"/>
+            </resultMap>
+	<resultMap id="tcmCmDTOMap" type="com.wyzy.hospital.tcm.dto.TcmCmDTO">
+		<id property="id" column="id"/>
+		<result property="chinamedicineName" column="chinamedicine_name"/>
+		<result property="onelevelId" column="onelevel_id"/>
+		<result property="secondlevelId" column="secondlevel_id"/>
+		<result property="oneName" column="oneName"/>
+		<result property="twoName" column="twoName"/>
+		<result property="picture" column="picture"/>
+		<result property="basicContent" column="basic_content"/>
+		<result property="application" column="application"/>
+		<result property="compatibility" column="compatibility"/>
+		<result property="recipeId" column="recipe_id"/>
+		<result property="pharmacology" column="pharmacology"/>
+		<result property="processing" column="processing"/>
+		<result property="characters" column="characters"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+
+	<select id="selectTcmCmByName" resultMap="tcmCmMap">
+		select id,chinamedicine_name,secondlevel_id,picture,basic_content,application,compatibility,
+		recipe_id,pharmacology,processing,characters,create_time,update_time,del_flag,is_online from tcm_cm where chinamedicine_name = #{chinamedicineName}
+	</select>
+	<select id="selectTcmCmDTOByName" resultMap="tcmCmDTOMap">
+		select cm.id,cm.chinamedicine_name,st.oneId as onelevel_id,cm.secondlevel_id,st.oneName,st.twoName,cm.picture,cm.basic_content,cm.application,cm.compatibility,
+		cm.recipe_id,cm.pharmacology,cm.processing,cm.characters,cm.create_time,cm.update_time,cm.del_flag,cm.is_online from
+		(select id,chinamedicine_name,secondlevel_id,picture,basic_content,application,compatibility,
+		recipe_id,pharmacology,processing,characters,create_time,update_time,del_flag,is_online from tcm_cm where chinamedicine_name = #{chinamedicineName}) cm
+		LEFT JOIN
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =2 and t.type = 2
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		on st.sort_id = cm.secondlevel_id
+	</select>
+
+	<sql id="selectAll">
+		id,chinamedicine_name,st.oneId as onelevel_id,secondlevel_id,picture,basic_content,application,compatibility,
+		recipe_id,pharmacology,processing,cm.characters,st.oneName,st.twoName,create_time,update_time,is_online
+	</sql>
+	<!--根据中药二级分类ID查询 中药表信息-->
+	<select id="getAllBySecondlevelId" resultMap="tcmCmDTOMap">
+		select
+		<include refid="selectAll"/>
+		from
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =2 and t.type = 2
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_cm cm
+		where st.sort_id = cm.secondlevel_id AND cm.secondlevel_id = #{secondlevelId} ORDER BY update_time DESC
+	</select>
+
+	<select id="getById" resultMap="tcmCmDTOMap">
+		select
+		<include refid="selectAll"/>
+		from
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =2 and t.type = 2
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_cm cm
+		where cm.del_flag = 0 and st.sort_id = cm.secondlevel_id AND cm.id = #{id}
+	</select>
+	<select id="selectAll" resultMap="tcmCmDTOMap">
+		select
+		<include refid="selectAll"/>
+		from
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =2 and t.type = 2
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_cm cm
+		where cm.del_flag = 0 and st.sort_id = cm.secondlevel_id ORDER BY update_time DESC
+	</select>
+
+	<select id="selectCmOneTwoId" resultMap="tcmCmDTOMap">
+		select
+		<include refid="selectAll"/>
+		from
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =2 and t.type = 2
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st,
+		tcm_cm cm
+		where cm.del_flag = 0 and cm.is_online = 1 and st.sort_id = cm.secondlevel_id ORDER BY update_time DESC
+	</select>
+
+	<update id="updateTcmCmById">
+		update tcm_cm set is_online =#{isOnline} where id = #{id}
+	</update>
+
+	<update id="updatePojoById">
+		update tcm_cm
+		set
+		<if test="tcmCm.id != null and tcmCm.id != ''">
+		id = #{tcmCm.id},
+		</if>
+		<if test="tcmCm.chinamedicineName != null and tcmCm.chinamedicineName != ''">
+		chinamedicine_name = #{tcmCm.chinamedicineName},
+		</if>
+		<if test="tcmCm.secondlevelId != null and tcmCm.secondlevelId != ''">
+		secondlevel_id = #{tcmCm.secondlevelId},
+		</if>
+		<if test="tcmCm.picture != null and tcmCm.picture != ''">
+		picture = #{tcmCm.picture},
+		</if>
+		<if test="tcmCm.basicContent != null and tcmCm.basicContent != ''">
+		basic_content = #{tcmCm.basicContent},
+		</if>
+		<if test="tcmCm.application != null and tcmCm.application != ''">
+		application = #{tcmCm.application},
+		</if>
+		<if test="tcmCm.compatibility != null and tcmCm.compatibility != ''">
+		compatibility = #{tcmCm.compatibility},
+		</if>
+		<if test="tcmCm.recipeId != null and tcmCm.recipeId != ''">
+		recipe_id = #{tcmCm.recipeId},
+		</if>
+		<if test="tcmCm.pharmacology != null and tcmCm.pharmacology != ''">
+		pharmacology = #{tcmCm.pharmacology},
+		</if>
+		<if test="tcmCm.processing != null and tcmCm.processing != ''">
+		processing = #{tcmCm.processing},
+		</if>
+		<if test="tcmCm.characters != null and tcmCm.characters != ''">
+		characters = #{tcmCm.characters},
+		</if>
+		<if test="tcmCm.createTime != null">
+			create_time = #{tcmCm.createTime},
+		</if>
+		del_flag = #{tcmCm.delFlag},
+		update_time = #{tcmCm.updateTime},
+		is_online = #{tcmCm.isOnline}
+		where id = #{tcmCm.id}
+	</update>
+</mapper>

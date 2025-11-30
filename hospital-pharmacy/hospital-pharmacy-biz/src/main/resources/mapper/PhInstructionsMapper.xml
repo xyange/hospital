@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.pharmacy.mapper.PhInstructionsMapper">
+
+  <resultMap id="phInstructionsMap" type="com.wyzy.hospital.pharmacy.entity.PhInstructions">
+                  <id property="id" column="id"/>
+                        <result property="drugId" column="drug_id"/>
+                        <result property="prescriptionType" column="prescription_type"/>
+                        <result property="component" column="component"/>
+                        <result property="indications" column="Indications"/>
+                        <result property="character" column="character"/>
+                        <result property="specifications" column="specifications"/>
+                        <result property="usageDosage" column="usage_dosage"/>
+                        <result property="withinExternal" column="within_external"/>
+                        <result property="taboo" column="taboo"/>
+                        <result property="matters" column="matters"/>
+                        <result property="effect" column="effect"/>
+                        <result property="store" column="store"/>
+                        <result property="dosageForm" column="dosage_form"/>
+                        <result property="termValidity" column="term_validity"/>
+                        <result property="approvalNum" column="approval_num"/>
+   </resultMap>
+
+
+
+
+	<select id="getInstructionByProductId" resultType="com.wyzy.hospital.pharmacy.dto.PhInstructionsDTO">
+		select phis.*,ppt.product_name AS productName from ph_instructions phis
+		left join  ph_product ppt  on  phis.drug_id = ppt.product_id
+		<where>
+			phis.drug_id  =  #{drugId}
+		</where>
+	</select>
+
+	<resultMap id="keywordSearchMap" type="com.wyzy.hospital.pharmacy.dto.ShopProductDTO">
+		<id property="shopId" column="shop_id"/>
+		<result property="shopLogo" column="shop_logo"/>
+		<result property="shopName" column="shop_name"/>
+		<collection property="productShopDTO" ofType="com.wyzy.hospital.pharmacy.dto.ProductShopDTO">
+			<id property="productId" column="product_id"/>
+			<result property="productImage" column="product_image"/>
+			<result property="productName" column="product_name"/>
+			<result property="price" column="price"/>
+			<result property="sales" column="sales"/>
+			<result property="vipPrice" column="vip_price"/>
+		</collection>
+	</resultMap>
+	<select id="keywordSearch" resultMap="keywordSearchMap">
+		select psp.shop_id,
+		psp.shop_logo ,
+		psp.shop_name ,
+		pdc.sales ,
+		pdc.product_id ,
+		pdc.product_image ,
+		pdc.product_name ,
+		pdc.price ,
+		pdc.vip_price   from ph_product pdc
+		left join ph_shop psp ON  pdc.shop_id = psp.shop_id
+		<where>
+			<if test="queryParam.shopName != null and queryParam.shopName != ''">
+				<bind name="queryParam.shopName" value="'%' + queryParam.shopName + '%'"/>
+				 psp.shop_name LIKE #{queryParam.shopName,jdbcType=VARCHAR}
+				OR
+				 pdc.product_name LIKE #{queryParam.shopName,jdbcType=VARCHAR}
+				OR
+				 pdc.keyword LIKE #{queryParam.shopName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

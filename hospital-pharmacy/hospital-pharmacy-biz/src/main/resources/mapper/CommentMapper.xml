@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.pharmacy.mapper.CommentMapper">
+
+  <resultMap id="commentMap" type="com.wyzy.hospital.pharmacy.entity.Comment">
+                  <id property="commentId" column="comment_id"/>
+                        <result property="shopId" column="shop_id"/>
+                        <result property="shopName" column="shop_name"/>
+                        <result property="shopCode" column="shop_code"/>
+                        <result property="productId" column="product_id"/>
+                        <result property="skuId" column="sku_id"/>
+                        <result property="orderId" column="order_id"/>
+                        <result property="userId" column="user_id"/>
+                        <result property="image" column="image"/>
+                        <result property="replay" column="replay"/>
+                        <result property="comment" column="comment"/>
+                        <result property="addComment" column="add_comment"/>
+                        <result property="state" column="state"/>
+                        <result property="ifSensitive" column="if_sensitive"/>
+                        <result property="addTime" column="add_time"/>
+                        <result property="star" column="star"/>
+                        <result property="impression" column="impression"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+	<resultMap id="commentDtoMap" type="com.wyzy.hospital.pharmacy.dto.CommentDTO">
+		<id property="commentId" column="comment_id"/>
+		<result property="shopId" column="shop_id"/>
+		<result property="shopName" column="shop_name"/>
+		<result property="shopCode" column="shop_code"/>
+		<result property="productId" column="product_id"/>
+		<result property="skuId" column="sku_id"/>
+		<result property="orderId" column="order_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="image" column="image"/>
+		<result property="addImage" column="add_image"/>
+		<result property="replay" column="replay"/>
+		<result property="comment" column="comment"/>
+		<result property="addComment" column="add_comment"/>
+		<result property="state" column="state"/>
+		<result property="ifSensitive" column="if_sensitive"/>
+		<result property="addTime" column="add_time"/>
+		<result property="star" column="star"/>
+		<result property="serviceStar" column="service_star"/>
+		<result property="impression" column="impression"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<collection property="memberUserDTOList" resultMap="PatientDtoMap"/>
+	</resultMap>
+	<resultMap id="PatientDtoMap" type="com.wyzy.hospital.pharmacy.dto.MemberUserDTO">
+		<id property="userId" column="user_id"/>
+		<result property="memberId" column="member_id"/>
+		<result property="integration" column="integration"/>
+		<result property="nickName" column="nickname"/>
+		<result property="phone" column="phone"/>
+		<result property="idCard" column="id_Card"/>
+	</resultMap>
+
+
+	<!-- 查询评论数量 -->
+	<select id="selectCommentNumbers" resultType="java.lang.Integer">
+		select COUNT(comment_id) number FROM ph_comment where shop_id=#{shopId}
+	</select>
+
+	<!-- 查询所有评论 -->
+	<select id="selectComment" resultMap="commentDtoMap">
+		select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+	</select>
+
+	<!-- 查询好评 -->
+	<select id="selectGoodComment" resultMap="commentDtoMap">
+       select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+      WHERE pc.star>=4 AND pc.service_star>=4
+	</select>
+
+	<!--近期差评（最近7天）-->
+	<select id="newDateNeComment" resultMap="commentDtoMap">
+    select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+	WHERE  DATE_SUB(CURDATE(),INTERVAL 6 DAY) &lt;= date(pc.create_time) AND pc.star&lt;=2 And pc.service_star&lt;=2
+	</select>
+
+
+	<!--最新评价（最近2天）-->
+<select id="selectNewDateComment" resultMap="commentDtoMap">
+    select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+	WHERE   DATE_SUB(CURDATE(), INTERVAL 1 DAY) &lt;= date(pc.create_time)
+</select>
+
+	<!--查询有内容评价-->
+<select id="selectHaveComment" resultMap="commentDtoMap">
+	select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+WHERE  CASE WHEN pc.`comment`='此用户无评论' and pc.add_comment ='此用户无追评' THEN 0 ELSE 1 END=1
+</select>
+
+	<!--查询有图评价-->
+	<select id="selectHaveImageComment" resultMap="commentDtoMap">
+		select wp.nickname,pc.* FROM (SELECT*FROM ph_comment WHERE shop_id=#{shopId}) pc LEFT JOIN wyzy.wyzy_member wp ON pc.user_id=wp.member_id
+		WHERE pc.image IS NOT NULL AND pc.image <![CDATA[<> '']]> AND pc.add_image IS NOT NULL AND pc.add_image  <![CDATA[<> '']]>
+	</select>
+
+	<!--查询药店评分-->
+	<select id="selectCommentAvg" resultType="decimal">
+	select round(avg(star),1) score FROM ph_comment where shop_id=#{shopId}
+	</select>
+
+</mapper>

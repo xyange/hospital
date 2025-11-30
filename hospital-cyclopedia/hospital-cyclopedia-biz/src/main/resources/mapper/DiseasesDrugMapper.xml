@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.DiseasesDrugMapper">
+
+  <resultMap id="diseasesDrugMap" type="com.wyzy.hospital.cyclopedia.dto.DiseasesDrugDTO">
+	  <result property="eid" column="eid"/>
+	  <result property="disName" column="dis_name"/>
+	  <collection property="drugDetailsDTOList" resultMap="DrugDetailsList"/>
+  </resultMap>
+<resultMap id="DrugDetailsList" type="com.wyzy.hospital.cyclopedia.dto.DrugDetailsDTO">
+	<id property="drugId" column="drug_id"/>
+	<result property="drugName" column="drug_name"/>
+	<result property="typeId" column="typeId"/>
+	<result property="drugTypeName" column="drug_type_name"/>
+	<result property="drugTypeNumber" column="drugTypeNumber"/>
+	<result property="drugEnglish" column="drug_english"/>
+	<result property="drugContent" column="drug_content"/>
+	<result property="drugIndications" column="drug_Indications"/>
+	<result property="drugTakeMethod" column="drug_take_method"/>
+	<result property="drugMedicineHint" column="drug_medicine_hint"/>
+	<result property="drugContraindication" column="drug_contraindication"/>
+	<result property="drugAdverseReactions" column="drug_adverse_reactions"/>
+	<result property="drugInteractions" column="drug_interactions"/>
+	<result property="drugOther" column="drug_other"/>
+	<result property="drugLevelId" column="drug_level_id"/>
+	<result property="delectStatus" column="delect_status"/>
+	<result property="createTime" column="create_time"/>
+	<result property="updateTime" column="update_time"/>
+</resultMap>
+	<select id="selectByDiseasesDrug" resultMap="diseasesDrugMap">
+         SELECT e.dis_id eid,e.dis_name,l.* FROM diseases_drug d LEFT JOIN cy_diseases e ON d.diseases_id=e.dis_id  LEFT JOIN drug_details l ON d.cy_drug_details_id=l.drug_id
+    WHERE e.dis_id=18 and l.delect_status='0'
+	</select>
+
+
+</mapper>

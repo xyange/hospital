@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ConsultOrderMapper">
+
+  <resultMap id="consultOrderMap" type="com.wyzy.hospital.admin.api.entity.ConsultOrder">
+                  <id property="id" column="id"/>
+                        <result property="memberId" column="member_id"/>
+                        <result property="cardId" column="card_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="orderId" column="order_id"/>
+                        <result property="orderTime" column="order_time"/>
+                        <result property="descriptionIllness" column="description_illness"/>
+                        <result property="photograph" column="photograph"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="price" column="price"/>
+                        <result property="consultType" column="consult_type"/>
+                        <result property="diseaseid" column="diseaseId"/>
+            </resultMap>
+    <select id="selectConsultOrderByconsultOrder" resultMap="consultOrderMap">
+        select id,member_id,card_id,doctor_id,order_id,order_time,
+               description_illness,photograph,create_time,update_time,price,consult_type,diseaseId
+        from consult_order where order_id = #{consultOrder.orderId}
+    </select>
+    <select id="pageConsultOrder" resultMap="consultOrderMap">
+    select id,member_id,card_id,doctor_id,order_id,order_time,
+           description_illness,photograph,create_time,update_time,price,consult_type,diseaseId
+    from consult_order where member_id = #{memberId}
+    </select>
+    <insert id="insertConsultOrder">
+        insert into
+            consult_order(id,member_id,card_id,doctor_id,order_id,order_time,description_illness,photograph,
+                          create_time,update_time,price,consult_type,diseaseId)
+        values (#{pojo.id},#{pojo.memberId},#{pojo.cardId},#{pojo.doctorId},#{pojo.orderId},#{pojo.orderTime},
+                #{pojo.descriptionIllness},#{pojo.photograph},#{pojo.createTime},#{pojo.updateTime},#{pojo.price},
+                #{pojo.consultType},#{pojo.diseaseid}
+                )
+    </insert>
+
+
+    <resultMap id="consultOrderMaps" type="com.wyzy.hospital.admin.api.dto.consult.ConsultOrderDTO">
+        <id property="id" column="id"/>
+        <result property="cardId" column="card_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="patientName" column="patient_name"/>
+        <result property="consultTypeId" column="consult_type_id"/>
+        <result property="consultType" column="label"/>
+        <result property="diseaseId" column="disease_id"/>
+        <result property="diseaseName" column="disease_name"/>
+        <result property="price" column="price"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="doctorId" column="doctor_id"/>
+
+    </resultMap>
+    <select id="selectConsultOrderListByMemberId" resultMap="consultOrderMaps">
+        SELECT DISTINCT
+                co.*,
+                wpc.patient_name,
+                dic.label,
+                dse.disease_name
+        FROM
+                `consult_order` co
+                        JOIN wyzy_patient_card wpc ON wpc.card_id = co.card_id
+                        JOIN consult_doctor cdo ON cdo.doctor_id = co.doctor_id
+                        JOIN sys_dic_item dic ON dic.`value` = cdo.consult_type
+                        JOIN doctor_disease ddse ON ddse.doctor_id = co.doctor_id
+                        JOIN disease dse ON dse.id = ddse.disease_id
+        WHERE
+                dic.dic_id = 49
+          AND dse.id = #{consultOrder.diseaseId}
+          AND cdo.consult_type = #{consultOrder.consultType}
+        GROUP BY
+                co.id
+    </select>
+
+</mapper>

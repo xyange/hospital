@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.PsychologyCategoryMapper">
+
+  <resultMap id="psychologyCategoryMap" type="com.wyzy.hospital.psychology.api.entity.PsychologyCategory">
+                  <id property="categoryId" column="category_id"/>
+                    <result property="categoryName" column="category_name"/>
+                    <result property="adeptDetail" column="adept_detail"/>
+  </resultMap>
+    <select id="selectPsychologyCategoryByname" resultType="java.lang.Integer">
+        select count(*) from psychology_category where category_name = #{psychologyCategory.categoryName}
+    </select>
+    <insert id="insertPsychologyCategory">
+        insert into psychology_category(category_id,category_name,adept_detail) values (#{psychologyCategory.categoryId},#{psychologyCategory.categoryName},#{psychologyCategory.adeptDetail})
+    </insert>
+</mapper>

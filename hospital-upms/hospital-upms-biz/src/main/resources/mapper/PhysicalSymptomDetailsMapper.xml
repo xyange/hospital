@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.PhysicalSymptomDetailsMapper">
+
+  <resultMap id="physicalSymptomDetailsMap" type="com.wyzy.hospital.admin.api.entity.PhysicalSymptomDetails">
+                  <id property="id" column="id"/>
+                        <result property="symptomId" column="symptom_id"/>
+                        <result property="symptomName" column="symptom_name"/>
+                        <result property="symptomIntroduce" column="symptom_introduce"/>
+                        <result property="symptom" column="symptom"/>
+                        <result property="diagnosis" column="diagnosis"/>
+                        <result property="prophylaxis" column="prophylaxis"/>
+                        <result property="concurrentDiseases" column="concurrent_diseases"/>
+                        <result property="treatmentCosts" column="treatment_costs"/>
+                        <result property="cureRate" column="cure_rate"/>
+                        <result property="treatmentCycle" column="treatment_cycle"/>
+                        <result property="therapeuticMethod" column="therapeutic_method"/>
+                        <result property="relevantInspection" column="relevant_inspection"/>
+                        <result property="commonlyDrugs" column="commonly_drugs"/>
+                        <result property="bestVisitTime" column="best_visit_time"/>
+                        <result property="lengthVisit" column="length_visit"/>
+                        <result property="returnVisit" column="return_visit"/>
+                        <result property="ready" column="ready"/>
+                        <result property="delFlag" column="del_flag"/>
+                        <result property="isOnline" column="is_online"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+      <resultMap id="physicalSymptomDetailsDTOMap" type="com.wyzy.hospital.admin.api.dto.PhysicalSymptomDetailsDTO">
+            <id property="id" column="id"/>
+            <result property="symptomName" column="symptom_name"/>
+      </resultMap>
+      <select id="selectPhysicalSymptomDetailsByPojo" resultMap="physicalSymptomDetailsMap">
+            select id,symptom_id,symptom_name,symptom_introduce,symptom,diagnosis,prophylaxis,concurrent_diseases,treatment_costs,cure_rate,
+                   treatment_cycle,therapeutic_method,relevant_inspection,commonly_drugs,best_visit_time,length_visit,return_visit,ready,
+                   del_flag,is_online,create_time,update_time
+             from physical_symptom_details
+            <where>
+                  <if test="symptomDetails.id != null and symptomDetails.id != ''">
+                        id = #{symptomDetails.id}
+                  </if>
+                  <if test="symptomDetails.symptomId != null and symptomDetails.symptomId != ''">
+                        and symptom_id = #{symptomDetails.symptomId}
+                  </if>
+                  <if test="symptomDetails.symptomName != null and symptomDetails.symptomName != ''">
+                        and symptom_name = #{symptomDetails.symptomName}
+                  </if>
+                  <if test="symptomDetails.symptomIntroduce != null and symptomDetails.symptomIntroduce != ''">
+                        and symptom_introduce = #{symptomDetails.symptomIntroduce}
+                  </if>
+                  <if test="symptomDetails.symptom != null and symptomDetails.symptom != ''">
+                        and symptom = #{symptomDetails.symptom}
+                  </if>
+                  <if test="symptomDetails.diagnosis != null and symptomDetails.diagnosis != ''">
+                        and diagnosis = #{symptomDetails.diagnosis}
+                  </if>
+                  <if test="symptomDetails.prophylaxis != null and symptomDetails.prophylaxis != ''">
+                        and prophylaxis = #{symptomDetails.prophylaxis}
+                  </if>
+                  <if test="symptomDetails.concurrentDiseases != null and symptomDetails.concurrentDiseases != ''">
+                        and concurrent_diseases = #{symptomDetails.concurrentDiseases}
+                  </if>
+                  <if test="symptomDetails.treatmentCosts != null and symptomDetails.treatmentCosts != ''">
+                        and treatment_costs = #{symptomDetails.treatmentCosts}
+                  </if>
+                  <if test="symptomDetails.cureRate != null and symptomDetails.cureRate != ''">
+                        and cure_rate = #{symptomDetails.cureRate}
+                  </if>
+                  <if test="symptomDetails.treatmentCycle != null and symptomDetails.treatmentCycle != ''">
+                        and treatment_cycle = #{symptomDetails.treatmentCycle}
+                  </if>
+                  <if test="symptomDetails.therapeuticMethod != null and symptomDetails.therapeuticMethod != ''">
+                        and therapeutic_method = #{symptomDetails.therapeuticMethod}
+                  </if>
+                  <if test="symptomDetails.relevantInspection != null and symptomDetails.relevantInspection != ''">
+                        and relevant_inspection = #{symptomDetails.relevantInspection}
+                  </if>
+                  <if test="symptomDetails.commonlyDrugs != null and symptomDetails.commonlyDrugs != ''">
+                        and commonly_drugs = #{symptomDetails.commonlyDrugs}
+                  </if>
+                  <if test="symptomDetails.bestVisitTime != null and symptomDetails.bestVisitTime != ''">
+                        and best_visit_time = #{symptomDetails.bestVisitTime}
+                  </if>
+                  <if test="symptomDetails.lengthVisit != null and symptomDetails.lengthVisit != ''">
+                        and length_visit = #{symptomDetails.lengthVisit}
+                  </if>
+                  <if test="symptomDetails.returnVisit != null and symptomDetails.returnVisit != ''">
+                        and return_visit = #{symptomDetails.returnVisit}
+                  </if>
+                  <if test="symptomDetails.ready != null and symptomDetails.ready != ''">
+                        and ready = #{symptomDetails.ready}
+                  </if>
+                  <if test="symptomDetails.delFlag != null and symptomDetails.delFlag != ''">
+                        and del_flag = #{symptomDetails.delFlag}
+                  </if>
+                  <if test="symptomDetails.isOnline != null and symptomDetails.isOnline != ''">
+                        and is_online = #{symptomDetails.isOnline}
+                  </if>
+            </where>
+      </select>
+      <select id="selectPhysicalSymptomDetailsBysymptomId" resultMap="physicalSymptomDetailsDTOMap">
+            select id,symptom_id,symptom_name
+            from physical_symptom_details
+            where symptom_id in
+            <foreach collection="symptomId" open="(" close=")" separator="," item ="id" index="i">
+                  #{id}
+            </foreach>
+            order by symptom_id
+      </select>
+</mapper>

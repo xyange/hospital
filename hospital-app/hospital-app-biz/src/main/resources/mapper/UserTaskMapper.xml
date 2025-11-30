@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.app.mapper.UserTaskMapper">
+
+  <resultMap id="userTaskMap" type="com.wyzy.hospital.app.api.entity.UserTask">
+                  <id property="id" column="id"/>
+                        <result property="taskName" column="task_name"/>
+                        <result property="taskTime" column="task_time"/>
+                        <result property="unit" column="unit"/>
+                        <result property="phone" column="phone"/>
+                        <result property="quantity" column="quantity"/>
+                        <result property="remark" column="remark"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="delFlag" column="del_flag"/>
+                        <result property="remindDay" column="remind_day"/>
+            </resultMap>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.coupon.mapper.UserCouponMapper">
+
+  <resultMap id="userCouponMap" type="com.wyzy.hospital.coupon.entity.UserCoupon">
+                  <id property="upId" column="up_id"/>
+                        <result property="userId" column="user_id"/>
+                        <result property="upIfuse" column="up_ifuse"/>
+                        <result property="upCouponCode" column="up_coupon_code"/>
+            </resultMap>
+
+	<resultMap id="userCouponCountDto" type="com.wyzy.hospital.coupon.dto.UserCouponCountDTO">
+		<result property="upCouponCode" column="up_coupon_code"/>
+		<result property="couponUsedNum" column="couponUsedNum"/>
+		<result property="couponOverdateNum" column="couponOverDateNum"/>
+	</resultMap>
+
+
+	<resultMap id="userCouponDtoMap" type="com.wyzy.hospital.coupon.dto.UserCouponDTO">
+		<id property="upId" column="up_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="nickname" column="nickname"/>
+		<result property="upIfuse" column="up_ifuse"/>
+		<result property="upCouponCode" column="up_coupon_code"/>
+		<collection property="ppCouponDTOList" resultMap="couponDtoMapList"/>
+	</resultMap>
+	<resultMap id="couponDtoMapList" type="com.wyzy.hospital.coupon.dto.PpCouponDTO">
+		<id property="couponId" column="coupon_id"/>
+		<result property="couponName" column="coupon_name"/>
+		<result property="couponCode" column="coupon_code"/>
+		<result property="couponImage" column="coupon_image"/>
+		<result property="couponRemarks" column="coupon_remarks"/>
+		<result property="couponFullDiscountMoney" column="coupon_full_discount_money"/>
+		<result property="couponFullMoney" column="coupon_full_money"/>
+		<result property="couponDirectMoney" column="coupon_direct_money"/>
+		<result property="couponDiscountNum" column="coupon_discount_num"/>
+		<result property="couponDiscountMoney" column="coupon_discount_money"/>
+		<result property="couponNumber" column="coupon_number"/>
+		<result property="couponReceiveNum" column="coupon_receive_num"/>
+		<result property="couponUsedNum" column="coupon_used_num"/>
+		<result property="couponOverdateNum" column="coupon_overDate_num"/>
+		<result property="couponLimitNum" column="coupon_limit_num"/>
+		<result property="couponGrantStruts" column="coupon_grant_struts"/>
+		<result property="couponDel" column="coupon_del"/>
+		<result property="couponAduitStruts" column="coupon_aduit_struts"/>
+		<result property="couponAduitCause" column="coupon_aduit_cause"/>
+		<result property="couponExistStruts" column="coupon_exist_struts"/>
+		<result property="couponRange" column="coupon_range"/>
+		<result property="couponType" column="coupon_type"/>
+		<result property="couponUnclaimed" column="unclaimed"/>
+		<result property="couponEffectiveDate" column="coupon_effective_date"/>
+		<result property="couponInvalidDate" column="coupon_invalid_date"/>
+		<result property="couponStartDate" column="coupon_start_date"/>
+		<result property="couponOverDate" column="coupon_over_date"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+	<!--用户使用优惠券详情-->
+	<select id="selectCouponUse" resultMap="userCouponDtoMap">
+SELECT wm.nickname,uc.up_ifuse,pc.*  FROM user_coupon uc LEFT JOIN wyzy.wyzy_member wm ON uc.user_id=wm.member_id LEFT JOIN pp_coupon pc ON uc.up_coupon_code=pc.coupon_code
+WHERE uc.user_id=#{userId} AND up_ifuse=#{upIfuse}
+	</select>
+
+<select id="selectLimitNumber" resultType="java.lang.Integer">
+	SELECT count(*) limitNumber FROM pp_coupon pc LEFT JOIN  user_coupon uc
+ON pc.coupon_code=uc.up_coupon_code WHERE uc.user_id=#{userId} AND pc.coupon_code=#{couponCode}
+</select>
+
+
+
+</mapper>

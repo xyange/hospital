@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DoctorAttributionMapper">
+    <insert id="batchAddDoctorAttribution">
+        INSERT INTO doctor_attribution (doctor_id, attribution_id, attribution_type)VALUES
+        <foreach collection ="list" item="doctorAttribution" separator =",">
+            (#{doctorAttribution.doctorId}, #{doctorAttribution.attributionId}, #{doctorAttribution.attributionType})
+        </foreach >
+    </insert>
+
+    <delete id="batchDeleteDoctorAttribution">
+        DELETE FROM doctor_attribution WHERE doctor_id=#{id}
+    </delete>
+
+    <insert id="add">
+        INSERT INTO doctor_attribution (doctor_id, attribution_id, attribution_type)VALUES
+        (#{doctorAttribution.doctorId}, #{doctorAttribution.attributionId}, #{doctorAttribution.attributionType})
+    </insert>
+</mapper>

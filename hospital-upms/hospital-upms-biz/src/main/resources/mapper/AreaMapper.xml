@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.AreaMapper">
+    <resultMap id="areaMap" type="com.wyzy.hospital.admin.api.entity.Area">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="level" column="level"/>
+        <result property="name" column="name"/>
+        <result property="wholeName" column="whole_name"/>
+        <result property="lon" column="lon"/>
+        <result property="lat" column="lat"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="zipCode" column="zip_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="pinYin" column="pin_yin"/>
+        <result property="simplePy" column="simple_py"/>
+        <result property="perPinYin" column="per_pin_yin"/>
+    </resultMap>
+
+    <select id="listAreaByParentId" resultMap="areaMap">
+        SELECT area.id,
+               parent_id,
+               level,
+               name,
+               whole_name,
+               lon,
+               lat,
+               city_code,
+               zip_code,
+               area_code,
+               pin_yin,
+               simple_py,
+               per_pin_yin
+        FROM area
+        <where>
+            <if test="parentId != null">
+                AND area.parent_id = #{parentId}
+            </if>
+            <if test="parentId == null">
+                AND area.level = 1
+            </if>
+            <if test="areaName != null and areaName != ''">
+                <bind name="areas" value="'%' + areaName + '%'"/>
+                AND area.name LIKE #{areas}
+            </if>
+        </where>
+    </select>
+</mapper>

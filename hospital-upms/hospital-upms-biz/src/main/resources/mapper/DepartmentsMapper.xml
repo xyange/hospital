@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author:  wyzy
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DepartmentsMapper">
+
+  <resultMap id="departmentsMap" type="com.wyzy.hospital.admin.api.entity.Departments">
+                  <id property="id" column="id"/>
+                        <result property="departmentName" column="department_name"/>
+                        <result property="superiorId" column="superior_id"/>
+	   					<result property="departmentNumber" column="department_number"/>
+	   					<result property="departmentImage" column="department_image"/>
+	  					<result property="noselectedImage" column="noselected_image"/>
+	   					<result property="description" column="description"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="delFlag" column="del_flag"/>
+                        <result property="sort" column="sort"/>
+  </resultMap>
+	<resultMap id="DoctorDepartmentsMap" type="com.wyzy.hospital.admin.api.entity.Doctor">
+
+	</resultMap>
+
+
+	
+
+	<select id="selectBySuperiorId" resultMap="departmentsMap">
+		select id,department_name,superior_id,create_time,update_time from departments where superior_id = #{superiorId}
+	</select>
+
+	<select id="selectNumberBySuperiorId" resultType="java.lang.Integer">
+		select COUNT(*) from departments where superior_id = #{id}
+	</select>
+
+	<select id="listDepartmentByName" resultMap="departmentsMap">
+		SELECT d.id,d.superior_id,d.department_name FROM departments d
+		<where>
+			<if test="name != null and name != ''">
+				<bind name="namePattern" value="'%' + name + '%'"/>
+				d.department_name LIKE #{namePattern}
+			</if>
+		</where>
+	</select>
+
+	<select id="listAllDepartment" resultMap="departmentsMap">
+		select id,department_name,superior_id,department_number,department_image, create_time,update_time,sort from departments
+	</select>
+
+	<select id="getOneDepartmentsList" resultMap="departmentsMap" >
+		select id,department_name,superior_id,department_number,create_time,update_time,sort from departments where  superior_id = 0;
+	</select>
+
+	<select id="selectDepartmentByName" resultMap="departmentsMap">
+		select id from departments where department_name like concat('%',#{name},'%')
+	</select>
+	<select id="getSpecialDepartment" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(department_name) FROM departments where id in
+		<foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+
+</mapper>

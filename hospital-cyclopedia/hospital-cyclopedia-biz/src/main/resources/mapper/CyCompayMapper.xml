@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyCompayMapper">
+
+  <resultMap id="cyCompayMap" type="com.wyzy.hospital.cyclopedia.entity.CyCompay">
+                  <id property="compayId" column="compay_id"/>
+                        <result property="compayName" column="compay_name"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+</mapper>

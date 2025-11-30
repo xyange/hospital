@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.wyzy.hospital.common.core.config.JacksonConfig,\
+  com.wyzy.hospital.common.core.config.MessageSourceConfig,\
+  com.wyzy.hospital.common.core.config.RestTemplateConfig,\
+  com.wyzy.hospital.common.core.util.SpringContextHolder

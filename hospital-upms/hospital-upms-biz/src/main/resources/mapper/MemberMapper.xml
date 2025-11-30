@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.MemberMapper">
+
+  <resultMap id="memberMap" type="com.wyzy.hospital.admin.api.entity.Member">
+          <id property="memberId" column="member_id"/>
+                <result property="createTime" column="create_time"/>
+                <result property="updateTime" column="update_time"/>
+                <result property="idCard" column="id_card"/>
+                <result property="nickname" column="nickname"/>
+                <result property="uuid" column="uuid"/>
+                <result property="phone" column="phone"/>
+                <result property="paid" column="is_paid"/>
+                <result property="integration" column="integration"/>
+                <result property="patientNumber" column="patient_number"/>
+                <result property="monetary" column="monetary"/>
+                <result property="userId" column="user_id"/>
+    </resultMap>
+    <resultMap id="detailMap" type="com.wyzy.hospital.admin.api.dto.member.MemberDTO">
+        <id property="memberId" column="member_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="uuid" column="uuid"/>
+        <result property="phone" column="phone"/>
+        <collection  property="patientCards" ofType="com.wyzy.hospital.admin.api.dto.member.PatientCardDTO">
+            <id property="cardId" column="card_id"/>
+            <result property="patientName" column="patient_name"/>
+            <result property="patientIdCard" column="patient_id_card"/>
+            <result property="patientPhone" column="patient_phone"/>
+        </collection>
+    </resultMap>
+    <select id="detail" resultMap="detailMap">
+        SELECT wm.member_id,wm.uuid,wm.nickname,wm.phone,
+               wpc.card_id,wpc.patient_phone,wpc.patient_id_card,wpc.patient_name
+            FROM wyzy_member wm
+            left join wyzy_patient_card wpc on wm.member_id=wpc.member_id
+        where wm.member_id=#{memberId};
+    </select>
+
+    <select id="page" resultType="com.wyzy.hospital.admin.api.dto.member.MemberDTO">
+        SELECT wm.member_id,wm.uuid,wm.nickname,wm.phone,wm.is_paid as paid,wm.integration, wm.create_time,
+               wm.patient_number,wm.monetary
+        FROM wyzy_member wm
+        <where>
+            <if test="member.paid != null">
+                AND wm.is_paid=#{member.paid}
+            </if>
+            <if test="member.phone != null and member.phone != ''">
+                AND wm.phone=#{member.phone}
+            </if>
+            <if test="member.startTime != null and member.endTime != null">
+                AND wm.create_time between #{member.startTime} and #{member.endTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

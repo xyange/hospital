@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.DoctorInterviewMapper">
+
+  <resultMap id="doctorInterviewMap" type="com.wyzy.hospital.psychology.api.entity.DoctorInterview">
+      <id property="id" column="id"/>
+      <result property="doctorId" column="doctor_id"/>
+      <result property="interviewTitle" column="Interview_title"/>
+      <result property="interviewContent" column="Interview_content"/>
+      <result property="sortCode" column="sort_code"/>
+</resultMap>
+</mapper>

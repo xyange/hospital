@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.AppDoctorMapper">
+    <!--app分页查询医生-->
+    <resultMap id="AllDoctor" type="com.wyzy.hospital.admin.api.dto.doctor.AppDoctorDTO">
+        <id column="doctorId" property="doctorId"/>
+        <result column="doctorName" property="doctorName"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="department" property="department"/>
+        <result column="professionalTitleId" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+        <result column="adept" property="adept"/>
+        <result column="peopleNumber" property="peopleNumber"/>
+        <result column="headPictureUrl" property="headPictureUrl"/>
+        <result column="wishes" property="wishes"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <collection property="doctorServe" resultMap="doctorServeMap"/>
+        <collection property="doctorAttribution" resultMap="DoctorAttributionMap"/>
+    </resultMap>
+    <resultMap id="doctorServeMap" type="com.wyzy.hospital.admin.api.dto.doctor.DoctorServeDTO">
+        <id column="docId" property="docId"/>
+        <id column="serviceId" property="serviceId"/>
+        <result column="price" property="price"/>
+        <result column="income" property="income"/>
+        <result column="serveName" property="serveName"/>
+    </resultMap>
+
+    <resultMap id="AppDoctorDetail" type="com.wyzy.hospital.admin.api.dto.doctor.AppDoctorDetail">
+        <id column="doctorId" property="doctorId"/>
+        <result column="doctorName" property="doctorName"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="department" property="department"/>
+        <result column="professionalTitleId" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="adept" property="adept"/>
+        <result column="peopleNumber" property="peopleNumber"/>
+        <result column="headPictureUrl" property="headPictureUrl"/>
+        <result column="experience" property="experience"/>
+        <result column="wishes" property="wishes"/>
+        <result column="doctorCollect" property="doctorCollect"/>
+
+
+
+        <collection property="doctorServe" resultMap="doctorServeMap"/>
+        <collection property="doctorAttribution" resultMap="DoctorAttributionMap"/>
+    </resultMap>
+
+    <resultMap id="DoctorAttributionMap" type="com.wyzy.hospital.admin.api.dto.doctor.DoctorAttribution">
+        <id column="attributionId" property="attributionId"/>
+        <result column="attributionTypeId" property="attributionTypeId"/>
+        <result column="attributionType" property="attributionType"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+        <result column="attributionName" property="attributionName"/>
+    </resultMap>
+
+
+    <!--根据医院查医生-->
+    <resultMap id="allDoctorByHospital" type="com.wyzy.hospital.admin.api.dto.doctor.AppDoctorDTO">
+        <result column="doctorId" property="doctorId"/>
+        <result column="doctorName" property="doctorName"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="department" property="department"/>
+        <result column="professionalTitleId" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="attributionType" property="attributionType"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+        <result column="attributionName" property="attributionName"/>
+        <result column="adept" property="adept"/>
+        <result column="headPictureUrl" property="headPictureUrl"/>
+        <collection property="doctorServe" resultMap="doctorServeMap"/>
+    </resultMap>
+
+    <resultMap id="collectDoctor" type="com.wyzy.hospital.admin.api.dto.doctor.AppDoctorDTO">
+        <id column="doctorId" property="doctorId"/>
+        <result column="doctorName" property="doctorName"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="department" property="department"/>
+        <result column="professionalTitleId" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+        <result column="adept" property="adept"/>
+        <result column="peopleNumber" property="peopleNumber"/>
+        <result column="headPictureUrl" property="headPictureUrl"/>
+
+        <collection property="doctorServe" resultMap="doctorServeMap"/>
+        <collection property="doctorAttribution" resultMap="DoctorAttributionMap"/>
+    </resultMap>
+
+
+
+
+    <select id="listAllDoctorBy" resultMap="AllDoctor">
+        SELECT finalData.doctorId,
+               finalData.wishes,
+               finalData.docId,
+               doctorName,
+               departmentId,
+               department,
+               professionalTitleId,
+               professionalTitle,
+               attributionType,
+               organizationGrade,
+               attributionName,
+               adept,
+               peopleNumber,
+               headPictureUrl,
+               serviceId,
+               price,
+               finalData.attributionType AS attributionTypeId,
+               finalData.attributionId,
+               serveName
+                FROM(
+                SELECT someDoctor.*,
+                       de.department_name    AS department,
+                       pro.label             AS professionalTitle,
+                       serve.service_id      AS serviceId,
+                       serve.doctor_id AS docId,
+                       serve.price           AS price,
+                       serve.income          AS income,
+                       dic.label             AS serveName,
+                       attr.attribution_type AS attributionType,
+                       attr.attribution_id AS attributionId,
+
+                       (CASE
+                               WHEN attr.attribution_type = 131 THEN (SELECT hos.grade_flag
+                                                                      FROM hospitals hos
+                                                                      WHERE hos.id = attribution_id)
+                               ELSE ""
+                               END)          AS organizationGrade,
+                       (CASE
+                               WHEN attr.attribution_type = 131 THEN (SELECT hos.hospital_name
+                                                                      FROM hospitals hos
+                                                                      WHERE hos.id = attribution_id)
+                               WHEN attr.attribution_type = 132 THEN (SELECT clinic.clinic_title
+                                                                      FROM clinic
+                                                                      WHERE clinic.clinic_id = attr.attribution_id)
+                               WHEN attr.attribution_type = 133 THEN "个人"
+                               END)
+                                             AS attributionName
+                FROM (
+                SELECT d.doctor_id                                                                               AS doctorId,
+                       d.doctor_name                                                                             AS doctorName,
+                       d.department_id                                                                           AS departmentId,
+                       d.wishes,
+                       d.professional_title_id                                                                   AS professionalTitleId,
+                       (SELECT GROUP_CONCAT(disease.disease_name)
+                        FROM disease
+                        WHERE disease.id IN (SELECT ddi.disease_id
+                                             FROM doctor_disease ddi
+                                             WHERE ddi.doctor_id = d.doctor_id))                                 AS adept,
+                       d.people_number                                                                           AS peopleNumber,
+                       d.avatar                                                                                  AS headPictureUrl
+                FROM doctor d
+        <where>
+            d.del_flag = 0
+            AND d.doctor_type=142
+            <if test="area != null and area != ''">
+                AND d.area = #{area}
+            </if>
+            <if test="professionalTitleId != null">
+                AND d.professional_title_id = #{professionalTitleId}
+            </if>
+            <if test="departmentId != null">
+                AND d.department_id = #{departmentId}
+            </if>
+            <if test="doctorIds != null and doctorIds != ''">
+                AND d.doctor_id IN (${doctorIds})
+            </if>
+           <!-- <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWords" value="'%' + keyWord + '%'"/>
+
+                OR (d.doctor_name LIKE #{keyWords})
+                &lt;!&ndash;断点，在到这里了 &ndash;&gt;
+                OR(LOCATE(#{keyWord},(SELECT GROUP_CONCAT(dis.disease_name) FROM disease  dis WHERE dis.id IN (SELECT dd.disease_id FROM doctor_disease dd WHERE dd.doctor_id=d.doctor_id) )))
+            OR (LOCATE(#{keyWord},(SELECT GROUP_CONCAT(hop.hospital_name) FROM hospitals hop WHERE  hop.id IN(SELECT attr.attribution_id FROM doctor_attribution attr WHERE attr.doctor_id=d.doctor_id AND attr.attribution_type=131))))
+            OR (LOCATE(#{keyWord},(SELECT dep.department_name  FROM departments dep WHERE dep.id=d.department_id)))
+            </if>-->
+            <if test="pageBegin != null  and pageSize != null">
+                LIMIT #{pageBegin},#{pageSize}
+            </if>
+        </where>
+        ) someDoctor
+                LEFT JOIN departments de ON someDoctor.departmentId = de.id
+                LEFT JOIN sys_dic_item pro ON pro.id = someDoctor.professionalTitleId
+                LEFT JOIN doctor_attribution attr ON attr.doctor_id = someDoctor.doctorId
+                LEFT JOIN doctor_serve serve ON serve.doctor_id = someDoctor.doctorId
+                LEFT JOIN sys_dic_item dic ON dic.id = serve.service_id
+
+
+        <where>
+            <if test="serviceId != null">
+                AND serve.service_id = #{serviceId}
+            </if>
+            <if test="priceBegin != null and priceEnd != null">
+                AND serve.price >= #{priceBegin}
+                AND serve.price &lt;= #{priceEnd}
+            </if>
+        </where>
+        ) finalData
+        <!--排序-->
+        <if test="sortCode != null and sortCode != '' and sortCode == 'true'">
+            ORDER BY finalData.peopleNumber DESC
+        </if>
+
+    </select>
+    <!--根据医院查医生信息-->
+    <select id="listDoctorByHospital" resultMap="allDoctorByHospital">
+        <!--医生姓名，级别，科室，服务，擅长，头像-->
+        SELECT d.doctorId,
+               d.doctorName,
+               d.departmentId,
+               d.professionalTitleId,
+               d.adept,
+               d.headPictureUrl,
+               ds.service_id       AS serviceId,
+               dic.label           AS serveName,
+               dep.department_name AS department,
+               professional.label  AS professionalTitle
+                FROM (SELECT d.doctor_id             AS doctorId,
+                             d.doctor_name           AS doctorName,
+                             d.professional_title_id AS professionalTitleId,
+
+                             d.department_id         AS departmentId,
+
+                             (
+                                     SELECT GROUP_CONCAT(disease.disease_name)
+                                     FROM disease
+                                     WHERE disease.id IN
+                                           (SELECT dd.disease_id
+                                            FROM doctor_disease dd
+                                            WHERE dd.doctor_id = d.doctor_id)
+                                     )               AS adept,
+                             d.avatar                AS headPictureUrl
+                      FROM doctor d
+                      WHERE d.del_flag = 0
+                        AND d.doctor_id IN
+                            (SELECT da.doctor_id FROM doctor_attribution da WHERE da.attribution_id = #{hospitalId})
+                      ORDER BY professional_title_id
+
+
+        <if test="beginNum != null and pageSize != null">
+            LIMIT #{beginNum},#{pageSize}
+        </if>
+        <if test="beginNum == null or pageSize == null">
+            LIMIT 10
+        </if>
+
+        ) d
+                LEFT JOIN doctor_serve ds ON d.doctorId = ds.doctor_id
+                LEFT JOIN sys_dic_item dic ON dic.id = ds.service_id
+                LEFT JOIN sys_dic_item professional ON professional.id = d.professionalTitleId
+                LEFT JOIN departments dep ON dep.id = d.departmentId
+    </select>
+    <!--查收藏的医生-->
+    <select id="getCollectedDoctors" resultMap="collectDoctor">
+        SELECT dc.doctor_id                                                                          AS doctorId,
+               doc.doctor_name                                                                       AS doctorName,
+               doc.avatar                                                                            AS headPictureUrl,
+               doc.professional_title_id                                                             AS professionalTitleId,
+               (SELECT dic.label
+                FROM sys_dic_item dic
+                WHERE dic.id = doc.professional_title_id)                                            AS professionalTitle,
+               doc.department_id                                                                     AS departmentId,
+               (SELECT depp.department_name FROM departments depp WHERE depp.id = doc.department_id) AS department,
+               doc.people_number                                                                     AS peopleNumber,
+               (SELECT GROUP_CONCAT(dis.disease_name)
+                FROM disease dis
+                WHERE dis.id IN (SELECT dd.disease_id
+                                 FROM doctor_disease dd
+                                 WHERE dd.doctor_id = doc.doctor_id))                                AS adept,
+               ds.service_id                                                                         AS serviceId,
+               ds.price,
+               ds.doctor_id                                                                          AS docId,
+               (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = ds.service_id)                 AS serveName,
+               attr.attribution_type                                                                 AS attributionTypeId,
+               attr.attribution_id                                                                   AS attributionId,
+               (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = attr.attribution_type)         AS attributionType,
+               (
+                       CASE
+                               WHEN attr.attribution_type = 131
+                                       THEN (SELECT hop.grade_flag
+                                             FROM hospitals hop
+                                             WHERE hop.id = attr.attribution_id)
+                               ELSE
+                                       ""
+                               END
+                       )                                                                             AS organizationGrade,
+               (CASE
+                       WHEN attr.attribution_type = 131
+                               THEN (SELECT hop.hospital_name FROM hospitals hop WHERE hop.id = attr.attribution_id)
+                       WHEN attr.attribution_type = 132
+                               THEN (SELECT cli.clinic_title FROM clinic cli WHERE cli.clinic_id = attr.attribution_id)
+                       ELSE
+                               ""
+                       END
+                       )                                                                             AS attributionName
+        FROM (SELECT dc.doctor_id
+              FROM doctor_collect dc
+              WHERE dc.sys_user_id = #{id}) dc
+                     LEFT JOIN doctor doc ON dc.doctor_id = doc.doctor_id
+                     LEFT JOIN doctor_serve ds ON ds.doctor_id = doc.doctor_id
+                     LEFT JOIN doctor_attribution attr ON attr.doctor_id = doc.doctor_id
+        WHERE doc.del_flag = 0
+
+    </select>
+    <!--收藏医生-->
+    <insert id="collectDoctor">
+        INSERT INTO doctor_collect (doctor_id, sys_user_id) VALUES (#{doctorId},#{sysUserId})
+    </insert>
+    <!--取消收藏医生-->
+    <insert id="cancelCollectDoctor">
+        DELETE FROM doctor_collect WHERE doctor_id=#{doctorId} AND sys_user_id=#{sysUserId}
+    </insert>
+    <!--根据疾病，姓名，医院名称，科室名称 把医生id筛选出来-->
+    <select id="listDoctorIdByDisease" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(DISTINCT finalData.doctor_id) FROM (
+        SELECT DISTINCT dc.doctor_id
+        FROM doctor_disease dc WHERE dc.disease_id IN(
+                SELECT group_concat(disease.id)
+                FROM disease
+        <where>
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWords" value="'%' + keyWord + '%'"/>
+                disease.disease_name LIKE #{keyWords}
+            </if>
+        </where>
+        )
+        UNION ALL
+        SELECT  doc.doctor_id FROM doctor doc
+        <where>
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWords" value="'%' + keyWord + '%'"/>
+                doc.doctor_name LIKE   #{keyWords}
+            </if>
+        </where>
+        UNION ALL
+        SELECT DISTINCT doc.doctor_id FROM doctor doc where department_id IN (SELECT dep.id FROM departments dep
+        <where>
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWords" value="'%' + keyWord + '%'"/>
+                dep.department_name LIKE   #{keyWords}
+            </if>
+        </where> )
+        UNION ALL
+        SELECT DISTINCT attr.doctor_id FROM doctor_attribution attr WHERE attr.attribution_type=131
+        AND attr.attribution_id IN(
+        SELECT hop.id FROM hospitals hop
+        <where>
+            <if test="keyWord != null and keyWord != ''">
+                <bind name="keyWords" value="'%' + keyWord + '%'"/>
+                hop.hospital_name LIKE   #{keyWords}
+            </if>
+        </where>)
+
+        )finalData WHERE finalData.doctor_id  IN (SELECT doctor.doctor_id FROM doctor WHERE doctor_type=142)
+
+
+
+    </select>
+    <!--推荐其他同类科室医生-->
+    <select id="appDoctorRecommend" resultMap="AllDoctor">
+        SELECT d.doctor_id                                                                      AS doctorId,
+               d.avatar                                                                         AS headPictureUrl,
+               d.doctor_name                                                                    AS doctorName,
+               d.department_id                                                                  AS departmentId,
+               d.professional_title_id                                                          AS professionalTitleId,
+                 d.wishes,
+               (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = d.professional_title_id)  AS professionalTitle,
+               (SELECT de.department_name FROM departments de WHERE de.id = d.department_id)    AS department,
+               attr.attribution_id                                                              AS attributionId,
+               attr.attribution_type                                                            AS attributionTypeId,
+               (SELECT dicc.label FROM sys_dic_item dicc WHERE dicc.id = attr.attribution_type) AS attributionType,
+               (SELECT (CASE
+                       WHEN
+                               attr.attribution_type = 131
+                               THEN (
+                               SELECT ho.grade_flag
+                               FROM hospitals ho
+                               WHERE attr.attribution_type = 131
+                                 AND attr.doctor_id = d.doctor_id
+                                 AND ho.id = attr.attribution_id)
+                       ELSE ""
+                       END)
+                       )                                                                        AS organizationGrade,
+
+
+               (CASE
+                       WHEN
+                               (FIND_IN_SET(131, (SELECT GROUP_CONCAT(attr.attribution_type)
+                                                  FROM doctor_attribution attr
+                                                  WHERE attr.doctor_id = d.doctor_id)))
+                               THEN
+                               (SELECT ho.hospital_name
+                                FROM doctor_attribution attr,
+                                     hospitals ho
+                                WHERE attr.attribution_id = ho.id
+                                  AND attr.doctor_id = d.doctor_id
+                                  AND attr.attribution_type = 131)
+                       WHEN
+                               (FIND_IN_SET(132, (SELECT GROUP_CONCAT(attr.attribution_type)
+                                                  FROM doctor_attribution attr
+                                                  WHERE attr.doctor_id = d.doctor_id)))
+                               THEN
+                               (SELECT cl.clinic_title
+                                FROM doctor_attribution attr,
+                                     clinic cl
+                                WHERE attr.attribution_id = cl.clinic_id
+                                  AND attr.doctor_id = d.doctor_id
+                                  AND attr.attribution_type = 132)
+                       ELSE
+                               (SELECT "个人")
+                       END)
+                                                                                                AS attributionName,
+               (SELECT GROUP_CONCAT(disease.disease_name)
+                FROM disease
+                WHERE disease.id IN (SELECT ddi.disease_id
+                                     FROM doctor_disease ddi
+                                     WHERE ddi.doctor_id = d.doctor_id))                        AS adept,
+               d.people_number                                                                  AS peopleNumber,
+               serve.service_id                                                                 AS serviceId,
+               (SELECT sname.label FROM sys_dic_item sname WHERE sname.id = serve.service_id)   AS serveName,
+               serve.price,
+               serve.doctor_id                                                                  AS docId
+        FROM (SELECT d.doctor_id, d.avatar, d.doctor_name, d.professional_title_id, d.department_id, d.people_number,d.wishes
+              FROM doctor d
+        <where>
+            <if test="deportmentId != null">
+               AND d.department_id = #{deportmentId}
+            </if>
+            <if test="doctorId != null">
+               AND d.doctor_id != #{doctorId}
+            </if>
+            <if test="deportmentName != null and deportmentName != ''">
+                AND d.department_id =(SELECT depp.id FROM departments depp  WHERE depp.department_name=#{deportmentName})
+            </if>
+            <if test="doctorName != null and doctorName != ''">
+                AND d.doctor_id NOT IN(SELECT docc.doctor_id FROM doctor docc WHERE docc.doctor_name=#{doctorName})
+            </if>
+        </where>
+        ORDER BY d.people_number DESC
+        LIMIT 2
+        ) d
+                     LEFT JOIN doctor_serve serve ON serve.doctor_id = d.doctor_id
+        LEFT JOIN doctor_attribution  attr ON attr.doctor_id=d.doctor_id
+
+    </select>
+    <!--医生详情-->
+    <select id="appDoctorDetail" resultMap="AppDoctorDetail">
+        SELECT doc.doctorId,
+               doc.doctorName,
+               doc.departmentId,
+               doc.professionalTitleId,
+               doc.peopleNumber,
+               doc.headPictureUrl,
+               doc.experience,
+               doc.wishes,
+               dep.department_name                                                                    AS department,
+               dic.label                                                                              AS professionalTitle,
+               attr.attribution_type                                                                  AS attributionTypeId,
+               attrTypeName.label                                                                     AS attributionType,
+               attr.attribution_id                                                                    AS attributionId,
+               (CASE
+                       WHEN attr.attribution_type = 131
+                               THEN
+                               (SELECT ho.hospital_name FROM hospitals ho WHERE ho.id = attr.attribution_id)
+                       WHEN
+                               attr.attribution_type = 132
+                               THEN
+                               (SELECT cl.clinic_title FROM clinic cl WHERE cl.clinic_id = attr.attribution_id)
+                       WHEN
+                               attr.attribution_type = 133
+                               THEN
+                               (SELECT "个人")
+                       END)                                                                           AS attributionName,
+               (CASE
+                       WHEN attr.attribution_type = 131 THEN (SELECT ho.grade_flag
+                                                              FROM hospitals ho
+                                                              WHERE ho.id = attr.attribution_id) END) AS organizationGrade,
+               serve.service_id                                                                       AS serviceId,
+               serve.doctor_id                                                                        AS docId,
+               serve.price,
+
+               (SELECT dic.label
+                FROM sys_dic_item dic
+                WHERE dic.id = serve.service_id)                                                      AS serveName,
+               (SELECT GROUP_CONCAT(dis.disease_name ORDER BY dis.severity DESC SEPARATOR '、') AS ad
+                FROM disease dis
+                WHERE dis.id IN (SELECT disease_id
+                                 FROM doctor_disease dd
+                                 WHERE dd.doctor_id = doc.doctorId))                                  as adept,
+               (CASE
+                       WHEN EXISTS(SELECT dc.doctor_id
+                                   FROM doctor_collect dc
+                                   WHERE dc.sys_user_id =#{userId} AND dc.doctor_id =#{id})
+                               THEN 1
+                       ELSE
+                               0
+                       END
+                       )                                                                              AS doctorCollect
+
+        FROM (SELECT doc.doctor_id             AS doctorId,
+                     doc.doctor_name           AS doctorName,
+                     doc.department_id         AS departmentId,
+                     doc.professional_title_id AS professionalTitleId,
+                     doc.people_number         AS peopleNumber,
+                     doc.avatar                AS headPictureUrl,
+                     doc.experience,
+                     doc.wishes
+              FROM doctor doc
+              WHERE doc.doctor_id = #{id}) doc
+                     LEFT JOIN doctor_attribution attr ON doc.doctorId = attr.doctor_id
+                     LEFT JOIN sys_dic_item attrTypeName ON attr.attribution_type = attrTypeName.id
+                     LEFT JOIN doctor_serve serve ON serve.doctor_id = doc.doctorId,
+             departments dep,
+             sys_dic_item dic
+        WHERE dep.id = doc.departmentId
+          AND doc.professionalTitleId = dic.id
+    </select>
+
+    <select id="isCollect" resultType="java.util.Map">
+        SELECT dc.doctor_id AS doctorId ,dc.sys_user_id AS sysUserId FROM doctor_collect dc WHERE dc.doctor_id=#{doctorId} AND dc.sys_user_id=#{userId}
+    </select>
+
+    <select id="getDoctorByFilter" resultMap="AllDoctor">
+        SELECT finalData.doctorId,
+        finalData.wishes,
+        finalData.docId,
+        finalData.latitude,
+        finalData.longitude,
+        doctorName,
+        departmentId,
+        department,
+        professionalTitleId,
+        professionalTitle,
+        attributionType,
+        organizationGrade,
+        attributionName,
+        adept,
+        peopleNumber,
+        headPictureUrl,
+        serviceId,
+        price,
+        finalData.attributionTypeId AS attributionTypeId,
+        finalData.attributionId,
+        serveName
+        FROM(
+        SELECT someDoctor.*,
+        de.department_name    AS department,
+        pro.label             AS professionalTitle,
+        serve.service_id      AS serviceId,
+        serve.doctor_id AS docId,
+        serve.price           AS price,
+        serve.income          AS income,
+        dic.label             AS serveName,
+        (SELECT dic.label FROM sys_dic_item dic WHERE  dic.id=attr.attribution_type)AS attributionType,
+        attr.attribution_type AS attributionTypeId,
+        attr.attribution_id AS attributionId,
+
+        (CASE
+        WHEN attr.attribution_type = 131 THEN (SELECT hos.grade_flag
+        FROM hospitals hos
+        WHERE hos.id = attribution_id)
+        ELSE ""
+        END)          AS organizationGrade,
+        (CASE
+        WHEN attr.attribution_type = 131 THEN (SELECT hos.hospital_name
+        FROM hospitals hos
+        WHERE hos.id = attribution_id)
+        WHEN attr.attribution_type = 132 THEN (SELECT clinic.clinic_title
+        FROM clinic
+        WHERE clinic.clinic_id = attr.attribution_id)
+        WHEN attr.attribution_type = 133 THEN "个人"
+        END)
+        AS attributionName,
+        (CASE
+        WHEN attr.attribution_type = 131
+        THEN (SELECT lon FROM hospitals WHERE id = attr.attribution_id)
+        WHEN attr.attribution_type = 132
+        THEN (SELECT cli.longitude AS lon
+        FROM clinic cli
+        WHERE cli.clinic_id = attr.attribution_id)
+        WHEN attr.attribution_type = 133
+        THEN (SELECT '' AS lon)
+        END
+        ) AS longitude,
+        (CASE
+        WHEN attr.attribution_type = 131
+        THEN (SELECT lat FROM hospitals WHERE id = attr.attribution_id)
+        WHEN attr.attribution_type = 132
+        THEN (SELECT cli.latitude AS lat
+        FROM clinic cli
+        WHERE cli.clinic_id = attr.attribution_id)
+        WHEN attr.attribution_type = 133
+        THEN (SELECT '' AS lat)
+        END
+        ) AS latitude
+        FROM (
+        SELECT d.doctor_id                                                                               AS doctorId,
+        d.doctor_name                                                                             AS doctorName,
+        d.department_id                                                                           AS departmentId,
+        d.wishes,
+        d.professional_title_id                                                                   AS professionalTitleId,
+        (SELECT GROUP_CONCAT(disease.disease_name)
+        FROM disease
+        WHERE disease.id IN (SELECT ddi.disease_id
+        FROM doctor_disease ddi
+        WHERE ddi.doctor_id = d.doctor_id))                                 AS adept,
+        d.people_number                                                                           AS peopleNumber,
+        d.avatar                                                                                  AS headPictureUrl
+        FROM doctor d
+        <where>
+            d.del_flag = 0
+            <if test="doctorIds != null and doctorIds != ''">
+                AND d.doctor_id IN (${doctorIds})
+            </if>
+        </where>
+        ) someDoctor
+        LEFT JOIN departments de ON someDoctor.departmentId = de.id
+        LEFT JOIN sys_dic_item pro ON pro.id = someDoctor.professionalTitleId
+        LEFT JOIN doctor_attribution attr ON attr.doctor_id = someDoctor.doctorId
+        LEFT JOIN doctor_serve serve ON serve.doctor_id = someDoctor.doctorId
+        LEFT JOIN sys_dic_item dic ON dic.id = serve.service_id
+        ) finalData
+        <!--排序-->
+        <if test="sortCode != null and sortCode != '' and sortCode == 'true' ">
+            ORDER BY finalData.peopleNumber DESC
+        </if>
+    </select>
+    <select id="getDoctorIdByFilter" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(finalData.doctor_id) FROM(
+                SELECT DISTINCT doc.doctor_id FROM (
+                SELECT doc.doctor_id,
+                       (CASE
+                               WHEN attr.attribution_type = 131
+                                       THEN (SELECT lon FROM hospitals WHERE id = attr.attribution_id)
+                               WHEN attr.attribution_type = 132
+                                       THEN (SELECT cli.longitude AS lon
+                                             FROM clinic cli
+                                             WHERE cli.clinic_id = attr.attribution_id)
+                               WHEN attr.attribution_type = 133
+                                       THEN (SELECT '' AS lon)
+                               END
+                               ) AS lon,
+                       (CASE
+                               WHEN attr.attribution_type = 131
+                                       THEN (SELECT lat FROM hospitals WHERE id = attr.attribution_id)
+                               WHEN attr.attribution_type = 132
+                                       THEN (SELECT cli.latitude AS lat
+                                             FROM clinic cli
+                                             WHERE cli.clinic_id = attr.attribution_id)
+                               WHEN attr.attribution_type = 133
+                                       THEN (SELECT '' AS lat)
+                               END
+                               ) AS lat
+                FROM doctor doc
+                             LEFT JOIN doctor_attribution attr on doc.doctor_id = attr.doctor_id
+        <where>
+            doc.doctor_type=142
+            <if test="wellKnown != null">
+                AND  doc.well_known=#{wellKnown}
+            </if>
+
+            <if test="area != null and area != ''">
+                AND doc.area = #{area}
+            </if>
+            <if test="deportmentId != null">
+                AND FIND_IN_SET(doc.department_id, CONCAT_WS(',', #{deportmentId}, (SELECT GROUP_CONCAT(dep.id)
+                                                                                    FROM departments dep
+                                                                                    WHERE dep.superior_id = #{deportmentId})))
+            </if>
+            <if test="professionalTitleId != null">
+                AND doc.professional_title_id = #{professionalTitleId}
+            </if>
+            <if test="doctorName != null and doctorName != ''">
+                <bind name="keyWords" value="'%' + doctorName + '%'"/>
+                AND doc.doctor_name LIKE #{keyWords}
+            </if>
+        </where>
+        )doc
+                LEFT JOIN doctor_disease dd ON dd.doctor_id = doc.doctor_id
+                LEFT JOIN doctor_serve ds
+                ON ds.doctor_id = doc.doctor_id
+        <where>
+            <if test="minMaxLngLat != null">
+                 doc.lat>=#{minMaxLngLat.minlat}
+                AND doc.lat &lt;=#{minMaxLngLat.maxlat}
+                AND doc.lon>=#{minMaxLngLat.minlng}
+                AND doc.lon &lt;=#{minMaxLngLat.maxlng}
+            </if>
+            <if test="diseaseId != null">
+                AND dd.disease_id = #{diseaseId}
+            </if>
+            <if test="diseaseName != null and diseaseName != ''">
+                AND dd.disease_id = (SELECT dis.id FROM disease dis WHERE dis.disease_name = #{diseaseName})
+            </if>
+            <if test="serveId != null">
+                AND ds.service_id = #{serveId}
+            </if>
+            <if test="priceBegin != null">
+                AND ds.price >= #{priceBegin}
+            </if>
+            <if test="priceEnd != null">
+                AND ds.price &lt;= #{priceEnd}
+            </if>
+        </where>
+        <if test="pageBegin != null and pageSize != null and minMaxLngLat==null">
+            LIMIT #{pageBegin},#{pageSize}
+        </if>
+        ) finalData
+    </select>
+
+
+    <resultMap id="AllsDoctor" type="com.wyzy.hospital.admin.api.dto.doctor.AppDoctorDTO">
+        <id column="doctor_id" property="doctorId"/>
+        <result column="doctor_name" property="doctorName"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="department" property="department"/>
+        <result column="professional_title_id" property="professionalTitleId"/>
+        <result column="professionalTitle" property="professionalTitle"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+        <result column="adept" property="adept"/>
+        <result column="price" property="price"/>
+        <result column="people_number" property="peopleNumber"/>
+        <result column="head_picture_url" property="headPictureUrl"/>
+        <result column="wishes" property="wishes"/>
+    </resultMap>
+
+    <select id="selectDoctorListById" resultMap="AllsDoctor">
+        SELECT DISTINCT dc.*,
+        (SELECT (GROUP_CONCAT(DISTINCT dis.disease_name SEPARATOR '、')) FROM disease dis  WHERE dis.id IN
+        (SELECT dd.disease_id FROM doctor_disease dd WHERE dd.doctor_id=dc.doctor_id))  adept,
+        (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = dc.professional_title_id)  AS professionalTitle,
+        (SELECT de.department_name FROM departments de WHERE de.id = dc.department_id)    AS department,
+        (CASE
+        WHEN attr.attribution_type = 131 THEN (SELECT   hos.grade_flag
+        FROM hospitals hos
+        WHERE hos.id = attribution_id)
+        ELSE ""
+        END)          AS organizationGrade,
+        (SELECT price FROM doctor_serve ds  WHERE ds.doctor_id = dc.doctor_id and ds.service_id = 155) AS price
+        FROM
+                `doctor` dc
+                        JOIN consult_doctor cdc ON cdc.doctor_id = dc.doctor_id
+                        JOIN sys_dic_item dic ON dic.`value` = cdc.consult_type
+                        JOIN doctor_disease ddse ON ddse.doctor_id = dc.doctor_id
+                        JOIN disease dse ON dse.id = ddse.disease_id
+                        JOIN doctor_attribution attr ON attr.doctor_id = dc.doctor_id
+        <where>
+            <if test="consultDTO.diseaseId != null and consultDTO.diseaseId != 0">
+                dse.id  = #{ consultDTO.diseaseId }
+            </if>
+
+            <if test="consultDTO.consultType != null and  consultDTO.consultType != 0">
+                AND cdc.consult_type = #{consultDTO.consultType}
+            </if>
+        </where>
+    GROUP BY dc.doctor_id
+    </select>
+    <select id="selectPriceByDoctorId" resultType="java.math.BigDecimal">
+        SELECT price FROM doctor_serve ds  WHERE ds.doctor_id = #{doctorId} and ds.service_id = 155
+    </select>
+</mapper>

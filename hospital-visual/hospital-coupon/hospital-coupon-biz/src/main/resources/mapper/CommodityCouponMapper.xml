@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.coupon.mapper.CommodityCouponMapper">
+
+  <resultMap id="commodityCouponMap" type="com.wyzy.hospital.coupon.entity.CommodityCoupon">
+                  <id property="comCouId" column="com_cou_id"/>
+                        <result property="commodityId" column="commodity_id"/>
+                        <result property="comCouponId" column="com_coupon_id"/>
+            </resultMap>
+</mapper>

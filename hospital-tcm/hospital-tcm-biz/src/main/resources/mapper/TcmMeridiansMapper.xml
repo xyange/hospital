@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmMeridiansMapper">
+
+  <resultMap id="tcmMeridiansMap" type="com.wyzy.hospital.tcm.entity.TcmMeridians">
+                  <id property="meridiansId" column="meridians_id"/>
+                        <result property="meridiansName" column="meridians_name"/>
+                        <result property="contextId" column="context_id"/>
+                        <result property="durationDuty" column="duration_duty"/>
+                        <result property="originalText" column="original_text"/>
+                        <result property="translation" column="translation"/>
+                        <result property="mainSymptoms" column="main_symptoms"/>
+                        <result property="outline" column="outline"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  <result property="isOnline" column="is_online"/>
+            </resultMap>
+	<resultMap id="tcmMeridiansDTOMap" type="com.wyzy.hospital.tcm.dto.TcmMeridiansDTO">
+		<id property="meridiansId" column="meridians_id"/>
+		<result property="meridiansName" column="meridians_name"/>
+		<result property="contextId" column="context_id"/>
+		<result property="oneName" column="oneName"/>
+		<result property="durationDuty" column="duration_duty"/>
+		<result property="originalText" column="original_text"/>
+		<result property="translation" column="translation"/>
+		<result property="mainSymptoms" column="main_symptoms"/>
+		<result property="outline" column="outline"/>
+	</resultMap>
+	<select id="selectTcmMeridiansByName" resultMap="tcmMeridiansMap">
+		select meridians_id,meridians_name,context_id,duration_duty,
+		original_text,translation,main_symptoms,outline,del_flag,create_time,update_time
+		from tcm_meridians where meridians_name = #{meridiansName}
+	</select>
+	<select id="selectTcmMeridiansDTOByName" resultMap="tcmMeridiansDTOMap">
+		select me.meridians_id,st.oneName,me.meridians_name,me.context_id,me.duration_duty,
+		me.original_text,me.translation,me.main_symptoms,me.outline,me.del_flag,me.create_time,me.update_time
+	from
+	(select meridians_id,meridians_name,context_id,duration_duty,
+		original_text,translation,main_symptoms,outline,del_flag,create_time,update_time
+		from tcm_meridians where meridians_name = #{meridiansName}) me
+		LEFT JOIN
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t
+		where s.type =1 and t.type = 1 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		on st.sort_id = me.context_id
+	</select>
+	<insert id="insertTcmMeridians">
+		insert into tcm_meridians(meridians_id,meridians_name,context_id,duration_duty,
+		original_text,translation,main_symptoms,outline,del_flag,create_time,update_time)
+		values (#{tcmMeridians.meridiansId},#{tcmMeridians.meridiansName},#{tcmMeridians.contextId},#{tcmMeridians.durationDuty},#{tcmMeridians.originalText},
+		#{tcmMeridians.translation},#{tcmMeridians.mainSymptoms},#{tcmMeridians.outline},#{tcmMeridians.delFlag},#{tcmMeridians.createTime},#{tcmMeridians.updateTime})
+	</insert>
+	<update id="updateTcmMeridiansById">
+		update tcm_meridians set is_online = #{isOnline} where meridians_id = #{meridiansId}
+	</update>
+	<select id="selectTcmMeridiansById" resultMap="tcmMeridiansDTOMap">
+		select meridians_id,meridians_name,context_id,duration_duty,
+		original_text,translation,main_symptoms,outline,del_flag,create_time,update_time,is_online
+		from tcm_meridians where meridians_id = #{meridiansId} and del_flag = 0
+	</select>
+	<select id="getTcmMeridiansPage" resultMap="tcmMeridiansMap">
+		select meridians_id,meridians_name,context_id,
+		duration_duty,original_text,translation,
+		main_symptoms,outline,del_flag,create_time,update_time,is_online
+		from tcm_meridians where del_flag = 0
+		ORDER BY update_time DESC
+	</select>
+	<select id="selectBycontextId" resultMap="tcmMeridiansDTOMap">
+		select meridians_id,meridians_name,context_id,
+		duration_duty,original_text,translation,
+		main_symptoms,outline,del_flag,
+		create_time,update_time from tcm_meridians
+		where is_online = 1
+		AND del_flag = 0
+		<if test="contextId != null and contextId != ''">
+		and context_id = #{contextId}
+		</if>
+		<if test="meridiansName != null and meridiansName != ''">
+		and meridians_name = #{meridiansName}
+		</if>
+		ORDER BY update_time DESC
+	</select>
+	<select id="selectAllBycontextId" resultMap="tcmMeridiansMap">
+		select meridians_id,meridians_name,context_id,
+		duration_duty,original_text,translation,
+		main_symptoms,outline,del_flag,
+		create_time,update_time from tcm_meridians
+		where  context_id = #{contextId}
+		ORDER BY update_time DESC
+	</select>
+	<update id="updatePojoById">
+		update tcm_meridians
+		set
+		<if test="tcmMeridians.meridiansId != null and tcmMeridians.meridiansId != ''">
+			meridians_id = #{tcmMeridians.meridiansId},
+		</if>
+		<if test="tcmMeridians.meridiansName != null and tcmMeridians.meridiansName != ''">
+			meridians_name = #{tcmMeridians.meridiansName},
+		</if>
+		<if test="tcmMeridians.contextId != null and tcmMeridians.contextId != ''">
+			context_id = #{tcmMeridians.contextId},
+		</if>
+		<if test="tcmMeridians.durationDuty != null and tcmMeridians.durationDuty != ''">
+			duration_duty = #{tcmMeridians.durationDuty},
+		</if>
+		<if test="tcmMeridians.originalText != null and tcmMeridians.originalText != ''">
+			original_text = #{tcmMeridians.originalText},
+		</if>
+		<if test="tcmMeridians.translation != null and tcmMeridians.translation != ''">
+			translation = #{tcmMeridians.translation},
+		</if>
+		<if test="tcmMeridians.mainSymptoms != null and tcmMeridians.mainSymptoms != ''">
+			main_symptoms = #{tcmMeridians.mainSymptoms},
+		</if>
+		<if test="tcmMeridians.outline != null and tcmMeridians.outline != ''">
+		outline = #{tcmMeridians.outline},
+		</if>
+		<if test="tcmMeridians.createTime != null">
+			create_time = #{tcmMeridians.createTime},
+		</if>
+		update_time = #{tcmMeridians.updateTime},
+		del_flag = #{tcmMeridians.delFlag},
+		is_online = #{tcmMeridians.isOnline}
+		where meridians_id = #{tcmMeridians.meridiansId}
+	</update>
+</mapper>

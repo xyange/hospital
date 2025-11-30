@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.integration.mapper.BpBpactivityMapper">
+
+  <resultMap id="bpBpactivityMap" type="com.wyzy.hospital.integration.entity.BpBpactivity">
+                  <id property="id" column="id"/>
+                        <result property="activityname" column="activityName"/>
+	  					<result property="productStatus" column="product_status"/>
+                        <result property="returnrates" column="returnRates"/>
+                        <result property="returnmax" column="returnMax"/>
+                        <result property="returnnumber" column="returnNumber"/>
+                        <result property="fluctuate" column="fluctuate"/>
+	  					<result property="source" column="source"/>
+	  					<result property="type" column="type"/>
+	  					<result property="isEveryday" column="is_everyday"/>
+  </resultMap>
+</mapper>

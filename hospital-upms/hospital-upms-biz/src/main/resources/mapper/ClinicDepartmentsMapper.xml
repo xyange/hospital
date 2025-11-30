@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ClinicDepartmentsMapper">
+    <resultMap id="clinicDepartmentsMap" type="com.wyzy.hospital.admin.api.entity.ClinicDepartments">
+        <id property="id" column="id"/>
+        <result property="clinicId" column="clinic_id"/>
+        <result property="departmentsId" column="departments_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+
+
+    <resultMap id="departmentsRecord" type="com.wyzy.hospital.admin.api.dto.department.DepartmentDiseaseRewriteDTO">
+        <id property="fatherId" column="fatherId"/>
+        <result property="fatherName" column="fatherName"/>
+        <collection property="departmentTreeDTOList" ofType="com.wyzy.hospital.admin.api.dto.department.DepartmentTreeTwoDTO">
+        <id property="sonId" column="sonId"/>
+        <result property="sonName" column="sonName"/>
+            <collection property="diseaseList" ofType="com.wyzy.hospital.admin.api.dto.department.DiseaseDTO">
+                <id property="diseaseId" column="diseaseId"/>
+                <result property="diseaseName" column="diseaseName"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <select id="selectListByClinicId" resultMap="clinicDepartmentsMap">
+        select id, clinic_id, departments_id, create_time, update_time
+        from clinic_departments
+        where clinic_id = #{ clinicId }
+    </select>
+
+    <select id="selectDepartmentNameByClinicId" resultType="string">
+        SELECT GROUP_CONCAT(departments.department_name) as departmentName
+        FROM clinic_departments
+                     JOIN departments ON clinic_departments.departments_id = departments.id
+        WHERE clinic_departments.clinic_id = #{clinicId}
+    </select>
+
+    <select id="getDiseaseByDeptNum"
+            resultMap="departmentsRecord">
+        SELECT dep.fatherId                                                            AS fatherId,
+               dep.fatherName                                                          AS fatherName,
+               dep.sonId                                                               AS sonId,
+               dep.sonName                                                             AS sonName,
+               dd.disease_id                                                           AS diseaseId,
+               (SELECT dis.disease_name FROM disease dis WHERE dis.id = dd.disease_id) as diseaseName
+        FROM (
+                     SELECT father.*,
+                            depSon.id              AS sonId,
+                            depSon.department_name AS sonName
+                     FROM (SELECT depFather.id AS fatherId, depFather.department_name AS fatherName
+                           FROM departments depFather
+                           WHERE depFather.superior_id = 0) father
+                                  LEFT JOIN departments depSon ON father.fatherId = depSon.superior_id
+                             AND depSon.superior_id != 0
+                             AND depSon.superior_id != - 1
+                     ) dep
+                     LEFT JOIN department_disease dd ON dep.sonId = dd.departments_id;
+    </select>
+
+
+    <select id="getDiseaseByTwoDeptNum" resultType="com.wyzy.hospital.admin.api.dto.department.DiseaseDTO">
+            select DISTINCT  d.id     AS diseaseId
+                  ,d.disease_name AS diseaseName
+                  from  disease  d
+                left join department_disease dd on dd.disease_id = d.id
+        <where>
+            <if test="departmentsId != null">
+                AND FIND_IN_SET(dd.departments_id,CONCAT_WS(',',#{departmentsId},(SELECT GROUP_CONCAT(dep.id) FROM departments dep WHERE dep.superior_id=#{departmentsId})))
+            </if>
+        </where>
+
+
+    </select>
+</mapper>

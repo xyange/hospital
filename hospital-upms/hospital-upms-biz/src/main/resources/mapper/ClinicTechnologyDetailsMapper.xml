@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ClinicTechnologyDetailsMapper">
+
+  <resultMap id="clinicTechnologyDetailsMap" type="com.wyzy.hospital.admin.api.entity.ClinicTechnologyDetails">
+                  <id property="technologyId" column="technology_id"/>
+                        <result property="technologyTitle" column="technology_title"/>
+                        <result property="technologyPic" column="technology_pic"/>
+                        <result property="technologyBornDate" column="technology_born_date"/>
+                        <result property="technologyBornCountry" column="technology_born_country"/>
+                        <result property="technologyApply" column="technology_apply"/>
+                        <result property="technologyCharacteristic" column="technology_characteristic"/>
+                        <result property="technologyPrinciple" column="technology_principle"/>
+                        <result property="technologyEquipment" column="technology_equipment"/>
+                        <result property="technologyDiagnosisId" column="technology_diagnosis_id"/>
+            </resultMap>
+
+
+    <select id="getDiagnosisByClinicId" resultType="com.wyzy.hospital.admin.api.entity.ClinicDiagnosis">
+            select * from  clinic_diagnosis cds
+            left join clinic_diagnosis_connect cdn on cdn.diagnosis_id = cds.diagnosis_id
+            <where>
+                <if test=" clinicDTO.clinicId !=null and clinicDTO.clinicId!= 0">
+                    cdn.clinic_id = #{clinicDTO.clinicId,jdbcType=BIGINT }
+                </if>
+            </where>
+    </select>
+
+
+    <select id="getClinicTechnologyByTechnologyId" resultMap="clinicTechnologyDetailsMap">
+        select  * from clinic_technology_details
+        <where>
+            <if test=" technologyId != null">
+                technology_id = #{ technologyId }
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getClinicTechnologyByClinicId" resultType="com.wyzy.hospital.admin.api.entity.ClinicTechnologyDetails">
+        select  * from  clinic_technology_details
+        <where>
+            <if test=" clinicDTO.diagnosisId != null">
+                technology_diagnosis_id = #{ clinicDTO.diagnosisId }
+            </if>
+        </where>
+    </select>
+
+    <select id="getTechnologyListByDiagnosisId" resultType="com.wyzy.hospital.admin.api.entity.ClinicTechnologyDetails">
+        select  * from clinic_technology_details ctd
+        left join clinic_diagnosis cds on cds.diagnosis_id = ctd.technology_diagnosis_id
+        left join clinic_diagnosis_connect cdn on cdn.diagnosis_id = cds.diagnosis_id
+            <where>
+                <if test=" clinicDTO.clinicId !=null and  clinicDTO.clinicId != 0">
+                    cdn.clinic_id = #{ clinicDTO.clinicId }
+                </if>
+                <if test=" clinicDTO.diagnosisId !=null and  clinicDTO.diagnosisId != 0">
+                    and cds.diagnosis_id = #{ clinicDTO.diagnosisId }
+                </if>
+            </where>
+    </select>
+</mapper>

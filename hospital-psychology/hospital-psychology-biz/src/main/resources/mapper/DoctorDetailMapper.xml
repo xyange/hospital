@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.DoctorDetailMapper">
+
+  <resultMap id="doctorDetailMap" type="com.wyzy.hospital.psychology.api.entity.DoctorDetail">
+                        <id property="id" column="id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="job" column="job"/>
+                        <result property="price" column="price"/>
+                        <result property="detailImg" column="detail_img"/>
+                        <result property="timeLength" column="time_length"/>
+                        <result property="workRoomName" column="work_room_name"/>
+                        <result property="workRoomImg" column="work_room_img"/>
+                        <result property="workRoomAddress" column="work_room_address"/>
+                        <result property="workRoomLongitude" column="work_room_longitude"/>
+                        <result property="workRoomLatitude" column="work_room_latitude"/>
+                        <result property="workRoomPhone" column="work_room_phone"/>
+                        <result property="area" column="area"/>
+  </resultMap>
+    <select id="selectByPojo" resultMap="doctorDetailMap">
+        select id,doctor_id,job,price,detail_img,time_length,work_room_name,work_room_img,work_room_address,work_room_longitude,work_room_latitude,work_room_phone,area
+        from doctor_detail where doctor_id = #{doctorDetail.doctorId} and work_room_name = #{doctorDetail.workRoomName}
+    </select>
+</mapper>

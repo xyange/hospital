@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.OnlineInquiryRecordMapper">
+
+  <resultMap id="onlineInquiryRecordMap" type="com.wyzy.hospital.admin.api.entity.OnlineInquiryRecord">
+                  <id property="inquiryId" column="inquiry_id"/>
+                        <result property="memberId" column="member_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="inquireType" column="inquire_type"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="status" column="status"/>
+
+      <result property="orderId" column="order_id"/>
+      <result property="cardId" column="card_id"/>
+      <result property="diseaseDescription" column="disease_description"/>
+      <result property="diseaseImg" column="disease_img"/>
+            </resultMap>
+    <resultMap id="onlineInquiryRecordDTOMap" type="com.wyzy.hospital.admin.api.dto.online.OnlineInquiryRecordDTO">
+        <id property="inquiryId" column="inquiry_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="inquireType" column="inquire_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="avatar" column="avatar"/>
+        <result property="label" column="label"/>
+        <result property="departmentName" column="department_name"/>
+    </resultMap>
+
+    <select id="selectPojoByStatus" resultMap="onlineInquiryRecordDTOMap">
+        select
+        inquiry.inquiry_id,
+        inquiry.member_id,
+        inquiry.doctor_id,
+        inquiry.doctor_name,
+        inquiry.avatar,
+        depart.department_name,
+        item.label,
+        inquiry.inquire_type,
+        inquiry.inquireTypeName,
+        inquiry.status,
+        inquiry.statusName,
+        inquiry.create_time,
+        inquiry.update_time,
+        inquiry.disease_description,
+        inquiry.disease_img,
+        inquiry.order_id,
+        inquiry.card_id
+        from
+        (select record.inquiry_id,
+        record.member_id,
+        doc.doctor_id,
+        doc.doctor_name,
+        doc.avatar,
+        doc.professional_title_id,
+        doc.department_id,
+        record.inquire_type,
+        (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = inquire_type) AS
+        inquireTypeName,
+
+        record.status,
+        (CASE
+        WHEN record.status = 0 THEN '进行中'
+        WHEN record.status = 1 THEN '已结束'
+        WHEN record.status = 2 THEN '已退款'
+        END
+        )                                                            AS statusName,
+        record.create_time,
+        record.update_time,
+        record.disease_description,
+        record.disease_img,
+        record.order_id,
+        record.card_id
+        from wyzy_online_inquiry_record record,
+        doctor doc
+        where record.member_id = #{memberId}
+        and doc.doctor_id = record.doctor_id
+        <if test="status != null">
+            and record.status = #{status}
+        </if>
+        ORDER BY record.update_time DESC) inquiry
+        LEFT JOIN
+        (SELECT
+        id,label
+        FROM sys_dic_item where del_flag = 0) item
+        ON inquiry.professional_title_id = item.id
+        left JOIN
+        (SELECT id,department_name from departments) depart
+        ON inquiry.department_id = depart.id
+
+    </select>
+
+    <resultMap id="getInquiryListPageMap" type="com.wyzy.hospital.admin.api.dto.online.PcOnlineInquiryRecordDTO">
+        <id property="inquiryId" column="inquiry_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="patientName" column="patient_name"/>
+        <result property="patientPhone" column="patient_phone"/>
+        <result property="price" column="price"/>
+        <result property="inquireTypeName" column="label"/>
+    </resultMap>
+
+        <!--  pc获取用户列表  -->
+    <select id="getInquiryListPage" resultMap="getInquiryListPageMap">
+        SELECT
+                woir.inquiry_id ,
+                wmer.member_id ,
+                dc.doctor_name ,
+                item.label,
+                wptc.patient_name ,
+                wptc.patient_phone ,
+                dse.price
+
+        FROM
+                        wyzy_online_inquiry_record woir
+                        JOIN wyzy_patient_card wptc ON woir.card_id = wptc.card_id
+                        JOIN wyzy_member wmer ON wmer.member_id = woir.member_id
+                        JOIN doctor dc ON dc.doctor_id = woir.doctor_id
+                        JOIN doctor_serve dse ON dse.doctor_id = dc.doctor_id
+                        JOIN sys_dic_item item ON item.id = dse.service_id
+    <where>
+        <if test=" pcOnlineInquiryRecordDTO.doctorName!= null and pcOnlineInquiryRecordDTO.doctorName != ''">
+            <bind name="pcOnlineInquiryRecordDTO.doctorName" value=" pcOnlineInquiryRecordDTO.doctorName+ '%'"/>
+            dc.doctor_name LIKE #{pcOnlineInquiryRecordDTO.doctorName}
+            or
+            wptc.patient_name LIKE #{pcOnlineInquiryRecordDTO.doctorName}
+            or
+            wptc.patient_phone LIKE #{ pcOnlineInquiryRecordDTO.doctorName }
+        </if>
+        <if test="pcOnlineInquiryRecordDTO.inquireType != 0 and pcOnlineInquiryRecordDTO.inquireType != null ">
+            and item.id =   #{ pcOnlineInquiryRecordDTO.inquireType }
+        </if>
+    </where>
+
+
+    </select>
+</mapper>

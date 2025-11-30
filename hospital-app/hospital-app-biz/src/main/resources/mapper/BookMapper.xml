@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.app.mapper.BookMapper">
+
+  <resultMap id="bookMap" type="com.wyzy.hospital.app.api.entity.Book">
+                  <id property="id" column="id"/>
+                        <result property="bookId" column="book_id"/>
+                        <result property="fileName" column="file_name"/>
+                        <result property="cover" column="cover"/>
+                        <result property="title" column="title"/>
+                        <result property="author" column="author"/>
+                        <result property="publisher" column="publisher"/>
+                        <result property="category" column="category"/>
+                        <result property="categoryText" column="category_text"/>
+                        <result property="language" column="language"/>
+                        <result property="rootFile" column="root_file"/>
+                        <result property="originalName" column="original_name"/>
+                        <result property="path" column="path"/>
+                        <result property="views" column="views"/>
+                        <result property="unzipPath" column="unzip_path"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="delFlag" column="del_flag"/>
+            </resultMap>
+    <select id="bookPage" resultType="com.wyzy.hospital.app.api.dto.AppEbookDTO">
+		select id, book_id,file_name,cover,title,author,views from epub_book as eb
+		<where>
+			<if test="book.category != null">
+				AND eb.category=#{book.category}
+			</if>
+			<if test="book.author != null">
+				AND eb.author=#{book.author}
+			</if>
+			<if test="book.title != null">
+				AND eb.title like concat('%',#{book.title},'%')
+			</if>
+		</where>
+	</select>
+</mapper>

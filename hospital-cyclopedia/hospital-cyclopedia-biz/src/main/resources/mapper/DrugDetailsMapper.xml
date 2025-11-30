@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.DrugDetailsMapper">
+
+  <resultMap id="drugDetailsMap" type="com.wyzy.hospital.cyclopedia.entity.DrugDetails">
+                  <id property="drugId" column="drug_id"/>
+                        <result property="drugName" column="drug_name"/>
+                        <result property="drugEnglish" column="drug_english"/>
+                        <result property="drugContent" column="drug_content"/>
+                        <result property="drugIndications" column="drug_Indications"/>
+                        <result property="drugTakeMethod" column="drug_take_method"/>
+                        <result property="drugMedicineHint" column="drug_medicine_hint"/>
+                        <result property="drugContraindication" column="drug_contraindication"/>
+                        <result property="drugAdverseReactions" column="drug_adverse_reactions"/>
+                        <result property="drugInteractions" column="drug_interactions"/>
+                        <result property="drugOther" column="drug_other"/>
+                        <result property="drugLevelId" column="drug_level_id"/>
+	                    <result property="delectStatus" column="delect_status"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+	<resultMap id="drugDetailsMapList" type="com.wyzy.hospital.cyclopedia.dto.DrugDetailsDTO">
+		<id property="drugId" column="drug_id"/>
+		<result property="drugName" column="drug_name"/>
+		<result property="typeId" column="typeId"/>
+		<result property="drugTypeName" column="drug_type_name"/>
+		<result property="drugTypeNumber" column="drugTypeNumber"/>
+		<result property="drugEnglish" column="drug_english"/>
+		<result property="drugContent" column="drug_content"/>
+		<result property="drugIndications" column="drug_Indications"/>
+		<result property="drugTakeMethod" column="drug_take_method"/>
+		<result property="drugMedicineHint" column="drug_medicine_hint"/>
+		<result property="drugContraindication" column="drug_contraindication"/>
+		<result property="drugAdverseReactions" column="drug_adverse_reactions"/>
+		<result property="drugInteractions" column="drug_interactions"/>
+		<result property="drugOther" column="drug_other"/>
+		<result property="drugLevelId" column="drug_level_id"/>
+		<result property="delectStatus" column="delect_status"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+<select id="selectDrugType" resultMap="drugDetailsMapList">
+SELECT d.drug_id, d.drug_name,t.id typeId ,t.drug_type_name,count(r.cy_drug_type_id ) drugTypeNumber FROM drug_details d LEFT JOIN drug_type t ON d.drug_id=t.drug_details_id LEFT JOIN
+(SELECT*FROM cy_reagent WHERE del_struts='0') r ON t.id=r.cy_drug_type_id WHERE d.drug_id=#{drugId}  GROUP BY t.id
+</select>
+
+	<select id="selectDrugTypeNumber" resultType="Integer">
+		SELECT count(t.drug_details_id) FROM drug_details d LEFT JOIN drug_type t ON d.drug_id=t.drug_details_id WHERE d.drug_id=#{did}
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmAcupointMapper">
+
+  <resultMap id="tcmAcupointMap" type="com.wyzy.hospital.tcm.entity.TcmAcupoint">
+                  <id property="acupointId" column="acupoint_id"/>
+                        <result property="acupointName" column="acupoint_name"/>
+                        <result property="contextId" column="context_id"/>
+                        <result property="acupointPicture" column="acupoint_picture"/>
+                        <result property="location" column="location"/>
+                        <result property="anatomy" column="anatomy"/>
+                        <result property="indications" column="Indications"/>
+                        <result property="operation" column="operation"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  <result property="isOnline" column="is_online"/>
+  </resultMap>
+	<resultMap id="tcmAcupointDTOMap" type="com.wyzy.hospital.tcm.dto.TcmAcupointDTO">
+		<id property="acupointId" column="acupoint_id"/>
+		<result property="acupointName" column="acupoint_name"/>
+		<result property="introduce" column="introduce"/>
+		<result property="contextId" column="context_id"/>
+		<result property="oneName" column="oneName"/>
+		<result property="twoName" column="twoName"/>
+		<result property="acupointPicture" column="acupoint_picture"/>
+		<result property="location" column="location"/>
+		<result property="anatomy" column="anatomy"/>
+		<result property="indications" column="Indications"/>
+		<result property="operation" column="operation"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+
+	<!--经络-->
+	<resultMap id="tcmSortAcupointMap" type="com.wyzy.hospital.tcm.vo.TcmAcupointVO">
+		<id property="acupointId" column="acupoint_id"/>
+		<result property="acupointName" column="acupoint_name"/>
+		<result property="isOnline" column="is_online"/>
+	</resultMap>
+	<resultMap id="tcmSortVoAcupointMap" type="com.wyzy.hospital.tcm.vo.TcmSortVO">
+		<result property="sortId" column="sort_two_id"/>
+		<result property="sortName" column="sort_two_name"/>
+		<collection property="tcmAcupointVOList" resultMap="tcmSortAcupointMap"/>
+	</resultMap>
+	<resultMap id="selectAcupointTcmSortListMap" type="com.wyzy.hospital.tcm.vo.TcmSortListVO">
+		<result property="sortId" column="sort_id"/>
+		<result property="sortName" column="sort_name"/>
+		<collection property="tcmSortVOList" resultMap="tcmSortVoAcupointMap"/>
+	</resultMap>
+
+	<!--查询经络腧穴:两级分类及数据表，三层-->
+	<select id="selectAcupointTcmSortListAPP" resultMap="selectAcupointTcmSortListMap">
+		SELECT
+		fs.sort_id,
+		fs.sort_name,
+		zs.sort_id AS sort_two_id,
+		zs.sort_name AS sort_two_name,
+		ac.acupoint_id,
+		ac.acupoint_name,
+		ac.is_online
+		FROM
+		( SELECT sort_id, sort_name FROM tcm_sort WHERE del_flag = 0 AND type = 1 AND superior_id = 0 ) fs
+		LEFT JOIN ( SELECT sort_id, sort_name, superior_id FROM tcm_sort WHERE del_flag = 0 AND type = 1 AND superior_id != 0 ) zs ON fs.sort_id = zs.superior_id
+		LEFT JOIN (select context_id,acupoint_id,acupoint_name,is_online from tcm_acupoint where is_online = 1 and del_flag = 0) ac  ON ac.context_id = zs.sort_id
+	</select>
+	<select id="getTcmAcupointDTOByName" resultMap="tcmAcupointDTOMap">
+		select st.oneName,st.twoName,a.acupoint_id,a.acupoint_name,a.context_id,
+		a.acupoint_picture,a.location,a.anatomy,a.Indications,
+		a.operation,a.del_flag,a.create_time,a.update_time,a.is_online
+		from
+		(select acupoint_id,acupoint_name,context_id,
+		acupoint_picture,location,anatomy,Indications,
+		operation,del_flag,create_time,update_time,is_online from tcm_acupoint where acupoint_name = #{acupointName}) a
+		LEFT JOIN
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =1 and t.type = 1 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		on a.context_id = st.sort_id
+	</select>
+	<!--查询经络腧穴:两级分类及数据表，三层-->
+	<select id="selectAcupointTcmSortList" resultMap="selectAcupointTcmSortListMap">
+		SELECT
+		fs.sort_id,
+		fs.sort_name,
+		zs.sort_id AS sort_two_id,
+		zs.sort_name AS sort_two_name,
+		ac.acupoint_id,
+		ac.acupoint_name,
+		ac.is_online
+		FROM
+		( SELECT sort_id, sort_name FROM tcm_sort WHERE del_flag = 0 AND type = 1 AND superior_id = 0 ) fs
+		LEFT JOIN ( SELECT sort_id, sort_name, superior_id FROM tcm_sort WHERE del_flag = 0 AND type = 1 AND superior_id != 0 ) zs ON fs.sort_id = zs.superior_id
+		LEFT JOIN (select context_id,acupoint_id,acupoint_name,is_online from tcm_acupoint where del_flag = 0) ac  ON ac.context_id = zs.sort_id
+	</select>
+	<select id="selectAll" resultMap="tcmAcupointDTOMap">
+		select acu.acupoint_id,st.oneName,st.twoName,acu.acupoint_name,acu.acupoint_picture,acu.context_id,acu.location,acu.anatomy,acu.Indications,acu.operation,acu.is_online from
+		(select acupoint_id,acupoint_name,context_id,location,anatomy,Indications,operation,is_online,acupoint_picture from tcm_acupoint where del_flag = 0) acu
+		LEFT JOIN
+		(select t.sort_id oneId,s.sort_id,t.sort_name oneName,s.sort_name twoName
+		from tcm_sort s,tcm_sort t where s.type =1 and t.type = 1
+		and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		on acu.context_id = st.sort_id
+	</select>
+	<sql id="selectAllDTO">
+		acupoint_id,acupoint_name,acupoint_picture,context_id,location,anatomy,Indications,operation,is_online
+	</sql>
+	<!--根据经络ID查询经脉数据表是否存在值-->
+	<select id="selectByContextId" resultMap="tcmAcupointDTOMap">
+		select <include refid="selectAllDTO"/>,st.oneName,st.twoName
+		FROM
+		tcm_acupoint a ,
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =1 and t.type = 1 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		where a.context_id = st.sort_id AND a.context_id =#{contextId}
+	</select>
+	<!--通过穴位ID查询穴位表-->
+	<select id="getById" resultMap="tcmAcupointDTOMap">
+		select <include refid="selectAllDTO"/>,a.introduce,st.oneName,st.twoName
+		FROM
+		tcm_acupoint a ,
+		(select s.sort_id,t.sort_name oneName,s.sort_name twoName  from tcm_sort s,tcm_sort t where s.type =1 and t.type = 1 and s.del_flag = 0 AND t.del_flag = 0 AND s.superior_id = t.sort_id) st
+		where  a.del_flag = 0 AND a.context_id = st.sort_id AND a.acupoint_id = #{acupointId}
+	</select>
+	<insert id="insertTcmAcupoint">
+		INSERT INTO tcm_acupoint(acupoint_id,acupoint_name,context_id,acupoint_picture,location,anatomy,Indications,operation,del_flag,create_time,update_time)
+		VALUES (#{tcmAcupoint.acupointId},#{tcmAcupoint.acupointName},#{tcmAcupoint.contextId},#{tcmAcupoint.acupointPicture},#{tcmAcupoint.location},
+		#{tcmAcupoint.anatomy},#{tcmAcupoint.indications},#{tcmAcupoint.operation},#{tcmAcupoint.delFlag},#{tcmAcupoint.createTime},#{tcmAcupoint.updateTime})
+	</insert>
+	<update id="updateTcmAcupointById">
+		update tcm_acupoint set is_online = #{isOnline} where acupoint_id = #{acupointId}
+	</update>
+	<update id="updatePojoById">
+		update tcm_acupoint
+		set
+		<if test="tcmAcupoint.acupointId != null and tcmAcupoint.acupointId != ''">
+		acupoint_id = #{tcmAcupoint.acupointId},
+		</if>
+		<if test="tcmAcupoint.acupointName != null and tcmAcupoint.acupointName != ''">
+		acupoint_name = #{tcmAcupoint.acupointName},
+		</if>
+		<if test="tcmAcupoint.contextId != null and tcmAcupoint.contextId != ''">
+		context_id = #{tcmAcupoint.contextId},
+		</if>
+		<if test="tcmAcupoint.acupointPicture != null and tcmAcupoint.acupointPicture != ''">
+		acupoint_picture = #{tcmAcupoint.acupointPicture},
+		</if>
+		<if test="tcmAcupoint.location != null and tcmAcupoint.location != ''">
+		location = #{tcmAcupoint.location},
+		</if>
+		<if test="tcmAcupoint.anatomy != null and tcmAcupoint.anatomy != ''">
+		anatomy = #{tcmAcupoint.anatomy},
+		</if>
+		<if test="tcmAcupoint.indications != null and tcmAcupoint.indications != ''">
+		Indications = #{tcmAcupoint.indications},
+		</if>
+		<if test="tcmAcupoint.operation != null and tcmAcupoint.operation != ''">
+		operation = #{tcmAcupoint.operation},
+		</if>
+		<if test="tcmAcupoint.createTime != null">
+		create_time = #{tcmAcupoint.createTime},
+		</if>
+		del_flag = #{tcmAcupoint.delFlag},
+		update_time = #{tcmAcupoint.updateTime},
+		is_online = #{tcmAcupoint.isOnline}
+		 where acupoint_id = #{tcmAcupoint.acupointId}
+	</update>
+</mapper>

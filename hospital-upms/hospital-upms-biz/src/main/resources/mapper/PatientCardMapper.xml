@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.PatientCardMapper">
+
+  <resultMap id="patientCardMap" type="com.wyzy.hospital.admin.api.entity.PatientCard">
+                  <id property="cardId" column="card_id"/>
+                        <result property="patientName" column="patient_name"/>
+                        <result property="memberId" column="member_id"/>
+                        <result property="patientIdCard" column="patient_id_card"/>
+                        <result property="patientPhone" column="patient_phone"/>
+                        <result property="patientWeight" column="patient_weight"/>
+                        <result property="patientHeight" column="patient_height"/>
+                        <result property="diseasesHistory" column="diseases_history"/>
+                        <result property="allergicHistory" column="allergic_history"/>
+                        <result property="surgeryHistory" column="surgery_history"/>
+                        <result property="habit" column="habit"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="relation" column="relation"/>
+            </resultMap>
+
+      <select id="selectPojoByPatientIdCard" resultMap="patientCardMap">
+           select card_id,patient_name,member_id,patient_id_card,patient_phone,patient_weight,patient_height,diseases_history,
+            allergic_history,surgery_history,habit,create_time,update_time,relation
+            from wyzy_patient_card where patient_id_card =  #{patientIdCard} and member_id = #{memberId}
+      </select>
+</mapper>

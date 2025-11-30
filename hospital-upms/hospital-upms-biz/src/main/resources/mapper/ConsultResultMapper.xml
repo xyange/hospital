@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ConsultResultMapper">
+
+  <resultMap id="consultResultMap" type="com.wyzy.hospital.admin.api.entity.ConsultResult">
+                        <id property="id" column="id"/>
+                        <result property="doctorDiagnosis" column="doctor_diagnosis"/>
+                        <result property="prescription" column="prescription"/>
+                        <result property="userDosage" column="user_dosage"/>
+                        <result property="carefulMatter" column="careful_matter"/>
+  </resultMap>
+
+
+    <select id="selectConsultResultsByCardId" resultMap="consultResultMap">
+        SELECT
+        cr.*
+        FROM
+        consult_result cr
+        JOIN wyzy_case_history wch ON wch.result_id = cr.id
+        <where>
+            <if test="consultOrder.cardId !=0 and consultOrder.cardId!= null ">
+                wch.card_id = #{ consultOrder.cardId }
+            </if>
+        </where>
+    </select>
+</mapper>

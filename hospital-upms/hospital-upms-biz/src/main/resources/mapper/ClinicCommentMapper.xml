@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ClinicCommentMapper">
+
+  <resultMap id="clinicCommentMap" type="com.wyzy.hospital.admin.api.entity.ClinicComment">
+                  <id property="commentId" column="comment_id"/>
+                        <result property="commentType" column="comment_type"/>
+                        <result property="idValue" column="id_value"/>
+                        <result property="content" column="content"/>
+                        <result property="commentImg" column="comment_img"/>
+                        <result property="commentRank" column="comment_rank"/>
+                        <result property="status" column="status"/>
+                        <result property="parentId" column="parent_id"/>
+                        <result property="userId" column="user_id"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+
+    <select id="getCommentListByClinicId" resultType="com.wyzy.hospital.admin.api.entity.ClinicComment">
+        select  comment_id  commentId,id_value  idValue,su.avatar avatar,su.username userName,comment_rank commentRank,content content,comment_img commentImg from  clinic_comment ccm
+        LEFT JOIN sys_user su on su.user_id = ccm.user_id
+        LEFT JOIN clinic_diagnosis_connect cdc ON cdc.diagnosis_id = ccm.id_value
+        <where>
+                ccm.status = 1
+            and ccm.comment_type = 2
+            <if test="clinicId != null and clinicId !=0">
+                and cdc.clinic_id   = #{clinicId}
+            </if>
+            <if test="clinicId != null and clinicId !=0">
+                and cdc.diagnosis_id = #{diagnosisId}
+            </if>
+        </where>
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.UserHospitalMapper">
+    <resultMap id="userHospitalMap" type="com.wyzy.hospital.admin.api.entity.UserHospital">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="hospitalId" column="hospital_id"/>
+        <result property="isCollect" column="is_collect"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getCollectedHospital" resultType="com.wyzy.hospital.admin.api.vo.hospital.HospitalsCollectVO">
+        SELECT hop.id,
+               hop.hospital_name     AS hospitalName,
+               hop.grade_flag        AS gradeFlag,
+               hop.hospital_images   AS hospitalImages,
+               hop.address,
+               hop.registration_date AS registrationDate,
+               hop.lon,
+               hop.lat
+        FROM hospitals hop
+        WHERE hop.id IN (SELECT uh.hospital_id FROM user_hospital uh WHERE uh.user_id = #{userId})
+    </select>
+</mapper>

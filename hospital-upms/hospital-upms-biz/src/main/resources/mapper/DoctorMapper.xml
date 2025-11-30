@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.DoctorMapper">
+    <resultMap id="doctorMap" type="com.wyzy.hospital.admin.api.entity.Doctor">
+        <id property="doctorId" column="doctor_id"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="professionalTitleId" column="professional_title_id"/>
+        <result property="area" column="area"/>
+        <result property="peopleNumber" column="people_number"/>
+        <result property="saleMan" column="sale_man"/>
+        <result property="salePhone" column="sale_phone"/>
+        <result property="experience" column="experience"/>
+        <result property="phone" column="phone"/>
+        <result property="wellKnown" column="well_known"/>
+        <result property="awards" column="awards"/>
+        <result property="status" column="status"/>
+        <result property="source" column="source"/>
+        <result property="passDate" column="pass_date"/>
+        <result property="workYears" column="work_years"/>
+        <result property="idCard" column="id_card"/>
+        <result property="professionalCertificate" column="professional_certificate"/>
+        <result property="avatar" column="avatar"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+    <resultMap id="pcDoctorMap" type="com.wyzy.hospital.admin.api.dto.PcDoctorDTO">
+        <id property="doctorId" column="doctorId"/>
+        <result property="departmentId" column="departmentId"/>
+        <result property="passDate" column="passDate"/>
+        <result property="source" column="source"/>
+        <result property="doctorName" column="doctorName"/>
+        <result property="phone" column="phone"/>
+        <result property="professionalTitleId" column="professionalTitleId"/>
+        <result property="professionalTitle" column="professionalTitle"/>
+        <result property="departmentId" column="departmentId"/>
+        <result property="department" column="department"/>
+        <result property="registerPrice" column="registerPrice"/>
+        <result property="registerIncome" column="registerIncome"/>
+        <result property="picturePrice" column="picturePrice"/>
+        <result property="pictureIncome" column="pictureIncome"/>
+        <result property="videoAudioPrice" column="videoAudioPrice"/>
+        <result property="videoAudioIncome" column="videoAudioIncome"/>
+        <result property="privatePrice" column="privatePrice"/>
+        <result property="privateIncome" column="privateIncome"/>
+        <result property="examStatusId" column="examStatusId"/>
+        <result property="examStatus" column="examStatus"/>
+        <result property="examDetailResult" column="examDetailResult"/>
+        <result property="examPersonId" column="examPersonId"/>
+
+        <collection property="doctorAttribution" resultMap="DoctorAttributionMap"/>
+    </resultMap>
+
+    <resultMap id="DoctorAttributionMap" type="com.wyzy.hospital.admin.api.dto.doctor.DoctorAttribution">
+        <id column="attributionId" property="attributionId"/>
+        <result column="attributionTypeId" property="attributionTypeId"/>
+        <result column="attributionType" property="attributionType"/>
+        <result column="attributionName" property="attributionName"/>
+        <result column="organizationGrade" property="organizationGrade"/>
+
+    </resultMap>
+    <resultMap id="pcDoctorDetail" type="com.wyzy.hospital.admin.api.dto.PcDoctorDTO">
+        <id property="doctorId" column="doctorId"/>
+
+        <result property="doctorType" column="doctorType"/>
+        <result property="doctorCode" column="doctorCode"/>
+        <result property="departmentId" column="departmentId"/>
+        <result property="passDate" column="passDate"/>
+        <result property="source" column="source"/>
+        <result property="sourceId" column="sourceId"/>
+        <result property="doctorName" column="doctorName"/>
+        <result property="phone" column="phone"/>
+        <result property="experience" column="experience"/>
+        <result property="doctorCode" column="doctorCode"/>
+        <result property="wishes" column="wishes"/>
+        <result property="salePhone" column="salePhone"/>
+        <result property="saleMan" column="saleMan"/>
+        <result property="awards" column="awards"/>
+        <result property="workYears" column="workYears"/>
+        <result property="idCard" column="idCard"/>
+        <result property="serve" column="serve"/>
+        <result property="wellKnown" column="wellKnown"/>
+        <result property="examStatus" column="examStatus"/>
+        <result property="examStatusId" column="examStatusId"/>
+        <result property="examDetailResult" column="examDetailResult"/>
+        <result property="examPersonId" column="examPersonId"/>
+
+
+        <result property="status" column="status"/>
+        <result property="professionalTitleId" column="professionalTitleId"/>
+        <result property="professionalCertificate" column="professionalCertificate"/>
+        <result property="professionalTitle" column="professionalTitle"/>
+        <result property="departmentId" column="departmentId"/>
+        <result property="department" column="department"/>
+        <result property="registerPrice" column="registerPrice"/>
+        <result property="registerIncome" column="registerIncome"/>
+        <result property="picturePrice" column="picturePrice"/>
+        <result property="pictureIncome" column="pictureIncome"/>
+        <result property="videoAudioPrice" column="videoAudioPrice"/>
+        <result property="videoAudioIncome" column="videoAudioIncome"/>
+        <result property="privatePrice" column="privatePrice"/>
+        <result property="privateIncome" column="privateIncome"/>
+        <result property="attrTypeName" column="attrTypeName"/>
+        <result property="avatar" column="avatar"/>
+        <result property="adept" column="adept"/>
+        <collection property="doctorAttribution" resultMap="DoctorAttributionMap"/>
+    </resultMap>
+
+    <resultMap id="doctorServeMap" type="com.wyzy.hospital.admin.api.dto.doctor.DoctorServeDTO">
+        <id column="doctorId" property="doctor_id"/>
+        <id column="service_id" property="serviceId"/>
+        <id column="price" property="price"/>
+        <id column="income" property="income"/>
+        <id column="serveName" property="serveName"/>
+    </resultMap>
+
+    <sql id="doctorSql">
+        select doctor_id,
+               doctor_name,
+               department_id,
+               professional_title_id,
+               area,
+               people_number,
+               sale_man,
+               experience,
+               phone,
+               well_known,
+               awards,
+               status,
+               source,
+               pass_date,
+               work_years,
+               id_card,
+               professional_certificate,
+               avatar,
+               del_flag,
+               sale_phone
+        from wyzy.doctor
+    </sql>
+
+    <sql id="doctorClinicSql">
+        select doctor_id,
+               doctor_name,
+               department_id,
+               professional_title_id,
+               area,
+               people_number,
+               sale_man,
+               experience,
+               phone,
+               well_known,
+               awards,
+               status,
+               source,
+               pass_date,
+               work_years,
+               id_card,
+               professional_certificate,
+               avatar,
+               del_flag,
+               sale_phone
+        from wyzy.doctor
+    </sql>
+
+    <!--后台管理医生查询-->
+    <select id="pcListDoctorBy" resultMap="pcDoctorMap">
+        SELECT finalDoc.*,
+               attr.attribution_id   AS attributionId,
+               attr.attribution_type AS attributionTypeId,
+               (CASE
+                       WHEN attr.attribution_type = 131 THEN (SELECT h.hospital_name
+                                                              from hospitals h
+                                                              WHERE h.id = attr.attribution_id)
+                       WHEN attr.attribution_type = 132 THEN (SELECT c.clinic_title
+                                                              from clinic c
+                                                              WHERE c.clinic_id = attr.attribution_id)
+                       WHEN attr.attribution_type = 133 THEN (SELECT "个人")
+                        WHEN attr.attribution_type IS NULL THEN (SELECT "")
+                       END)          AS attributionName
+
+                FROM (SELECT d.doctorId,
+                             d.departmentId,
+                             d.passDate,
+                             d.source,
+                             d.doctorName,
+                             d.phone,
+                             d.professionalTitleId,
+                             exam.label                                                             AS examStatus,
+                             d.examStatusId,
+                             d.examDetailResult,
+                             d.examPersonId,
+                             dic.label                                                              AS professionalTitle,
+
+                             dep.department_name                                                    AS department,
+
+
+                             s1.price                                                               AS registerPrice,
+                             s1.income                                                              AS registerIncome,
+                             s2.price                                                               AS picturePrice,
+                             s2.income                                                              AS pictureIncome,
+                             s3.price                                                               AS videoAudioPrice,
+                             s3.income                                                              AS videoAudioIncome,
+                             s4.price                                                               AS privatePrice,
+                             s4.income                                                              AS privateIncome,
+                             (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = s1.service_id) AS serveName
+                FROM (
+                SELECT d.pass_date                                                       AS passDate,
+                       d.doctor_id                                                       AS doctorId,
+                       d.doctor_name                                                     AS doctorName,
+                       d.phone,
+                       d.professional_title_id                                           AS professionalTitleId,
+
+                       d.department_id                                                   AS departmentId,
+
+
+                       (SELECT dic.label FROM sys_dic_item dic WHERE dic.id = d.source) AS source,
+                       d.exam_status_id                                                  AS examStatusId,
+                       d.exam_detail_result                                              AS examDetailResult,
+                       d.exam_person_id                                                  AS examPersonId
+                FROM doctor d
+        <where>
+            d.del_flag = 0
+            <if test="doctorIds != null and doctorIds != ''">
+                AND d.doctor_id IN (${doctorIds})
+            </if>
+            <if test="passDateBegin != null  and passDateBegin != '' and passDateEnd != null and passDateEnd != ''">
+                AND d.pass_date >= #{passDateBegin}
+                AND d.pass_date &lt;= #{passDateEnd}
+            </if>
+            <if test="nameOrPhone != null and nameOrPhone != ''">
+                <bind name="valuePattern" value="'%' + nameOrPhone + '%'"/>
+                AND concat(d.doctor_name, d.phone) LIKE #{valuePattern}
+            </if>
+            <if test="source != null and source != ''">
+                AND d.source = #{source}
+            </if>
+            <if test="departmentIds != null and departmentIds != ''">
+                AND d.department_id IN (${departmentIds})
+            </if>
+            <if test="status != null">
+                AND d.status= #{status}
+            </if>
+
+        </where>
+        ) d
+        LEFT JOIN doctor_serve s1 ON s1.doctor_id = d.doctorId
+        AND s1.service_id = 126
+        LEFT JOIN doctor_serve s2 ON s2.doctor_id = d.doctorId
+        AND s2.service_id = 123
+        LEFT JOIN doctor_serve s3 ON s3.doctor_id = d.doctorId
+        AND s3.service_id = 124
+        LEFT JOIN doctor_serve s4 ON s4.doctor_id = d.doctorId
+        AND s4.service_id = 125
+        LEFT JOIN sys_dic_item dic ON dic.id = d.professionalTitleId
+        LEFT JOIN departments dep ON dep.id = d.departmentId
+        LEFT JOIN sys_dic_item exam ON exam.id = d.examStatusId
+        LIMIT
+                #{pageBegin},
+                #{pageSize}) finalDoc
+        LEFT JOIN doctor_attribution attr ON attr.doctor_id = finalDoc.doctorId
+        ORDER BY attr.attribution_type
+    </select>
+    <!--后台管理查医生总数-->
+    <select id="pcCountDoctorBy" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM (SELECT d.doctorId
+                FROM (
+                SELECT d.doctor_id AS doctorId
+                FROM doctor d
+        <where>
+            d.del_flag = 0
+            <if test="doctorIds != null and doctorIds != ''">
+                AND d.doctor_id IN (${doctorIds})
+            </if>
+            <if test="passDateBegin != null  and passDateBegin != '' and passDateEnd != null and passDateEnd != ''">
+                AND d.pass_date >= #{passDateBegin}
+                AND d.pass_date &lt;= #{passDateEnd}
+            </if>
+            <if test="nameOrPhone != null and nameOrPhone != ''">
+                <bind name="valuePattern" value="'%' + nameOrPhone + '%'"/>
+                AND concat(d.doctor_name, d.phone) LIKE #{valuePattern}
+            </if>
+            <if test="source != null and source != ''">
+                AND d.source = #{source}
+            </if>
+            <if test="departmentIds != null and departmentIds != ''">
+                AND d.department_id IN (${departmentIds})
+            </if>
+            <if test="status != null">
+                AND d.STATUS = #{status}
+            </if>
+
+        </where>
+        )
+        d
+        LEFT JOIN doctor_serve s ON s.doctor_id = d.doctorId
+        GROUP BY
+        d.doctorId
+        ) finalData
+    </select>
+
+    <!--根据归属类型查机构-->
+    <select id="listInstitutions" resultType="java.util.Map">
+        <if test="id != null and id == 131">
+            SELECT h.id AS id, h.hospital_name AS name
+            FROM hospitals h
+            <where>
+                <if test="name != null and name != ''">
+                    h.hospital_name LIKE
+                    <bind name="hNameValue" value="'%' + name + '%'"/>
+                    #{hNameValue};
+                </if>
+            </where>
+        </if>
+        <if test="id != null and id == 132">
+            SELECT c.clinic_id AS id, c.clinic_title AS name
+            FROM clinic c
+            <where>
+                <if test="name != null and name != ''">
+                    c.clinic_title LIKE
+                    <bind name="cNameValue" value="'%' + name + '%'"/>
+                    #{cNameValue};
+                </if>
+            </where>
+        </if>
+    </select>
+
+
+    <select id="getDoctorByClinicId" resultType="com.wyzy.hospital.admin.api.dto.DoctorDTO">
+        select distinct
+        d.doctor_id,
+        d.doctor_name,
+        d.department_id,
+        d.professional_title_id,
+        d.area,
+        d.people_number,
+        d.sale_man,
+        d.experience,
+        d.phone,
+        d.well_known,
+        d.awards,
+        d.status,
+        d.source,
+        d.pass_date,
+        d.work_years,
+        d.id_card,
+        d.professional_certificate,
+        d.avatar,
+        d.del_flag,
+        d.sale_phone,
+        GROUP_CONCAT(dse.disease_name) AS disease_name
+        from wyzy.doctor d
+        left join doctor_disease ddse on ddse.doctor_id = d.doctor_id
+        left join disease dse  on ddse.disease_id =dse.id
+        where ddse.doctor_id in (
+                select doctor_id from doctor_attribution where attribution_id = #{clinicId}
+                )
+        GROUP BY d.doctor_id
+    </select>
+
+    <!--根据id查医生-->
+    <select id="getDoctorById" resultMap="pcDoctorDetail">
+        SELECT d.*,
+        (SELECT GROUP_CONCAT(serves.service_id SEPARATOR '、') FROM doctor_serve serves WHERE serves.doctor_id=d.doctorId) AS serve,
+        exam.label AS examStatus,
+               (CASE
+                       WHEN attr.attribution_type = 131 THEN (SELECT h.hospital_name
+                                                              from hospitals h
+                                                              WHERE h.id = attr.attribution_id)
+                       WHEN attr.attribution_type = 132 THEN (SELECT c.clinic_title
+                                                              from clinic c
+                                                              WHERE c.clinic_id = attr.attribution_id)
+                       WHEN attr.attribution_type = 133 THEN (SELECT "个人")
+                       END)                                                                               AS attributionName,
+               attr.attribution_id                                                                        AS attributionId,
+               attr.attribution_type                                                                      AS attributionTypeId,
+               (SELECT dicItem.label
+                FROM sys_dic_item dicItem
+                WHERE dicItem.id = attr.attribution_type)                                                 AS attributionType,
+               (CASE
+                       WHEN attr.attribution_type = 131 AND
+                            (SELECT h.grade_flag FROM hospitals h WHERE h.id = attr.attribution_id) = 0 THEN "三级甲等"
+                       WHEN attr.attribution_type = 131 AND (SELECT h.grade_flag
+                                                             FROM hospitals h
+                                                             WHERE h.id = attr.attribution_id) = 1 THEN "三级乙等"
+                       WHEN attr.attribution_type = 131 AND (SELECT h.grade_flag
+                                                             FROM hospitals h
+                                                             WHERE h.id = attr.attribution_id) = 1 THEN "二级甲等"
+                       ELSE ""
+                       END
+                       )
+                                                                                                          AS organizationGrade,
+
+               professionals.label                                                                        AS professionalTitle,
+
+               sources.label                                                                              AS source,
+
+               dep.department_name                                                                        AS department,
+               s1.price                                                                                   AS registerPrice,
+               s1.income                                                                                  AS registerIncome,
+               s2.price                                                                                   AS picturePrice,
+               s2.income                                                                                  AS pictureIncome,
+               s3.price                                                                                   AS videoAudioPrice,
+               s3.income                                                                                  AS videoAudioIncome,
+               s4.price                                                                                   AS privatePrice,
+               s4.income                                                                                  AS privateIncome,
+               attrType.label                                                                             AS attrTypeName
+        FROM (SELECT d.work_years            AS workYears,
+                     d.awards                AS awards,
+                     d.id_card               AS idCard,
+                     d.wishes,
+                     d.exam_detail_result    AS examDetailResult,
+                     d.exam_person_id        AS examPersonId,
+                     d.exam_status_id        AS examStatusId,
+                     d.phone                 AS phone,
+                     d.doctor_type           AS doctorType,
+                     d.avatar,
+                     d.experience,
+                     d.doctor_id             AS doctorId,
+                     d.doctor_code           AS doctorCode,
+                     d.status,
+                     d.sale_man              AS saleMan,
+                     d.sale_phone            AS salePhone,
+                     d.pass_date             AS passDate,
+                     d.doctor_name           AS doctorName,
+                      /*等级*/
+                     d.professional_title_id AS professionalTitleId,
+                      /*来源*/
+                     d.source                AS sourceId,
+                      /*科室*/
+                     d.department_id         AS departmentId,
+                     d.well_known            AS wellKnown,
+                     (SELECT GROUP_CONCAT(disease.disease_name)
+                      FROM disease
+                      WHERE disease.id IN (SELECT ddi.disease_id
+                                           FROM doctor_disease ddi
+                                           WHERE ddi.doctor_id = d.doctor_id)) AS adept,
+                     d.professional_certificate                                AS professionalCertificate
+              FROM doctor d
+              WHERE d.doctor_id = #{id}
+                AND d.del_flag = 0) d
+
+
+                     LEFT JOIN departments dep ON dep.id = d.departmentId
+                     LEFT JOIN sys_dic_item sources ON sources.id = d.sourceId
+                     LEFT JOIN sys_dic_item professionals ON professionals.id = d.professionalTitleId
+                     LEFT JOIN doctor_attribution attr ON attr.doctor_id = d.doctorId
+                     LEFT JOIN doctor_serve s1 ON s1.doctor_id = d.doctorId AND s1.service_id = 126
+                     LEFT JOIN doctor_serve s2 ON s2.doctor_id = d.doctorId AND s2.service_id = 123
+                     LEFT JOIN doctor_serve s3 ON s3.doctor_id = d.doctorId AND s3.service_id = 124
+                     LEFT JOIN doctor_serve s4 ON s4.doctor_id = d.doctorId AND s4.service_id = 125
+                     LEFT JOIN sys_dic_item attrType ON attrType.id = attr.attribution_type
+                     LEFT JOIN sys_dic_item exam ON exam.id = d.examStatusId
+    </select>
+
+    <update id="deleteDoctorById">
+        UPDATE doctor
+        SET del_flag=1
+        WHERE doctor_id = #{doctorId}
+    </update>
+    <update id="examDoctor">
+        UPDATE doctor
+        SET exam_status_id=#{examStatusId},
+            exam_person_id=#{examPersonId},
+            exam_detail_result=#{examDetailResult}
+        WHERE doctor_id = #{doctorId}
+    </update>
+
+    <select id="getDoctorList" resultMap="doctorMap">
+        <include refid="doctorClinicSql">
+        </include>
+        where doctor_id in (
+            select doctor_id from doctor_attribution da
+        <where>
+            <if test="clinicId != null and clinicId != '0'">
+               da.attribution_id = #{clinicId}
+            </if>
+                and da.attribution_type = "132"
+        </where>
+        )
+    </select>
+
+    <select id="getIdsByIncome" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(ds.doctor_id)
+        FROM doctor_serve ds
+        <where>
+            <if test="inComeType != null">
+                 ds.service_id = #{inComeType}
+            </if>
+            <if test="inComeBegin != null">
+                AND ds.income >= #{inComeBegin}
+            </if>
+            <if test="inComeEnd != null">
+                AND ds.income &lt;=#{inComeEnd}
+            </if>
+        </where>
+    </select>
+
+</mapper>

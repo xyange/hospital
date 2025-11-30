@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.admin.mapper.ConsultSettingMapper">
+
+  <resultMap id="consultSettingMap" type="com.wyzy.hospital.admin.api.entity.ConsultSetting">
+                  <id property="orderId" column="order_id"/>
+                        <result property="doctorId" column="doctor_id"/>
+                        <result property="orderTime" column="order_time"/>
+                        <result property="already" column="already"/>
+                        <result property="dateTime" column="date_time"/>
+            </resultMap>
+    <update id="updateAlreadyById">
+        update consult_setting set already = 1 where order_id = #{orderId}
+    </update>
+    <select id="getTimeByDoctorId" resultType="com.wyzy.hospital.admin.api.dto.ConsultSettingDTO">
+        select order_id,doctor_id,order_time,already,date_time from consult_setting where doctor_id = #{doctorId} and already = 0 and date_time >= #{substring}
+        ORDER BY date_time,order_time
+    </select>
+    <select id="selectConsultSettingByPojo" resultMap="consultSettingMap">
+        select order_id,doctor_id,order_time,already,date_time from consult_setting
+        <where>
+            <if test="pojo.orderId != null and pojo.orderId != ''">
+                order_id = #{pojo.orderId}
+            </if>
+            <if test="pojo.doctorId != null and pojo.doctorId != ''">
+                and doctor_id = #{pojo.doctorId}
+            </if>
+            <if test="pojo.orderTime != null">
+                and order_time = #{pojo.orderTime}
+            </if>
+            <if test="pojo.already != null and pojo.already != ''">
+                and already = #{pojo.already}
+            </if>
+            <if test="pojo.dateTime != null">
+                and date_time = #{pojo.dateTime}
+            </if>
+        </where>
+        ORDER BY date_time,order_time
+    </select>
+</mapper>

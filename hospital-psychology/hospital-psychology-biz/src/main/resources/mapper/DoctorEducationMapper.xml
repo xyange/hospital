@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.DoctorEducationMapper">
+
+  <resultMap id="doctorEducationMap" type="com.wyzy.hospital.psychology.api.entity.DoctorEducation">
+                  <id property="id" column="id"/>
+                    <result property="doctorId" column="doctor_id"/>
+                        <result property="college" column="college"/>
+                        <result property="profession" column="profession"/>
+                        <result property="degree" column="degree"/>
+                        <result property="startDate" column="start_date"/>
+                        <result property="endDate" column="end_date"/>
+            </resultMap>
+    <select id="selectDoctorEducationByDoctorId" resultMap="doctorEducationMap">
+        select id,doctor_id,college,profession,degree,start_date,end_date from doctor_education where doctor_id = #{doctorId}
+    </select>
+    <select id="selectDoctorEducationByDoctorEducation" resultType="java.lang.Integer">
+        select count(*) from doctor_education
+        where doctor_id = #{doctorEducation.doctorId}
+          and college = #{doctorEducation.college}
+          and profession = #{doctorEducation.profession}
+          and degree = #{doctorEducation.degree}
+    </select>
+</mapper>

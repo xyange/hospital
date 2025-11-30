@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.tcm.mapper.TcmMedicalbookMapper">
+
+  <resultMap id="tcmMedicalbookMap" type="com.wyzy.hospital.tcm.entity.TcmMedicalbook">
+                  <id property="medicalbookId" column="medicalbook_id"/>
+                        <result property="medicalbookName" column="medicalbook_name"/>
+                        <result property="classicsId" column="classics_id"/>
+	 			 		<result property="sectId" column="sect_id"/>
+	  					<result property="subjectId" column="subject_id"/>
+	  					<result property="writerId" column="writer_id"/>
+                        <result property="catalogue" column="catalogue"/>
+                        <result property="content" column="content"/>
+	  					<result property="pageView" column="page_view"/>
+	  					<result property="delFlag" column="del_flag"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+	  					<result property="isOnline" column="is_online"/>
+            </resultMap>
+	<resultMap id="tcmMedicalbookDTOMap" type="com.wyzy.hospital.tcm.dto.TcmMedicalbookDTO">
+		<id property="medicalbookId" column="medicalbook_id"/>
+		<result property="medicalbookName" column="medicalbook_name"/>
+		<result property="classicsId" column="classics_id"/>
+		<result property="sectId" column="sect_id"/>
+		<result property="subjectId" column="subject_id"/>
+		<result property="writerId" column="writer_id"/>
+		<result property="classicsName" column="classics_name"/>
+		<result property="sectName" column="sect_name"/>
+		<result property="subjectName" column="subject_name"/>
+		<result property="writerName" column="writer_name"/>
+		<result property="catalogue" column="catalogue"/>
+		<result property="content" column="content"/>
+		<result property="pageView" column="page_view"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="isCollect" column="isCollect"/>
+	</resultMap>
+
+	<sql id="selectAll">
+		medicalbook_id,medicalbook_name,classics_id,sect_id,subject_id,writer_id,catalogue,
+		content,del_flag,page_view,create_time,update_time,is_online
+	</sql>
+
+	<select id="selectTcmMedicalbookByName" resultMap="tcmMedicalbookMap">
+		select <include refid="selectAll"/>
+		from tcm_medicalbook where medicalbook_name = #{medicalbookName}
+	</select>
+	<insert id="insertTcmMedicalbook" >
+		insert into tcm_medicalbook(medicalbook_id,medicalbook_name,classics_id,sect_id,subject_id,writer_id,catalogue,content,del_flag,create_time,update_time,is_online)
+		values (#{tcmMedicalbook.medicalbookId},#{tcmMedicalbook.medicalbookName},
+		#{tcmMedicalbook.classicsId},#{tcmMedicalbook.sectId},#{tcmMedicalbook.subjectId},
+		#{tcmMedicalbook.writerId},#{tcmMedicalbook.catalogue},#{tcmMedicalbook.content},
+		#{tcmMedicalbook.delFlag},#{tcmMedicalbook.createTime},#{tcmMedicalbook.updateTime},
+		#{tcmMedicalbook.isOnline})
+	</insert>
+	<update id="updateIsOnlineById">
+		update tcm_medicalbook set is_online = #{isOnline} where medicalbook_id = #{medicalbookId}
+	</update>
+	<update id="updateTcmMedicalbookById">
+		update tcm_medicalbook
+		 set
+		<if test="tcmMedicalbook.medicalbookId != null and tcmMedicalbook.medicalbookId != ''">
+		medicalbook_id = #{tcmMedicalbook.medicalbookId},
+		</if>
+		<if test="tcmMedicalbook.medicalbookName != null and tcmMedicalbook.medicalbookName != ''">
+		medicalbook_name = #{tcmMedicalbook.medicalbookName},
+		</if>
+		<if test="tcmMedicalbook.classicsId != null and tcmMedicalbook.classicsId != ''">
+		classics_id = #{tcmMedicalbook.classicsId},
+		</if>
+		<if test="tcmMedicalbook.sectId != null and tcmMedicalbook.sectId != ''">
+		sect_id = #{tcmMedicalbook.sectId},
+		</if>
+		<if test="tcmMedicalbook.subjectId != null and tcmMedicalbook.subjectId != ''">
+		subject_id = #{tcmMedicalbook.subjectId},
+		</if>
+		<if test="tcmMedicalbook.writerId != null and tcmMedicalbook.writerId != ''">
+		writer_id = #{tcmMedicalbook.writerId},
+		</if>
+		<if test="tcmMedicalbook.catalogue != null and tcmMedicalbook.catalogue != ''">
+		catalogue = #{tcmMedicalbook.catalogue},
+		</if>
+		<if test="tcmMedicalbook.content != null and tcmMedicalbook.content != ''">
+		content = #{tcmMedicalbook.content},
+		</if>
+		<if test="tcmMedicalbook.createTime != null">
+		create_time = #{tcmMedicalbook.createTime},
+		</if>
+		del_flag = #{tcmMedicalbook.delFlag},
+		update_time = #{tcmMedicalbook.updateTime},
+		is_online = #{tcmMedicalbook.isOnline}
+		where medicalbook_id = #{tcmMedicalbook.medicalbookId}
+	</update>
+	<sql id="selectSQL">
+		select
+			medicalbook_id,medicalbook_name,
+			classics_id,classics.bookattr_name as classics_name,
+			sect_id,sect.bookattr_name as sect_name,
+			subject_id,sub.bookattr_name as subject_name,
+			writer_id,writer.bookattr_name as writer_name,
+			catalogue,content,del_flag,book.page_view,is_online,create_time,update_time
+		from
+			tcm_medicalbook book,
+			(select id,bookattr_name FROM tcm_bookattr) classics,
+			(select id,bookattr_name FROM tcm_bookattr) sect,
+			(select id,bookattr_name FROM tcm_bookattr) sub,
+			(select id,bookattr_name FROM tcm_bookattr) writer
+		where book.classics_id = classics.id
+			and book.sect_id = sect.id
+		AND book.subject_id =sub.id
+		and book.writer_id = writer.id
+	</sql>
+	
+	<!--通过医书属性多值查询医书表数据列表-->
+	<select id="selectByMultivalued" resultMap="tcmMedicalbookDTOMap">
+		SELECT
+		book.medicalbook_id,book.medicalbook_name,
+		(case  when  userbook.is_collect = 1  then  1 else  0 END) isCollect,
+		book.classics_id,book.classics_name,book.sect_id,book.sect_name,book.subject_id,
+		book.subject_name,book.writer_id,book.writer_name,book.catalogue,book.content,
+		book.del_flag,book.is_online,book.create_time,book.update_time
+		from
+		(select
+		medicalbook_id,medicalbook_name,
+		classics_id,classics.bookattr_name as classics_name,
+		sect_id,sect.bookattr_name as sect_name,
+		subject_id,sub.bookattr_name as subject_name,
+		writer_id,writer.bookattr_name as writer_name,
+		catalogue,content,del_flag,is_online,create_time,update_time
+		from
+		tcm_medicalbook book,
+		(select id,bookattr_name FROM tcm_bookattr) classics,
+		(select id,bookattr_name FROM tcm_bookattr) sect,
+		(select id,bookattr_name FROM tcm_bookattr) sub,
+		(select id,bookattr_name FROM tcm_bookattr) writer
+		where book.classics_id = classics.id
+		and book.sect_id = sect.id
+		AND book.subject_id =sub.id
+		and book.writer_id = writer.id
+		<if test="classicsId != null and classicsId != ''">
+			and classics_id = #{classicsId}
+		</if>
+		<if test="sectId != null and sectId != ''">
+			and sect_id = #{sectId}
+		</if>
+		<if test="subjectId != null and subjectId != ''">
+			and subject_id = #{subjectId}
+		</if>
+		<if test="writerId != null and writerId != ''">
+			and writer_id = #{writerId}
+		</if>
+		and del_flag = 0 and is_online = 1
+		) book
+		LEFT JOIN
+		(select medicalbook_id,is_collect from tcm_usermedicalbook where user_id = 1) userbook
+		ON book.medicalbook_id = userbook.medicalbook_id;
+	</select>
+
+
+	<!--通过医书ID查询医书表数据列表-->
+	<select id="getById" resultMap="tcmMedicalbookDTOMap">
+		<include refid="selectSQL"/>
+		AND book.medicalbook_id = #{medicalbookId} and del_flag = 0
+	</select>
+
+	<!--分页查询-->
+	<select id="getTcmMedicalbookPage" resultMap="tcmMedicalbookDTOMap">
+		<include refid="selectSQL"/>
+		and book.del_flag = 0 ORDER BY book.update_time DESC
+	</select>
+
+	<!--查询收藏医书ID集合-->
+	<select id="getcollectMedicalbook" resultType="com.wyzy.hospital.tcm.dto.TcmMedicalbookDTO">
+		<include refid="selectSQL"/>
+		and book.is_online = 1 and book.medicalbook_id in
+		<foreach collection="list" open="(" close=")" separator="," item ="id" index="i">
+			#{id}
+		</foreach>
+	</select>
+	<select id="getByIdAPP" resultMap="tcmMedicalbookDTOMap">
+		SELECT
+			book.medicalbook_id,book.medicalbook_name,
+			(case  when  userbook.is_collect = 1  then  1 else  0 END) isCollect,
+			book.classics_id,book.sect_id,book.subject_id,book.writer_id,book.catalogue,
+			book.content,book.del_flag,book.page_view,book.create_time,book.update_time,book.is_online
+		from
+		(select medicalbook_id,medicalbook_name,classics_id,sect_id,subject_id,writer_id,catalogue,
+		content,del_flag,page_view,create_time,update_time,is_online
+		from tcm_medicalbook where medicalbook_id = #{medicalbookId}) book
+		LEFT JOIN
+		(select medicalbook_id,is_collect from tcm_usermedicalbook where user_id = #{id}) userbook
+		ON book.medicalbook_id = userbook.medicalbook_id
+	</select>
+	<update id="updatePageViewById">
+		UPDATE tcm_medicalbook set page_view = page_view + 1 where medicalbook_id = #{medicalbookId}
+	</update>
+</mapper>

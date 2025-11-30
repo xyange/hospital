@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.CyDepartmentMapper">
+
+  <resultMap id="cyDepartmentMap" type="com.wyzy.hospital.cyclopedia.entity.CyDepartment">
+                  <id property="departmentId" column="department_id"/>
+                        <result property="departmentName" column="department_name"/>
+                        <result property="parentId" column="parent_id"/>
+                        <result property="departmentLevel" column="department_level"/>
+            </resultMap>
+
+	<resultMap id="departmentDtoList" type="com.wyzy.hospital.cyclopedia.dto.CyDepartmentDTO">
+		<id property="departmentId" column="department_id"/>
+		<result property="departmentName" column="department_name"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="departmentLevel" column="department_level"/>
+	</resultMap>
+
+
+
+	<resultMap id="DepartmentMapList" type="com.wyzy.hospital.cyclopedia.dto.CyOneDepartmentDTO">
+		<id property="aid" column="aid"/>
+		<result property="aname" column="aname"/>
+		<result property="alevel" column="alevel"/>
+		<collection property="cyTwoDepartmentDTOList" resultMap="cyDepartmentListMap"/>
+	</resultMap>
+	<resultMap id="cyDepartmentListMap" type="com.wyzy.hospital.cyclopedia.dto.CyTwoDepartmentDTO">
+		<id property="bid" column="bid"/>
+		<result property="bname" column="bname"/>
+		<result property="blevel" column="blevel"/>
+		<collection property="cyDiseasesDTOList" resultMap="cyDiseasesDtoMap"/>
+	</resultMap>
+	<resultMap id="cyDiseasesDtoMap" type="com.wyzy.hospital.cyclopedia.dto.CyDiseasesDTO">
+		<id property="disId" column="dis_id"/>
+		<result property="disName" column="dis_name"/>
+	</resultMap>
+
+
+	<!--查一级下二级科室-->
+	<select id="selectDepartmentMapList" resultMap="DepartmentMapList">
+			SELECT a.department_id aid,a.department_name aname ,a.department_level alevel,b.department_id bid,b.department_name bname,b.department_level blevel FROM cy_department a LEFT JOIN
+		cy_department b ON a.department_id=b.parent_id WHERE a.department_id=#{departmentId}
+	</select>
+
+	<!--查所有一级科室-->
+<select id="selectDepartment" resultMap="departmentDtoList">
+		SELECT department_id ,department_name,department_level, parent_id from cy_department where department_level=1
+</select>
+
+<!-- 根据一级查疾病 -->
+	<select id="selectOneDiseases" resultMap="DepartmentMapList">
+	SELECT a.department_id aid,a.department_name aname,cd.dis_id,cd.dis_name FROM cy_department a LEFT JOIN
+	cy_department b ON a.department_id=b.parent_id LEFT JOIN depart_diseases dd ON dd.depart_dis_deparment_id=b.department_id
+	LEFT JOIN cy_diseases cd ON  dd.depart_dis_diseases_id=cd.dis_id
+	WHERE a.department_id=#{aid}
+</select>
+
+
+	<!--根据姓名查询(添加时是否数据重复)-->
+	<select id="selectName" resultType="java.lang.String">
+		select department_name from cy_department where department_name=#{departmentName}
+	</select>
+</mapper>

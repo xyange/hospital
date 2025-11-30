@@ -1,0 +1,9 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.wyzy.hospital.common.data.cache.RedisTemplateConfig,\
+    com.wyzy.hospital.common.data.cache.RedisCacheManagerConfig,\
+    com.wyzy.hospital.common.data.cache.RedisCacheAutoConfiguration,\
+    com.wyzy.hospital.common.data.tenant.HospitalTenantConfigProperties,\
+    com.wyzy.hospital.common.data.tenant.TenantContextHolderFilter,\
+    com.wyzy.hospital.common.data.tenant.HospitalTenantConfiguration,\
+    com.wyzy.hospital.common.data.mybatis.MybatisPlusConfiguration,\
+    com.wyzy.hospital.common.data.resolver.TenantKeyStrResolver

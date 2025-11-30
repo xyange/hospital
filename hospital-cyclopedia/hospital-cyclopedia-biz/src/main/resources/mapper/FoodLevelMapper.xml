@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.cyclopedia.mapper.FoodLevelMapper">
+
+
+	<resultMap id="foodLevelMap" type="com.wyzy.hospital.cyclopedia.dto.FoodOneLevelDTO">
+		<id property="fid" column="fid"/>
+		<result property="fname" column="fname"/>
+		<result property="flevels" column="flevels"/>
+		<result property="foodNumber" column="foodNumber"/>
+		<collection property="foodTwoLevelDTOList" resultMap="foodTwoLevelMap"/>
+	</resultMap>
+		<resultMap id="foodTwoLevelMap" type="com.wyzy.hospital.cyclopedia.dto.FoodTwoLevelDTO">
+			<id property="cid" column="cid"/>
+			<result property="cname" column="cname"/>
+			<result property="clevels" column="clevels"/>
+		</resultMap>
+
+
+
+<!--查一级食物表分类-->
+	<select id="selectFirstByLevel" resultType="com.wyzy.hospital.cyclopedia.dto.FoodLevelDTO">
+		select*FROM food_level WHERE levels=1
+	</select>
+
+	<!--查一级食物的二级分类-->
+	<select id="selectTwoByFid" resultMap="foodLevelMap">
+			select f.id fid ,f.food_level_name fname,c.id cid,c.food_level_name cname from food_level f LEFT JOIN  food_level c ON f.id=c.parent_id WHERE f.id=#{fid}
+	</select>
+
+	<!--查一级食物包含食物总数-->
+	<select id="firstSelectFoodNumber" resultMap="foodLevelMap">
+      SELECT f.id fid,f.food_level_name fname ,count(d.food_level_id) foodNumber  FROM (SELECT id,food_level_name FROM food_level WHERE levels = 1) f LEFT JOIN food_level c ON c.parent_id=f.id
+     LEFT JOIN food_details d ON c.id=d.food_level_id GROUP BY f.food_level_name
+	</select>
+
+
+	<!--根据一级查二级下食物数量(判断删除一级)-->
+	<select id="selectFoodLevelCount"  parameterType="Long" resultType="Integer">
+		SELECT count(c.id) number FROM (select id,food_level_name,parent_id,levels from food_level WHERE levels=1)f LEFT JOIN food_level c ON f.id=c.parent_id WHERE f.id=#{fid}
+	</select>
+
+	<!--查二级详情-->
+	<select id="selectDetailsCount"  parameterType="Long" resultType="int">
+		select count(*)from food_details d LEFT JOIN food_level l on d.food_level_id=l.id where d.food_level_id=#{foodLevelId}
+	</select>
+
+
+<!--食物百科审核-->
+	<select id="selectFoodBackstage" resultMap="selectFoodMyBack">
+				SELECT  f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,d.food_kcal,d.food_upload_admin,d.food_upload_time,d.food_audit_status
+		FROM (SELECT id,food_level_name,levels,parent_id FROM food_level WHERE levels=1)f INNER JOIN  food_level c ON f.id=c.parent_id INNER JOIN (select*from food_details WHERE food_audit_status='0' ) d
+		on c.id=d.food_level_id GROUP BY d.food_id
+	</select>
+
+<!-- 食物百科列表-->
+	<select id="selectFoodBackTable" resultMap="selectFoodMyBack">
+             SELECT  f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,d.food_kcal,d.food_examine_admin,d.food_check_pass_time,d.food_exist_status
+		 FROM (SELECT id,food_level_name,levels,parent_id FROM food_level WHERE levels=1)f INNER JOIN  food_level c ON f.id=c.parent_id INNER JOIN (SELECT*from food_details WHERE food_audit_status='1') d
+		 on c.id=d.food_level_id GROUP BY  d.food_id
+	</select>
+
+	<!-- 百科食物审核列表-->
+	<select id="selectFoodBackExamineTable" resultMap="selectFoodMyBack">
+              SELECT f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,d.food_kcal,d.food_examine_admin,d.food_audit_status,d.food_audit_time
+		FROM (SELECT id,food_level_name FROM food_level WHERE levels =1) f LEFT JOIN food_level c ON f.id=c.parent_id LEFT JOIN
+		food_details d on c.id=d.food_level_id WHERE d.food_audit_status='2' GROUP BY  d.food_id
+	</select>
+
+	<!-- 百科后台查询食物详情-->
+	<select id="selectFoodDetailsBack" resultMap="selectFoodMyBack">
+     	SELECT f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,
+              d.food_heat,d.food_dietary_fiber,d.food_acid,d.food_calcium,d.food_carbohydrates,
+              d.food_GI,d.food_GL,d.food_cholesterol,d.food_magnesium,d.food_sodium,d.food_saturated_fat,d.food_purine,d.food_protein,d.food_potassium,
+              d.food_magnesium,d.food_fat,d.food_iron,d.food_zinc
+              FROM (SELECT id,food_level_name FROM food_level WHERE levels =1) f LEFT JOIN food_level c ON f.id=c.parent_id LEFT JOIN
+		food_details d on c.id=d.food_level_id where d.food_id=#{id}
+	</select>
+
+	<!--食物百科审核(条件查询)-->
+	<select id="byConditionFoodBackstage" resultMap="selectFoodMyBack">
+		SELECT  f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,d.food_kcal,d.food_upload_admin,d.food_upload_time,d.food_audit_status
+		FROM (SELECT id,food_level_name,levels,parent_id FROM food_level WHERE levels=1)f INNER JOIN  food_level c ON f.id=c.parent_id INNER JOIN (select*from food_details WHERE food_audit_status='0' ) d
+		on c.id=d.food_level_id
+		<where>
+				<if test="minTime !=null">
+					<![CDATA[ d.food_upload_time >= #{minTime} ]]>
+				</if>
+				<if test="maxTime!=null">
+					 <![CDATA[ And d.food_upload_time <=#{maxTime} ]]>
+				</if>
+				<if test="foodName!=null and foodName!=''">
+					and d.food_name like concat('%',#{foodName},'%')
+				</if>
+				<if test="foodUploadAdmin!=null and foodUploadAdmin!=''">
+					and d.food_upload_admin like concat('%',#{foodUploadAdmin},'%')
+				</if>
+
+		</where>
+		GROUP BY d.food_id ORDER BY d.food_upload_time ASC
+	</select>
+
+
+	<!--食物百科列表(条件查询)-->
+	<select id="byConditionFoodTable" resultMap="selectFoodMyBack">
+		SELECT  f.food_level_name fname,c.food_level_name cname,d.food_id,d.food_name,d.food_kcal,d.food_examine_admin,d.food_check_pass_time,d.food_exist_status
+		FROM (SELECT id,food_level_name,levels,parent_id FROM food_level WHERE levels=1)f INNER JOIN  food_level c ON f.id=c.parent_id INNER JOIN (SELECT*from food_details WHERE food_audit_status='1') d
+		on c.id=d.food_level_id
+		<where>
+			<if test="minTime !=null">
+				<![CDATA[ d.food_check_pass_time >= #{minTime} ]]>
+			</if>
+			<if test="maxTime!=null">
+				<![CDATA[ And d.food_check_pass_time <=#{maxTime} ]]>
+			</if>
+			<if test="foodName!=null and foodName!=''">
+				and d.food_name like concat('%',#{foodName},'%')
+			</if>
+			<if test="foodExamineAdmin!=null and foodExamineAdmin!=''">
+				and d.food_examine_admin like concat('%',#{foodExamineAdmin},'%')
+			</if>
+
+		</where>
+		GROUP BY  d.food_id ORDER BY d.food_check_pass_time ASC
+	</select>
+
+	<!--百科食物审核列表(条件查询)-->
+	<select id="byConditionAuditFoodTable" resultMap="selectFoodMyBack">
+		SELECT f.food_level_name fname,c.food_level_name cname,d.food_id ,d.food_name,d.food_kcal,d.food_examine_admin,d.food_audit_status,d.food_audit_time
+		FROM (SELECT id,food_level_name FROM food_level WHERE levels =1) f LEFT JOIN food_level c ON f.id=c.parent_id LEFT JOIN
+		food_details d on c.id=d.food_level_id
+		<where>
+			<if test="minTime !=null">
+				<![CDATA[ d.food_audit_time <= #{minTime} ]]>
+			</if>
+			<if test="maxTime!=null">
+				<![CDATA[ And d.food_audit_time >=#{maxTime} ]]>
+			</if>
+			<if test="foodName!=null and foodName!=''">
+				and d.food_name like concat('%',#{foodName},'%')
+			</if>
+			<if test="foodExamineAdmin!=null and foodExamineAdmin!=''">
+				and d.food_examine_admin like concat('%',#{foodExamineAdmin},'%')
+			</if>
+		</where>
+		And d.food_audit_status='2' GROUP BY d.food_id ORDER BY d.food_audit_time ASC
+	</select>
+
+	<!--根据姓名查询(添加时是否数据重复)-->
+	<select id="selectName" resultType="java.lang.String">
+		select food_level_name from food_level where food_level_name=#{foodLevelName}
+	</select>
+
+	<resultMap id="selectFoodMyBack" type="com.wyzy.hospital.cyclopedia.dto.FoodBackstageDTO">
+		<id property="foodId" column="food_id"/>
+		<result property="foodName" column="food_name"/>
+		<result property="foodKcal" column="food_kcal"/>
+		<result property="foodKilojoules" column="food_kilojoules"/>
+		<result property="foodHeat" column="food_heat"/>
+		<result property="foodProtein" column="food_protein"/>
+		<result property="foodFat" column="food_fat"/>
+		<result property="foodCarbohydrates" column="food_carbohydrates"/>
+		<result property="foodCholesterol" column="food_cholesterol"/>
+		<result property="foodDietaryFiber" column="food_dietary_fiber"/>
+		<result property="foodIron" column="food_iron"/>
+		<result property="foodCalcium" column="food_calcium"/>
+		<result property="foodPotassium" column="food_potassium"/>
+		<result property="foodMagnesium" column="food_magnesium"/>
+		<result property="foodAcid" column="food_acid"/>
+		<result property="foodZinc" column="food_zinc"/>
+		<result property="foodPurine" column="food_purine"/>
+		<result property="foodSodium" column="food_sodium"/>
+		<result property="foodSaturatedFat" column="food_saturated_fat"/>
+		<result property="foodGi" column="food_GI"/>
+		<result property="foodGl" column="food_GL"/>
+		<result property="foodLevelId" column="food_level_id"/>
+		<result property="foodImage" column="food_image"/>
+		<result property="foodReferralRate" column="food_referral_rate"/>
+		<result property="foodExistStatus" column="food_exist_status"/>
+		<result property="foodAuditStatus" column="food_audit_status"/>
+		<result property="foodUploadAdmin" column="food_upload_admin"/>
+		<result property="foodExamineAdmin" column="food_examine_admin"/>
+		<result property="foodCheckPassTime" column="food_check_pass_time"/>
+		<result property="foodAuditTime" column="food_audit_time"/>
+		<result property="foodUploadTime" column="food_upload_time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<collection property="foodOneLevelDTOList" resultMap="selectFirstFoodBack"/>
+	</resultMap>
+     <resultMap id="selectFirstFoodBack" type="com.wyzy.hospital.cyclopedia.dto.FoodOneLevelDTO">
+	           <id property="fid" column="fid"/>
+	           <result property="fname" column="fname"/>
+           <collection property="foodTwoLevelDTOList" resultMap="selectTwoFoodBack"/>
+     </resultMap>
+	<resultMap id="selectTwoFoodBack" type="com.wyzy.hospital.cyclopedia.dto.FoodTwoLevelDTO">
+		<id property="cid" column="cid"/>
+		<result property="cname" column="cname"/>
+	</resultMap>
+
+
+</mapper>

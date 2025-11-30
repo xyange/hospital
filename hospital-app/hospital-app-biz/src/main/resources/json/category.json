@@ -1,0 +1,121 @@
+{
+  "code": 0,
+  "data": [
+    {
+      "label": "ComputerScience",
+      "value": 1,
+      "num": 56
+    },
+    {
+      "label": "SocialSciences",
+      "value": 2,
+      "num": 51
+    },
+    {
+      "label": "Economics",
+      "value": 3,
+      "num": 30
+    },
+    {
+      "label": "Education",
+      "value": 4,
+      "num": 60
+    },
+    {
+      "label": "Engineering",
+      "value": 5,
+      "num": 23
+    },
+    {
+      "label": "Environment",
+      "value": 6,
+      "num": 42
+    },
+    {
+      "label": "Geography",
+      "value": 7,
+      "num": 7
+    },
+    {
+      "label": "History",
+      "value": 8,
+      "num": 18
+    },
+    {
+      "label": "Laws",
+      "value": 9,
+      "num": 13
+    },
+    {
+      "label": "LifeSciences",
+      "value": 10,
+      "num": 24
+    },
+    {
+      "label": "Literature",
+      "value": 11,
+      "num": 6
+    },
+    {
+      "label": "Biomedicine",
+      "value": 12,
+      "num": 13
+    },
+    {
+      "label": "BusinessandManagement",
+      "value": 13,
+      "num": 16
+    },
+    {
+      "label": "EarthSciences",
+      "value": 14,
+      "num": 16
+    },
+    {
+      "label": "MaterialsScience",
+      "value": 15,
+      "num": 2
+    },
+    {
+      "label": "Mathematics",
+      "value": 16,
+      "num": 9
+    },
+    {
+      "label": "MedicineAndPublicHealth",
+      "value": 17,
+      "num": 20
+    },
+    {
+      "label": "Philosophy",
+      "value": 18,
+      "num": 16
+    },
+    {
+      "label": "Physics",
+      "value": 19,
+      "num": 10
+    },
+    {
+      "label": "PoliticalScienceAndInternationalRelations",
+      "value": 20,
+      "num": 26
+    },
+    {
+      "label": "Psychology",
+      "value": 21,
+      "num": 3
+    },
+    {
+      "label": "Statistics",
+      "value": 22,
+      "num": 1
+    },
+    {
+      "label": "自定义",
+      "value": 99,
+      "num": 1
+    }
+  ],
+  "msg": "操作成功"
+}

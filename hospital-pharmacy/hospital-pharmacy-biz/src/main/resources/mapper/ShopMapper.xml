@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.pharmacy.mapper.ShopMapper">
+
+  <resultMap id="shopMap" type="com.wyzy.hospital.pharmacy.entity.Shop">
+                  <id property="shopId" column="shop_id"/>
+                        <result property="shopCode" column="shop_code"/>
+                        <result property="shopName" column="shop_name"/>
+                        <result property="shopBrief" column="shop_brief"/>
+                        <result property="shopPhone" column="shop_phone"/>
+                        <result property="shopPassword" column="shop_password"/>
+                        <result property="chargePersonName" column="charge_person_name"/>
+                        <result property="chargePersonPhone" column="charge_person_phone"/>
+                        <result property="areaId" column="area_id"/>
+                        <result property="shopAddress" column="shop_address"/>
+                        <result property="shopAddressProvince" column="shop_address_province"/>
+                        <result property="shopAddressCity" column="shop_address_city"/>
+                        <result property="shopAddressDetail" column="shop_address_detail"/>
+                        <result property="shopLogo" column="shop_logo"/>
+                        <result property="effectiveDate" column="effective_date"/>
+                        <result property="effectiveYear" column="effective_year"/>
+                        <result property="contractState" column="contract_state"/>
+                        <result property="authenticationState" column="authentication_state"/>
+                        <result property="checkState" column="check_state"/>
+                        <result property="delFlag" column="del_flag"/>
+                        <result property="authenticationType" column="authentication_type"/>
+                        <result property="wxImage" column="wx_image"/>
+                        <result property="ailpayImage" column="ailpay_image"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateTime" column="update_time"/>
+
+                        <result property="shopType" column="shop_type"/>
+                        <result property="openHours" column="open_hours"/>
+                        <result property="shopQualification" column="shop_qualification"/>
+                        <result property="shopServices" column="shop_services"/>
+                        <result property="hotline" column="hotline"/>
+            </resultMap>
+    <select id="shopDetail" resultType="com.wyzy.hospital.pharmacy.dto.ShopDTO">
+		SELECT shop_id, shop_name,shop_logo,shop_brief, shop_address, shop_type, open_hours, shop_qualification, shop_services, hotline FROM ph_shop
+		where shop_id=#{shopId}
+	</select>
+</mapper>

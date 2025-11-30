@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wyzy.hospital.psychology.mapper.PsychologistRecommendMapper">
+
+	<resultMap id="AppDoctorDetail" type="com.wyzy.hospital.psychology.api.dto.PsychologistRecommendDTO">
+		<result column="doctor_id" property="doctorId"/>
+		<result column="price" property="price"/>
+		<result column="area" property="area"/>
+		<collection property="serveDTOList" resultMap="serveDTOList"/>
+		<collection property="psychologyCategoryDTOList" resultMap="psychologyCategoryDTOList"/>
+		<collection property="doctorHonorDTOList" resultMap="doctorHonorDTOList"/>
+		<collection property="counselTypeDTOList" resultMap="counselTypeDTOList"/>
+	</resultMap>
+	<resultMap id="serveDTOList" type="com.wyzy.hospital.psychology.api.dto.ServeDTO">
+		<result property="serveName" column="serve_name"/>
+	</resultMap>
+	<resultMap id="psychologyCategoryDTOList" type="com.wyzy.hospital.psychology.api.dto.PsychologyCategoryDTO">
+		<result property="categoryName" column="category_name"/>
+	</resultMap>
+	<resultMap id="doctorHonorDTOList" type="com.wyzy.hospital.psychology.api.dto.DoctorHonorDTO">
+		<result property="honorName" column="honor_name"/>
+	</resultMap>
+	<resultMap id="counselTypeDTOList" type="com.wyzy.hospital.psychology.api.dto.CounselTypeDTO">
+		<result column="counsel_name" property="counselName"/>
+	</resultMap>
+
+	<select id="selectRecommendDoctorIdList" resultType="java.lang.String">
+		select
+		GROUP_CONCAT(distinct(setting.doctor_id))
+		from
+		order_setting setting,-- 预约时间
+		doctor_detail detail,-- 价格、地址
+		(SELECT
+		adept.doctor_id,category.category_id
+		FROM
+		(SELECT doctor_id,adept_id FROM doctor_adept) adept
+		LEFT JOIN
+		psychology_category category
+		ON adept.adept_id = category.category_id) adca,	-- 擅长
+
+		(SELECT counsel.doctor_id,type.counsel_id
+		from
+		(select doctor_id,counsel_type_id from doctor_counsel) counsel
+		LEFT JOIN
+		counsel_type type
+		ON type.counsel_id = counsel.counsel_type_id) coty,-- 咨询类型名称
+
+		(SELECT
+		ds.doctor_id,s.serve_id
+		from
+		(SELECT doctor_id,serve_id from doctor_serve) ds
+		LEFT JOIN
+		serve s
+		ON ds.serve_id = s.serve_id) ser -- 诊疗方式
+		where setting.already = 0 -- 是否可预约
+		<if test="week != null">
+			and setting.date_time >= #{week} and setting.date_time &lt;= #{week} -- 根据可预约日期查询
+		</if>
+		<if test="minPrice != null and minPrice != ''">
+			AND detail.price >= #{minPrice}
+		</if>
+		<if test="maxPrice != null and maxPrice != ''">
+			AND detail.price &lt;= #{maxPrice}
+		</if>
+		<if test="counselId != null and counselId != ''">
+			and coty.counsel_id = #{counselId}  -- 成人、少儿
+		</if>
+		<if test="serveId != null and serveId != ''">
+			and ser.serve_id = #{serveId} -- 诊疗方式
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			and adca.category_id = #{categoryId} -- 擅长
+		</if>
+		and setting.doctor_id = detail.doctor_id
+		and setting.doctor_id = adca.doctor_id
+		and setting.doctor_id = coty.doctor_id
+		and setting.doctor_id = ser.doctor_id
+	</select>
+	<select id="selectRecommendByDoctorIds" resultMap="AppDoctorDetail">
+		select
+		setting.doctor_id,setting.order_time,setting.date_time, -- 预约时间
+		detail.price,detail.area, -- 价格、地址
+		adca.category_id,adca.category_name, -- 擅长
+		coty.counsel_id,coty.counsel_name, -- 咨询类型名称
+		ser.serve_id,ser.serve_name, -- 诊疗方式
+		honor.honor_name -- 荣誉
+		from
+		order_setting setting,-- 预约时间
+		doctor_detail detail,-- 价格、地址
+		(SELECT
+		adept.doctor_id,category.category_id,category.category_name
+		FROM
+		(SELECT doctor_id,adept_id FROM doctor_adept) adept
+		LEFT JOIN
+		psychology_category category
+		ON adept.adept_id = category.category_id) adca,	-- 擅长
+		(SELECT
+		counsel.doctor_id,type.counsel_name,type.counsel_id
+		from
+		(select doctor_id,counsel_type_id from doctor_counsel) counsel
+		LEFT JOIN
+		counsel_type type
+		ON type.counsel_id = counsel.counsel_type_id) coty,-- 咨询类型名称
+		(SELECT
+		ds.doctor_id,s.serve_id,s.serve_name
+		from
+		(SELECT doctor_id,serve_id from doctor_serve) ds
+		LEFT JOIN
+		serve s
+		ON ds.serve_id = s.serve_id) ser, -- 诊疗方式
+		(SELECT
+		doctor_id,honor_name
+		FROM doctor_honor) honor -- 荣誉
+		where setting.already = 0 -- 是否可预约
+		and setting.doctor_id in (${longList})
+		and setting.doctor_id = detail.doctor_id
+		and setting.doctor_id = adca.doctor_id
+		and setting.doctor_id = coty.doctor_id
+		and setting.doctor_id = ser.doctor_id
+		and setting.doctor_id = honor.doctor_id
+	</select>
+	<select id="selectOrderIds" resultType="java.lang.Long">
+		select order_id from order_record where member_id = #{memberId}
+	</select>
+
+	<resultMap id="OrderRecordDTOMapper" type="com.wyzy.hospital.psychology.api.dto.OrderRecordDTO">
+		<result property="doctorId" column="doctor_id"/>
+		<result property="area" column="area"/>
+		<result property="workRoomName" column="work_room_name"/>
+		<result property="workRoomAddress" column="work_room_address"/>
+		<result property="dateTime" column="date_time"/>
+		<result property="orderTime" column="order_time"/>
+	</resultMap>
+
+	<select id="selectOrderRecordDTOByOrderIds" resultMap="OrderRecordDTOMapper">
+		select
+			setting.doctor_id, -- 医生ID
+			detail.work_room_name, -- 线下工作室名字
+			setting.date_time, -- 预约日期
+			setting.order_time, -- 预约时间
+			detail.area, -- 价格、地址
+			detail.work_room_address -- 地点
+		from
+			order_setting setting,-- 预约时间
+			doctor_detail detail-- 价格、地址
+		where setting.order_id in
+		      <foreach collection="orderIds" open="(" close=")" separator="," item ="id" index="i">
+				#{id}
+			  </foreach>
+		  and setting.doctor_id = detail.doctor_id
+	</select>
+</mapper>

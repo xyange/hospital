@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.wyzy.hospital.common.security.component.HospitalTokenEnhancer,\
+  com.wyzy.hospital.common.security.component.HospitalSecurityInnerAspect,\
+  com.wyzy.hospital.common.security.service.HospitalUserDetailsServiceImpl,\
+  com.wyzy.hospital.common.security.serializer.HospitalTokenStoreAutoConfiguration,\
+  com.wyzy.hospital.common.security.listener.AuthenticationFailureEventListener,\
+  com.wyzy.hospital.common.security.listener.AuthenticationSuccessEventListener
+
