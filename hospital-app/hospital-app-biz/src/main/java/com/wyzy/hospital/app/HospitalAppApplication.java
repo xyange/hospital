@@ -33,7 +33,6 @@ public class HospitalAppApplication {
 	public RequestContextListener requestContextListener(){
 		return new RequestContextListener();
 	}
-
 	@Bean
 	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
 		ObjectMapper mapper = new ObjectMapper();
